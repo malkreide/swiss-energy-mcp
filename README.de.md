@@ -146,8 +146,6 @@ MIT-Lizenz – siehe [LICENSE](LICENSE)
 
 ## Autor
 
-Hayal Küçük · [malkreide](https://github.com/malkreide)
+Hayal Oezkan · [malkreide](https://github.com/malkreide)
 
 ---
-
-*Teil des Swiss Open Data MCP-Portfolios – KI-Assistenten mit Schweizer Öffentlichkeitsdaten verbinden.*
