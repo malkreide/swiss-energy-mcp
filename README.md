@@ -146,8 +146,6 @@ MIT License — see [LICENSE](LICENSE)
 
 ## Author
 
-Hayal Küçük · [malkreide](https://github.com/malkreide)
+Hayal Oezkan · [malkreide](https://github.com/malkreide)
 
 ---
-
-*Part of the Swiss Open Data MCP portfolio — connecting AI assistants to Swiss public data sources.*
