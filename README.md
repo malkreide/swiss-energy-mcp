@@ -8,6 +8,7 @@
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)](https://modelcontextprotocol.io/)
 [![Data Source](https://img.shields.io/badge/Data-SFOE%20%2F%20GeoAdmin-red)](https://www.geo.admin.ch/)
 ![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen)
+![CI](https://github.com/malkreide/swiss-energy-mcp/actions/workflows/ci.yml/badge.svg)
 
 > MCP server for Swiss energy data from the Federal Office of Energy (SFOE/BFE) via GeoAdmin REST API and opendata.swiss — no API key required.
 
