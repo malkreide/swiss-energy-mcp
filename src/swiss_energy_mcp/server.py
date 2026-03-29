@@ -27,8 +27,7 @@ import json
 import logging
 import os
 import sys
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -43,9 +42,7 @@ from .api_client import (
     LAYER_PV_LARGE,
     LAYER_SOLAR_ROOFS,
     LAYER_WIND_TURBINES,
-    OPENDATA_SWISS_BASE,
     EnergyHTTPClient,
-    clean_label,
     find_geoadmin_by_name,
     format_power_value,
     format_year,
@@ -63,7 +60,7 @@ logger = logging.getLogger("swiss-energy-mcp")
 mcp = FastMCP(
     "swiss_energy_mcp",
     instructions=(
-        "Swiss Energy MCP Server – Energiedaten des Bundesamts für Energie (BFE) via GeoAdmin REST API "
+        "Swiss Energy MCP Server – Energiedaten des BFE via GeoAdmin REST API "
         "und opendata.swiss. Alle Tools sind auth-frei und benötigen keinen API-Key. "
         "Koordinaten werden als WGS84 (Lat/Lon) übergeben und intern nach LV95 konvertiert. "
         "Verfügbare Tools: "
@@ -100,7 +97,8 @@ def _get_client() -> EnergyHTTPClient:
 # Pydantic-Modelle
 # ---------------------------------------------------------------------------
 
-class ResponseFormat(str, Enum):
+
+class ResponseFormat(StrEnum):
     MARKDOWN = "markdown"
     JSON = "json"
 
@@ -137,7 +135,7 @@ class LocationInput(BaseModel):
 class PowerPlantInput(LocationInput):
     """Abfrage von Elektrizitätsproduktionsanlagen mit optionalem Typ-Filter."""
 
-    category_filter: Optional[str] = Field(
+    category_filter: str | None = Field(
         default=None,
         description=(
             "Optionaler Filter für Hauptkategorie (Deutsch, Gross-/Kleinschreibung ignoriert). "
@@ -183,18 +181,18 @@ class EnergyCityInput(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True, validate_assignment=True, extra="forbid")
 
-    name: Optional[str] = Field(
+    name: str | None = Field(
         default=None,
         description="Name der Gemeinde/Stadt (z. B. 'Zürich', 'Bern'). Leer = Standortsuche.",
         max_length=100,
     )
-    lat: Optional[float] = Field(
+    lat: float | None = Field(
         default=None,
         description="Breitengrad für Standortsuche (WGS84). Nur wenn kein Name angegeben.",
         ge=45.0,
         le=48.0,
     )
-    lon: Optional[float] = Field(
+    lon: float | None = Field(
         default=None,
         description="Längengrad für Standortsuche (WGS84). Nur wenn kein Name angegeben.",
         ge=5.5,
@@ -220,6 +218,7 @@ class EnergyCityInput(BaseModel):
 # ---------------------------------------------------------------------------
 # Hilfsfunktionen für Ausgabe-Formatierung
 # ---------------------------------------------------------------------------
+
 
 def _format_power_plant_list(features: list[dict], title: str) -> str:
     """Formatiert eine Liste von Elektrizitätsproduktionsanlagen als Markdown."""
@@ -266,6 +265,7 @@ def _format_wind_turbine_list(features: list[dict], title: str) -> str:
         turbine_info = ""
         if "<tur_manufacturer>" in turbines_xml:
             import re
+
             mfr = re.search(r"<tur_manufacturer>(.*?)</tur_manufacturer>", turbines_xml)
             model = re.search(r"<tur_model>(.*?)</tur_model>", turbines_xml)
             hub = re.search(r"<tur_hubheight>(.*?)</tur_hubheight>", turbines_xml)
@@ -387,6 +387,7 @@ def _format_energy_city(attrs: dict) -> str:
 # Tool 1: Elektrizitätsproduktionsanlagen
 # ---------------------------------------------------------------------------
 
+
 @mcp.tool(
     name="energy_find_power_plants",
     annotations={
@@ -400,7 +401,8 @@ def _format_energy_city(attrs: dict) -> str:
 async def energy_find_power_plants(params: PowerPlantInput) -> str:
     """Sucht nach Elektrizitätsproduktionsanlagen im Umkreis eines Standorts.
 
-    Durchsucht den BFE-Layer 'Elektrizitätsproduktionsanlagen' (ch.bfe.elektrizitaetsproduktionsanlagen)
+    Durchsucht den BFE-Layer 'Elektrizitätsproduktionsanlagen'
+    (ch.bfe.elektrizitaetsproduktionsanlagen)
     via GeoAdmin REST API. Enthält alle Anlagentypen: Photovoltaik, Wasserkraft,
     Windkraft, Biomasse, Kernkraft, etc. Optionaler Filter für Anlagentyp.
 
@@ -429,7 +431,8 @@ async def energy_find_power_plants(params: PowerPlantInput) -> str:
     if params.category_filter:
         cf = params.category_filter.lower()
         features = [
-            f for f in features
+            f
+            for f in features
             if cf in f.get("attributes", {}).get("sub_category_de", "").lower()
             or cf in f.get("attributes", {}).get("main_category_de", "").lower()
         ]
@@ -457,6 +460,7 @@ async def energy_find_power_plants(params: PowerPlantInput) -> str:
 # ---------------------------------------------------------------------------
 # Tool 2: Windenergieanlagen
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_find_wind_turbines",
@@ -517,6 +521,7 @@ async def energy_find_wind_turbines(params: LocationInput) -> str:
 # Tool 3: Wasserkraftwerke
 # ---------------------------------------------------------------------------
 
+
 @mcp.tool(
     name="energy_find_hydro_plants",
     annotations={
@@ -573,6 +578,7 @@ async def energy_find_hydro_plants(params: LocationInput) -> str:
 # ---------------------------------------------------------------------------
 # Tool 4: Photovoltaik-Grossanlagen
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_find_pv_installations",
@@ -631,6 +637,7 @@ async def energy_find_pv_installations(params: LocationInput) -> str:
 # Tool 5: Biogasanlagen
 # ---------------------------------------------------------------------------
 
+
 @mcp.tool(
     name="energy_find_biogas_plants",
     annotations={
@@ -667,7 +674,10 @@ async def energy_find_biogas_plants(params: LocationInput) -> str:
         return f"Fehler bei der Abfrage: {e}"
 
     if not features:
-        return f"## Biogasanlagen\n\nKeine Biogasanlagen im Umkreis von {params.radius_m / 1000:.0f} km gefunden."
+        radius_km = params.radius_m / 1000
+        return (
+            f"## Biogasanlagen\n\nKeine Biogasanlagen im Umkreis von {radius_km:.0f} km gefunden."
+        )
 
     if params.response_format == ResponseFormat.JSON:
         return json.dumps(
@@ -699,6 +709,7 @@ async def energy_find_biogas_plants(params: LocationInput) -> str:
 # ---------------------------------------------------------------------------
 # Tool 6: Energiestädte
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_find_energy_cities",
@@ -735,17 +746,13 @@ async def energy_find_energy_cities(params: EnergyCityInput) -> str:
 
     try:
         if params.name:
-            features = await find_geoadmin_by_name(
-                client, LAYER_ENERGY_CITIES, params.name, "name"
-            )
+            features = await find_geoadmin_by_name(client, LAYER_ENERGY_CITIES, params.name, "name")
         elif params.lat is not None and params.lon is not None:
             features = await query_geoadmin_layer(
                 client, LAYER_ENERGY_CITIES, params.lat, params.lon, params.radius_m
             )
         else:
-            return (
-                "Bitte entweder einen Gemeindenamen (name) oder Koordinaten (lat/lon) angeben."
-            )
+            return "Bitte entweder einen Gemeindenamen (name) oder Koordinaten (lat/lon) angeben."
     except ValueError as e:
         return f"Fehler bei der Abfrage: {e}"
 
@@ -765,19 +772,18 @@ async def energy_find_energy_cities(params: EnergyCityInput) -> str:
             ensure_ascii=False,
         )
 
-    lines = [f"## Energiestädte", f"\n**{len(features)} Gemeinde(n) gefunden**\n"]
+    lines = ["## Energiestädte", f"\n**{len(features)} Gemeinde(n) gefunden**\n"]
     for feat in features:
         lines.append(_format_energy_city(feat.get("attributes", {})))
 
-    lines.append(
-        "\n*Quelle: BFE / energiestadt.ch – Daten via GeoAdmin (ch.bfe.energiestaedte)*"
-    )
+    lines.append("\n*Quelle: BFE / energiestadt.ch – Daten via GeoAdmin (ch.bfe.energiestaedte)*")
     return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
 # Tool 7: Solareignung Dächer
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_solar_potential",
@@ -888,7 +894,7 @@ async def energy_solar_potential(params: LocationInput) -> str:
         else:
             # Rohdaten anzeigen falls Feldnamen unbekannt
             sample = features[0].get("attributes", {}) if features else {}
-            lines.append(f"| – | Rohdaten (erstes Objekt) | – |")
+            lines.append("| – | Rohdaten (erstes Objekt) | – |")
             for k, v in list(sample.items())[:5]:
                 lines.append(f"| {k} | {v} | – |")
 
@@ -905,6 +911,7 @@ async def energy_solar_potential(params: LocationInput) -> str:
 # ---------------------------------------------------------------------------
 # Tool 8: Vollständiges Energieprofil für einen Standort
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_location_profile",
@@ -986,11 +993,13 @@ async def energy_location_profile(params: LocationInput) -> str:
 
     # PV-Anlagen nach Subkategorie gruppieren
     pv_count = sum(
-        1 for f in power_plants
+        1
+        for f in power_plants
         if "photovoltaik" in f.get("attributes", {}).get("sub_category_de", "").lower()
     )
     other_renewable = sum(
-        1 for f in power_plants
+        1
+        for f in power_plants
         if "photovoltaik" not in f.get("attributes", {}).get("sub_category_de", "").lower()
     )
 
@@ -1006,8 +1015,8 @@ async def energy_location_profile(params: LocationInput) -> str:
         "",
         "## 📊 Zusammenfassung",
         "",
-        f"| Energiequelle | Anzahl Anlagen |",
-        f"|---------------|----------------|",
+        "| Energiequelle | Anzahl Anlagen |",
+        "|---------------|----------------|",
         f"| ☀️ Photovoltaik (Einzelanlagen) | {pv_count} |",
         f"| ☀️ PV-Grossanlagen | {len(pv_large)} |",
         f"| 💨 Windenergie | {len(wind_turbines)} |",
@@ -1074,6 +1083,7 @@ async def energy_location_profile(params: LocationInput) -> str:
 # ---------------------------------------------------------------------------
 # Tool 9: BFE-Datensätze auf opendata.swiss suchen
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_search_bfe_datasets",
@@ -1150,7 +1160,8 @@ async def energy_search_bfe_datasets(params: SearchInput) -> str:
     search_desc = f'"{params.query}"' if params.query else "alle BFE-Datensätze"
     lines = [
         f"## BFE-Datensätze auf opendata.swiss – {search_desc}",
-        f"\n**{total} Datensätze total**, zeige {params.offset + 1}–{params.offset + len(datasets)}\n",
+        f"\n**{total} Datensätze total**, "
+        f"zeige {params.offset + 1}–{params.offset + len(datasets)}\n",
     ]
 
     for ds in datasets:
@@ -1191,6 +1202,7 @@ async def energy_search_bfe_datasets(params: SearchInput) -> str:
 # ---------------------------------------------------------------------------
 # Tool 10: Systemstatus
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool(
     name="energy_check_status",
@@ -1255,12 +1267,12 @@ async def energy_check_status() -> str:
     lines = [
         "## Swiss Energy MCP – API-Status",
         "",
-        f"### GeoAdmin REST API (api3.geo.admin.ch)",
+        "### GeoAdmin REST API (api3.geo.admin.ch)",
         f"- Status: {results['geoadmin']['status']}",
         f"- Antwortzeit: {results['geoadmin']['response_time_ms']} ms",
         f"- Test: {results['geoadmin'].get('test', '–')}",
         "",
-        f"### opendata.swiss CKAN API",
+        "### opendata.swiss CKAN API",
         f"- Status: {results['opendata_swiss']['status']}",
         f"- Antwortzeit: {results['opendata_swiss']['response_time_ms']} ms",
         f"- Test: {results['opendata_swiss'].get('test', '–')}",
@@ -1282,6 +1294,7 @@ async def energy_check_status() -> str:
 # ---------------------------------------------------------------------------
 # Einstiegspunkt
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     """Startet den Swiss Energy MCP Server."""

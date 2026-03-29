@@ -4,7 +4,6 @@ Metapher: Dieser Client ist der Dolmetscher zwischen GeoAdmin und dem MCP-Server
 Er übersetzt Koordinaten, formuliert Anfragen und bereitet Antworten auf.
 """
 
-import math
 from typing import Any
 
 import httpx
@@ -40,6 +39,7 @@ LAYER_TRANSMISSION_LINES = "ch.bfe.sachplan-uebertragungsleitungen_kraft"
 # ---------------------------------------------------------------------------
 # Koordinaten-Konvertierung: WGS84 → LV95 (näherungsweise)
 # ---------------------------------------------------------------------------
+
 
 def wgs84_to_lv95(lat: float, lon: float) -> tuple[float, float]:
     """Konvertiert WGS84-Koordinaten (lat/lon) in Schweizer LV95 (E, N).
@@ -130,6 +130,7 @@ def compute_tolerance(radius_m: int, image_size: int = 1000) -> int:
 # HTTP-Client
 # ---------------------------------------------------------------------------
 
+
 class EnergyHTTPClient:
     """Async HTTP-Client für GeoAdmin und opendata.swiss APIs.
 
@@ -172,7 +173,8 @@ class EnergyHTTPClient:
                 ) from e
             elif code == 404:
                 raise ValueError(
-                    f"Ressource nicht gefunden (HTTP 404). Layer oder Endpunkt existiert nicht. URL: {url}"
+                    f"Ressource nicht gefunden (HTTP 404). "
+                    f"Layer oder Endpunkt existiert nicht. URL: {url}"
                 ) from e
             elif code == 429:
                 raise ValueError(
@@ -180,20 +182,18 @@ class EnergyHTTPClient:
                 ) from e
             elif code == 503:
                 raise ValueError(
-                    "GeoAdmin-Dienst vorübergehend nicht verfügbar (HTTP 503). Bitte später erneut versuchen."
+                    "GeoAdmin-Dienst vorübergehend nicht verfügbar (HTTP 503). "
+                    "Bitte später erneut versuchen."
                 ) from e
             else:
-                raise ValueError(
-                    f"API-Fehler (HTTP {code}). URL: {url}"
-                ) from e
+                raise ValueError(f"API-Fehler (HTTP {code}). URL: {url}") from e
         except httpx.TimeoutException as e:
             raise ValueError(
-                "Zeitüberschreitung bei der Anfrage. Bitte Netzwerkverbindung prüfen und erneut versuchen."
+                "Zeitüberschreitung bei der Anfrage. "
+                "Bitte Netzwerkverbindung prüfen und erneut versuchen."
             ) from e
         except httpx.RequestError as e:
-            raise ValueError(
-                f"Netzwerkfehler: {e!s}. Bitte Internetverbindung prüfen."
-            ) from e
+            raise ValueError(f"Netzwerkfehler: {e!s}. Bitte Internetverbindung prüfen.") from e
 
     async def close(self) -> None:
         """Schliesst den HTTP-Client."""
@@ -203,6 +203,7 @@ class EnergyHTTPClient:
 # ---------------------------------------------------------------------------
 # GeoAdmin identify-Abfrage (Kernfunktion)
 # ---------------------------------------------------------------------------
+
 
 async def query_geoadmin_layer(
     client: EnergyHTTPClient,
@@ -282,6 +283,7 @@ async def find_geoadmin_by_name(
 # opendata.swiss CKAN-Abfragen
 # ---------------------------------------------------------------------------
 
+
 async def search_opendata_swiss(
     client: EnergyHTTPClient,
     query: str = "",
@@ -329,6 +331,7 @@ async def search_opendata_swiss(
 # ---------------------------------------------------------------------------
 # Formatierungs-Hilfsfunktionen
 # ---------------------------------------------------------------------------
+
 
 def format_power_value(value: Any, unit: str = "kW") -> str:
     """Formatiert Leistungswerte leserlich.
