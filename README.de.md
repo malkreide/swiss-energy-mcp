@@ -14,6 +14,10 @@
 
 > MCP-Server für Schweizer Energiedaten des Bundesamts für Energie (BFE) via GeoAdmin REST API und opendata.swiss – kein API-Key erforderlich.
 
+<p align="center">
+  <img src="assets/demo.svg" alt="swiss-energy-mcp Demo – Claude fragt nach Kraftwerken bei Wädenswil" width="720">
+</p>
+
 ---
 
 ## Übersicht
@@ -162,6 +166,20 @@ Alle Tools akzeptieren WGS84-Koordinaten (Breiten-/Längengrad). Die Konvertieru
 | `SWISS_ENERGY_TRANSPORT` | `stdio` | Transportmodus: `stdio` oder `http` |
 | `SWISS_ENERGY_PORT` | `8000` | Port für HTTP-Transport |
 | `SWISS_ENERGY_HOST` | `0.0.0.0` | Host für HTTP-Transport |
+
+---
+
+## Safety & Limits
+
+| Aspekt | Details |
+|--------|---------|
+| **Zugriff** | Nur lesend (`readOnlyHint: true`) — der Server kann keine Daten ändern oder löschen |
+| **Personendaten** | Keine personenbezogenen Daten — alle Quellen sind aggregierte, öffentliche Infrastrukturdaten |
+| **Rate Limits** | Eingebaute Obergrenzen pro Abfrage (max. 50 Suchergebnisse, Standard-Radius 5 km) |
+| **Timeout** | 20 Sekunden pro API-Aufruf |
+| **Authentifizierung** | Keine API-Keys nötig — beide APIs sind öffentlich zugänglich |
+| **Lizenzen** | Alle Daten unter offenen Lizenzen via [opendata.swiss](https://opendata.swiss/) (OGD) |
+| **Nutzungsbedingungen** | Es gelten die ToS der jeweiligen Datenquellen: [GeoAdmin](https://www.geo.admin.ch/), [opendata.swiss](https://opendata.swiss/), [BFE](https://www.bfe.admin.ch/) |
 
 ---
 

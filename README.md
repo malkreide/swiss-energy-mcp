@@ -14,6 +14,10 @@
 
 [🇩🇪 Deutsche Version](README.de.md)
 
+<p align="center">
+  <img src="assets/demo.svg" alt="swiss-energy-mcp demo – Claude asks for power plants near Wädenswil" width="720">
+</p>
+
 ---
 
 ## Overview
@@ -162,6 +166,20 @@ All tools accept WGS84 coordinates (lat/lon). Conversion to Swiss LV95 is handle
 | `SWISS_ENERGY_TRANSPORT` | `stdio` | Transport mode: `stdio` or `http` |
 | `SWISS_ENERGY_PORT` | `8000` | Port for HTTP transport |
 | `SWISS_ENERGY_HOST` | `0.0.0.0` | Host for HTTP transport |
+
+---
+
+## Safety & Limits
+
+| Aspect | Details |
+|--------|---------|
+| **Access** | Read-only (`readOnlyHint: true`) — the server cannot modify or delete any data |
+| **Personal data** | No personal data — all sources are aggregated, public infrastructure data |
+| **Rate limits** | Built-in per-query caps (max 50 search results, default 5 km radius) |
+| **Timeout** | 20 seconds per API call |
+| **Authentication** | No API keys required — both APIs are publicly accessible |
+| **Licenses** | All data under open licenses via [opendata.swiss](https://opendata.swiss/) (OGD) |
+| **Terms of Service** | Subject to ToS of the respective data sources: [GeoAdmin](https://www.geo.admin.ch/), [opendata.swiss](https://opendata.swiss/), [SFOE/BFE](https://www.bfe.admin.ch/) |
 
 ---
 
