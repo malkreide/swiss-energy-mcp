@@ -139,6 +139,8 @@ Alle Tools akzeptieren WGS84-Koordinaten (Breiten-/Längengrad). Die Konvertieru
 | *«Vollständiges Energieprofil für die Region Luzern?»* | `energy_location_profile` |
 | *«BFE-Datensätze zum Thema Wasserkraft?»* | `energy_search_bfe_datasets` |
 
+[→ Weitere Anwendungsbeispiele nach Zielgruppe →](EXAMPLES.md)
+
 ---
 
 ## Datenquellen

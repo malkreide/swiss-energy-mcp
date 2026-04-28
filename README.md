@@ -139,6 +139,8 @@ All tools accept WGS84 coordinates (lat/lon). Conversion to Swiss LV95 is handle
 | *"Full energy profile for Lucerne region?"* | `energy_location_profile` |
 | *"SFOE datasets on hydropower?"* | `energy_search_bfe_datasets` |
 
+[→ More use cases by audience →](EXAMPLES.md)
+
 ---
 
 ## Data Sources
