@@ -7,7 +7,11 @@ import pydantic
 import pytest
 import respx
 
-from swiss_energy_mcp.api_client import GEOADMIN_BASE, OPENDATA_SWISS_BASE
+from swiss_energy_mcp.api_client import (
+    GEOADMIN_BASE,
+    OPENDATA_SWISS_BASE,
+    EnergyHTTPClient,
+)
 from swiss_energy_mcp.models import (
     EnergyCityInput,
     EnergyResponse,
@@ -484,3 +488,49 @@ class TestCheckStatus:
         res = await tool("energy_check_status")(ctx)
         geoadmin = next(a for a in res.apis if "GeoAdmin" in a.name)
         assert "Traceback" not in geoadmin.detail
+
+
+# ---------------------------------------------------------------------------
+# Redirect handling (SEC-021)
+# ---------------------------------------------------------------------------
+
+
+class TestRedirectHandling:
+    @respx.mock
+    async def test_redirect_to_allowed_host_is_followed(self):
+        respx.get(f"{GEOADMIN_BASE}/redir").mock(
+            return_value=httpx.Response(302, headers={"Location": f"{OPENDATA_SWISS_BASE}/final"})
+        )
+        respx.get(f"{OPENDATA_SWISS_BASE}/final").mock(
+            return_value=httpx.Response(200, json={"ok": True})
+        )
+        client = EnergyHTTPClient()
+        try:
+            result = await client.get(f"{GEOADMIN_BASE}/redir")
+        finally:
+            await client.close()
+        assert result == {"ok": True}
+
+    @respx.mock
+    async def test_redirect_to_disallowed_host_is_rejected(self):
+        respx.get(f"{GEOADMIN_BASE}/redir").mock(
+            return_value=httpx.Response(302, headers={"Location": "https://evil.example.com/x"})
+        )
+        client = EnergyHTTPClient()
+        try:
+            with pytest.raises(ValueError, match="Allow-List"):
+                await client.get(f"{GEOADMIN_BASE}/redir")
+        finally:
+            await client.close()
+
+    @respx.mock
+    async def test_redirect_loop_is_capped(self):
+        respx.get(f"{GEOADMIN_BASE}/loop").mock(
+            return_value=httpx.Response(302, headers={"Location": f"{GEOADMIN_BASE}/loop"})
+        )
+        client = EnergyHTTPClient()
+        try:
+            with pytest.raises(ValueError, match="Weiterleitungen"):
+                await client.get(f"{GEOADMIN_BASE}/loop")
+        finally:
+            await client.close()

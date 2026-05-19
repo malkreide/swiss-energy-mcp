@@ -6,8 +6,10 @@ The server only ever contacts a fixed set of public Swiss government APIs.
 :func:`assert_url_allowed` enforces this as a code-layer egress allow-list
 (SEC-021), rejecting non-HTTPS targets, hosts outside the allow-list, and any
 host that resolves to a private, loopback, link-local or otherwise reserved IP
-(SSRF / DNS-rebinding prevention, SEC-004/SEC-005). Redirects are disabled so a
-response cannot bounce the client onto an unvetted host.
+(SSRF / DNS-rebinding prevention, SEC-004/SEC-005). Redirects are not followed
+automatically: each hop's target is re-validated against the same allow-list
+before the redirected request is sent, so a response cannot bounce the client
+onto an unvetted host.
 """
 
 from __future__ import annotations
@@ -182,16 +184,18 @@ def compute_tolerance(radius_m: int, image_size: int = 1000) -> int:
 class EnergyHTTPClient:
     """Async HTTP client for the GeoAdmin and opendata.swiss APIs.
 
-    Redirects are disabled and every request target is validated against the
-    egress allow-list before the connection is opened.
+    Redirects are not followed automatically; they are resolved manually so
+    every hop can be re-validated against the egress allow-list.
     """
+
+    _MAX_REDIRECTS = 5
 
     def __init__(self, timeout: float = DEFAULT_TIMEOUT) -> None:
         self._client = httpx.AsyncClient(
             timeout=timeout,
             follow_redirects=False,
             headers={
-                "User-Agent": "swiss-energy-mcp/0.2.0 (github.com/malkreide/swiss-energy-mcp)",
+                "User-Agent": "swiss-energy-mcp/0.2.1 (github.com/malkreide/swiss-energy-mcp)",
                 "Accept": "application/json",
             },
         )
@@ -206,6 +210,14 @@ class EnergyHTTPClient:
         assert_url_allowed(url)
         try:
             response = await self._client.get(url, params=params)
+            redirects = 0
+            while response.is_redirect and response.next_request is not None:
+                redirects += 1
+                if redirects > self._MAX_REDIRECTS:
+                    raise ValueError("Zu viele Weiterleitungen bei der Anfrage.")
+                # Re-validate every redirect hop against the egress allow-list.
+                assert_url_allowed(str(response.next_request.url))
+                response = await self._client.send(response.next_request)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as exc:
