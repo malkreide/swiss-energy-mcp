@@ -7,7 +7,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)](https://modelcontextprotocol.io/)
 [![Data Source](https://img.shields.io/badge/Data-SFOE%20%2F%20GeoAdmin-red)](https://www.geo.admin.ch/)
-![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-87%20passing-brightgreen)
 ![CI](https://github.com/malkreide/swiss-energy-mcp/actions/workflows/ci.yml/badge.svg)
 
 > MCP server for Swiss energy data from the Federal Office of Energy (SFOE/BFE) via GeoAdmin REST API and opendata.swiss — no API key required.
@@ -163,11 +163,42 @@ All tools accept WGS84 coordinates (lat/lon). Conversion to Swiss LV95 is handle
 
 ## Configuration
 
+All variables use the `SWISS_ENERGY_` prefix and are validated at startup.
+
 | Environment variable | Default | Description |
 |---|---|---|
 | `SWISS_ENERGY_TRANSPORT` | `stdio` | Transport mode: `stdio` or `http` |
+| `SWISS_ENERGY_HOST` | `127.0.0.1` | Host for HTTP transport. Bind `0.0.0.0` only inside a container. |
 | `SWISS_ENERGY_PORT` | `8000` | Port for HTTP transport |
-| `SWISS_ENERGY_HOST` | `0.0.0.0` | Host for HTTP transport |
+| `SWISS_ENERGY_CORS_ORIGINS` | `https://claude.ai` | Comma-separated allowed CORS origins (HTTP transport) |
+| `SWISS_ENERGY_LOG_LEVEL` | `INFO` | Log level: `DEBUG` / `INFO` / `WARNING` / `ERROR` |
+| `SWISS_ENERGY_HTTP_TIMEOUT` | `20` | Upstream HTTP timeout in seconds |
+
+See [`.env.example`](.env.example) for a template.
+
+---
+
+## MCP Protocol Version
+
+This server targets the MCP protocol version shipped with the pinned `mcp`
+SDK (`mcp[cli] >= 1.20.0`). SDK updates arrive monthly via Dependabot;
+protocol-version changes are recorded in [CHANGELOG.md](CHANGELOG.md).
+
+## MCP Primitives
+
+The server uses all three MCP primitives:
+
+- **Tools** — 10 read-only tools (see above). Every search tool returns an
+  `EnergyResponse` envelope: structured `results` plus a Markdown `summary`,
+  explicit `source` / `license` attribution, and a `match_type` field.
+- **Resource** — `energy://layers`, the static catalogue of BFE GeoAdmin layers.
+- **Prompt** — `energy_site_assessment`, a guided location-analysis template.
+
+## Development Phase
+
+The server is in **Phase 1 (read-only)**. See [docs/roadmap.md](docs/roadmap.md)
+for the phased architecture and [docs/security.md](docs/security.md) for the
+egress allow-list, SSRF protection and trifecta assessment.
 
 ---
 
@@ -218,11 +249,23 @@ All tools accept WGS84 coordinates (lat/lon). Conversion to Swiss LV95 is handle
 swiss-energy-mcp/
 ├── src/
 │   └── swiss_energy_mcp/
-│       ├── __init__.py
-│       ├── server.py        # FastMCP server — 10 tools
-│       └── api_client.py    # HTTP client, LV95 conversion, GeoAdmin queries
+│       ├── server.py          # FastMCP setup, lifespan, entry point
+│       ├── settings.py        # Typed configuration (pydantic-settings)
+│       ├── logging_config.py  # Structured JSON logging to stderr
+│       ├── api_client.py      # HTTP client, egress guard, LV95 conversion
+│       ├── models.py          # Pydantic input/output models
+│       ├── formatting.py      # Markdown summary builders
+│       ├── resources.py       # Layer-catalogue resource + prompt
+│       └── tools/             # One module per tool group
+│           ├── installations.py   # power, wind, hydro, PV, biogas
+│           ├── places.py          # solar, Energiestadt, location profile
+│           └── catalog.py         # dataset search, status
 ├── tests/
-│   └── test_server.py       # 78 unit tests + 7 live tests
+│   ├── test_unit.py         # Pure-unit tests (coords, formatting, egress)
+│   ├── test_tools.py        # Tool tests with respx-mocked APIs
+│   └── test_live.py         # Live integration tests (marked `live`)
+├── docs/                    # roadmap.md, security.md
+├── Dockerfile               # Multi-stage build, non-root user
 ├── pyproject.toml
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md

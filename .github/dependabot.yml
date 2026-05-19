@@ -1,0 +1,18 @@
+version: 2
+updates:
+  # Monthly PRs for Python dependency updates, incl. the MCP SDK (ARCH-012).
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "ci"

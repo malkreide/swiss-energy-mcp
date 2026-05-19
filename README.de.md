@@ -163,11 +163,42 @@ Alle Tools akzeptieren WGS84-Koordinaten (Breiten-/Längengrad). Die Konvertieru
 
 ## Konfiguration
 
+Alle Variablen nutzen das Präfix `SWISS_ENERGY_` und werden beim Start validiert.
+
 | Umgebungsvariable | Standard | Beschreibung |
 |---|---|---|
 | `SWISS_ENERGY_TRANSPORT` | `stdio` | Transportmodus: `stdio` oder `http` |
+| `SWISS_ENERGY_HOST` | `127.0.0.1` | Host für HTTP-Transport. `0.0.0.0` nur im Container binden. |
 | `SWISS_ENERGY_PORT` | `8000` | Port für HTTP-Transport |
-| `SWISS_ENERGY_HOST` | `0.0.0.0` | Host für HTTP-Transport |
+| `SWISS_ENERGY_CORS_ORIGINS` | `https://claude.ai` | Erlaubte CORS-Origins, kommagetrennt (HTTP-Transport) |
+| `SWISS_ENERGY_LOG_LEVEL` | `INFO` | Log-Level: `DEBUG` / `INFO` / `WARNING` / `ERROR` |
+| `SWISS_ENERGY_HTTP_TIMEOUT` | `20` | Timeout für Upstream-Requests in Sekunden |
+
+Eine Vorlage liegt unter [`.env.example`](.env.example).
+
+---
+
+## MCP-Protokollversion
+
+Der Server unterstützt die MCP-Protokollversion des gepinnten `mcp`-SDK
+(`mcp[cli] >= 1.20.0`). SDK-Updates kommen monatlich via Dependabot;
+Protokollversions-Änderungen werden im [CHANGELOG.md](CHANGELOG.md) festgehalten.
+
+## MCP-Primitive
+
+Der Server nutzt alle drei MCP-Primitive:
+
+- **Tools** — 10 read-only Tools. Jedes Such-Tool liefert ein `EnergyResponse`-
+  Envelope: strukturierte `results`, eine Markdown-`summary`, explizite
+  `source`/`license`-Angabe und ein `match_type`-Feld.
+- **Resource** — `energy://layers`, der statische Katalog der BFE-GeoAdmin-Layer.
+- **Prompt** — `energy_site_assessment`, eine geführte Standortanalyse-Vorlage.
+
+## Entwicklungsphase
+
+Der Server ist in **Phase 1 (read-only)**. Siehe [docs/roadmap.md](docs/roadmap.md)
+für die Phasenarchitektur und [docs/security.md](docs/security.md) für die
+Egress-Allow-List, den SSRF-Schutz und die Trifecta-Bewertung.
 
 ---
 
@@ -218,11 +249,23 @@ Alle Tools akzeptieren WGS84-Koordinaten (Breiten-/Längengrad). Die Konvertieru
 swiss-energy-mcp/
 ├── src/
 │   └── swiss_energy_mcp/
-│       ├── __init__.py
-│       ├── server.py        # FastMCP-Server – 10 Tools
-│       └── api_client.py    # HTTP-Client, LV95-Konvertierung, GeoAdmin-Abfragen
+│       ├── server.py          # FastMCP-Setup, Lifespan, Einstiegspunkt
+│       ├── settings.py        # Typisierte Konfiguration (pydantic-settings)
+│       ├── logging_config.py  # Strukturiertes JSON-Logging nach stderr
+│       ├── api_client.py      # HTTP-Client, Egress-Guard, LV95-Konvertierung
+│       ├── models.py          # Pydantic Input-/Output-Modelle
+│       ├── formatting.py      # Markdown-Zusammenfassungen
+│       ├── resources.py       # Layer-Katalog-Resource + Prompt
+│       └── tools/             # Ein Modul pro Tool-Gruppe
+│           ├── installations.py   # Strom, Wind, Wasser, PV, Biogas
+│           ├── places.py          # Solar, Energiestadt, Standortprofil
+│           └── catalog.py         # Datensatzsuche, Status
 ├── tests/
-│   └── test_server.py       # 78 Unit-Tests + 7 Live-Tests
+│   ├── test_unit.py         # Reine Unit-Tests (Koordinaten, Formatierung, Egress)
+│   ├── test_tools.py        # Tool-Tests mit respx-gemockten APIs
+│   └── test_live.py         # Live-Integrationstests (Marker `live`)
+├── docs/                    # roadmap.md, security.md
+├── Dockerfile               # Multi-Stage-Build, Non-Root-User
 ├── pyproject.toml
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
