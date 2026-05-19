@@ -28,18 +28,16 @@ jobs:
         run: uv pip install -e ".[dev]" --system
 
       - name: Linting mit ruff
-        run: ruff check src/
+        run: ruff check src/ tests/
 
       - name: Syntax-Prüfung
-        run: python -m py_compile src/swiss_energy_mcp/server.py src/swiss_energy_mcp/api_client.py
+        run: python -m compileall -q src/
 
       - name: Import-Test
         run: python -c "from swiss_energy_mcp.server import mcp; print('Import OK')"
 
       - name: Unit-Tests (ohne Live-API)
         run: pytest tests/ -m "not live"
-        env:
-          PYTHONPATH: src
 
   lint:
     runs-on: ubuntu-latest
@@ -52,6 +50,18 @@ jobs:
 
       - run: pip install ruff
 
-      - run: ruff check src/
+      - run: ruff check src/ tests/
 
-      - run: ruff format --check src/
+      - run: ruff format --check src/ tests/
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

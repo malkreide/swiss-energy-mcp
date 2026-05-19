@@ -1,23 +1,103 @@
-"""HTTP-Client und Hilfsfunktionen für den Swiss Energy MCP Server.
+"""HTTP client, egress guard and GeoAdmin/CKAN query helpers.
 
-Metapher: Dieser Client ist der Dolmetscher zwischen GeoAdmin und dem MCP-Server.
-Er übersetzt Koordinaten, formuliert Anfragen und bereitet Antworten auf.
+Security model
+--------------
+The server only ever contacts a fixed set of public Swiss government APIs.
+:func:`assert_url_allowed` enforces this as a code-layer egress allow-list
+(SEC-021), rejecting non-HTTPS targets, hosts outside the allow-list, and any
+host that resolves to a private, loopback, link-local or otherwise reserved IP
+(SSRF / DNS-rebinding prevention, SEC-004/SEC-005). Redirects are disabled so a
+response cannot bounce the client onto an unvetted host.
 """
 
+from __future__ import annotations
+
+import socket
+from dataclasses import dataclass
+from ipaddress import ip_address, ip_network
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
 # ---------------------------------------------------------------------------
-# API-Basisadressen
+# API base addresses
 # ---------------------------------------------------------------------------
 
 GEOADMIN_BASE = "https://api3.geo.admin.ch/rest/services/api/MapServer"
 OPENDATA_SWISS_BASE = "https://opendata.swiss/api/3/action"
 
-# Standardwerte
 DEFAULT_TIMEOUT = 20.0
 DEFAULT_RADIUS_M = 5000  # 5 km
+
+# Data-source attribution (CH-004 — OGD licence compliance).
+SOURCE_GEOADMIN = "Bundesamt für Energie (BFE) / swisstopo"
+SOURCE_OPENDATA = "Bundesamt für Energie (BFE)"
+API_GEOADMIN = "GeoAdmin REST API (api3.geo.admin.ch)"
+API_OPENDATA = "opendata.swiss CKAN API"
+LICENSE_OGD = (
+    "Open Government Data via opendata.swiss — free use with attribution "
+    "(BFE / swisstopo); subject to the source's terms of use"
+)
+
+# ---------------------------------------------------------------------------
+# Egress allow-list (SEC-021)
+# ---------------------------------------------------------------------------
+
+ALLOWED_HOSTS: frozenset[str] = frozenset({"api3.geo.admin.ch", "opendata.swiss"})
+
+_BLOCKED_NETWORKS = tuple(
+    ip_network(cidr)
+    for cidr in (
+        "0.0.0.0/8",
+        "10.0.0.0/8",
+        "100.64.0.0/10",
+        "127.0.0.0/8",
+        "169.254.0.0/16",  # link-local incl. cloud metadata 169.254.169.254
+        "172.16.0.0/12",
+        "192.0.0.0/24",
+        "192.168.0.0/16",
+        "198.18.0.0/15",
+        "::1/128",
+        "fc00::/7",
+        "fe80::/10",
+    )
+)
+
+
+def assert_url_allowed(url: str) -> None:
+    """Validate an outbound URL against the egress allow-list.
+
+    Raises:
+        ValueError: if the scheme is not HTTPS, the host is not allow-listed,
+            or the host resolves to a private/reserved IP address.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme != "https":
+        raise ValueError("Nur HTTPS-Verbindungen sind erlaubt.")
+
+    host = parsed.hostname or ""
+    if host not in ALLOWED_HOSTS:
+        raise ValueError("Ziel-Host ist nicht in der Egress-Allow-List zugelassen.")
+
+    try:
+        infos = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+    except socket.gaierror as exc:  # pragma: no cover - network dependent
+        raise ValueError("Ziel-Host konnte nicht aufgelöst werden.") from exc
+
+    for info in infos:
+        addr = ip_address(info[4][0])
+        if (
+            addr.is_private
+            or addr.is_loopback
+            or addr.is_link_local
+            or addr.is_reserved
+            or addr.is_multicast
+            or addr.is_unspecified
+            or any(addr in network for network in _BLOCKED_NETWORKS)
+        ):
+            raise ValueError("Ziel-Host löst auf eine nicht erlaubte IP-Adresse auf.")
+
 
 # ---------------------------------------------------------------------------
 # BFE Layer-IDs (GeoAdmin)
@@ -31,34 +111,29 @@ LAYER_SOLAR_ROOFS = "ch.bfe.solarenergie-eignung-daecher"
 LAYER_SOLAR_FACADES = "ch.bfe.solarenergie-eignung-fassaden"
 LAYER_ENERGY_CITIES = "ch.bfe.energiestaedte"
 LAYER_BIOGAS = "ch.bfe.biogasanlagen"
-LAYER_BIOMASS_WOODY = "ch.bfe.biomasse-verholzt"
-LAYER_BIOMASS_NONWOODY = "ch.bfe.biomasse-nicht-verholzt"
-LAYER_WIND_SPEED_H100 = "ch.bfe.windenergie-geschwindigkeit_h100"
-LAYER_TRANSMISSION_LINES = "ch.bfe.sachplan-uebertragungsleitungen_kraft"
+
+# Catalogue exposed via the energy://layers resource.
+LAYER_CATALOG: dict[str, str] = {
+    LAYER_POWER_PLANTS: "Alle Elektrizitätsproduktionsanlagen (alle Typen)",
+    LAYER_WIND_TURBINES: "Windenergieanlagen mit Betreiber- und Turbinendaten",
+    LAYER_HYDRO_PLANTS: "Statistik der Wasserkraftanlagen",
+    LAYER_PV_LARGE: "Photovoltaik-Grossanlagen",
+    LAYER_SOLAR_ROOFS: "Solarenergie: Eignung der Dächer",
+    LAYER_ENERGY_CITIES: "Gemeinden mit dem Label «Energiestadt»",
+    LAYER_BIOGAS: "Biogasanlagen",
+}
+
 
 # ---------------------------------------------------------------------------
-# Koordinaten-Konvertierung: WGS84 → LV95 (näherungsweise)
+# Coordinate conversion: WGS84 -> LV95 (swisstopo approximation)
 # ---------------------------------------------------------------------------
 
 
 def wgs84_to_lv95(lat: float, lon: float) -> tuple[float, float]:
-    """Konvertiert WGS84-Koordinaten (lat/lon) in Schweizer LV95 (E, N).
-
-    Verwendet die offizielle Näherungsformel des swisstopo.
-    Genauigkeit: ±1 m, ausreichend für API-Abfragen.
-
-    Args:
-        lat: Breitengrad (z. B. 47.3769 für Zürich)
-        lon: Längengrad (z. B. 8.5417 für Zürich)
-
-    Returns:
-        Tuple (E, N) in LV95-Koordinaten (Meter)
-    """
-    # Hilfsgrössen (swisstopo-Formel)
+    """Convert WGS84 (lat/lon) to Swiss LV95 (E, N) using the swisstopo formula."""
     lat_aux = (lat * 3600 - 169028.66) / 10000
     lon_aux = (lon * 3600 - 26782.5) / 10000
 
-    # Rechtswert (E)
     e = (
         2600072.37
         + 211455.93 * lon_aux
@@ -66,8 +141,6 @@ def wgs84_to_lv95(lat: float, lon: float) -> tuple[float, float]:
         - 0.36 * lon_aux * lat_aux**2
         - 44.54 * lon_aux**3
     )
-
-    # Hochwert (N)
     n = (
         1200147.07
         + 308807.95 * lat_aux
@@ -76,25 +149,11 @@ def wgs84_to_lv95(lat: float, lon: float) -> tuple[float, float]:
         - 194.56 * lon_aux**2 * lat_aux
         + 119.79 * lat_aux**3
     )
-
     return e, n
 
 
 def radius_to_map_extent(lat: float, lon: float, radius_m: int) -> dict[str, float]:
-    """Berechnet mapExtent-Parameter für GeoAdmin identify-Endpoint.
-
-    Der identify-Endpoint braucht einen mapExtent (Kartenausschnitt) und
-    eine tolerance (Suchradius in Pixel). Wir simulieren einen quadratischen
-    Ausschnitt um den Punkt.
-
-    Args:
-        lat: Breitengrad des Mittelpunkts
-        lon: Längengrad des Mittelpunkts
-        radius_m: Suchradius in Metern
-
-    Returns:
-        Dict mit xmin, ymin, xmax, ymax in LV95
-    """
+    """Build a square mapExtent (LV95) around a point for the identify endpoint."""
     e, n = wgs84_to_lv95(lat, lon)
     return {
         "xmin": e - radius_m,
@@ -107,101 +166,82 @@ def radius_to_map_extent(lat: float, lon: float, radius_m: int) -> dict[str, flo
 
 
 def compute_tolerance(radius_m: int, image_size: int = 1000) -> int:
-    """Berechnet die pixel-tolerance für den identify-Endpoint.
+    """Return the pixel tolerance for the identify endpoint.
 
-    GeoAdmin arbeitet mit Pixeln. Bei einem mapExtent von 2*radius_m Breite
-    und einer Bildgrösse von image_size Pixeln entspricht 1 Pixel = 2*radius/image_size Meter.
-    Wir verwenden immer die maximale Tolerance (500 px), da der mapExtent
-    bereits den Suchbereich einschränkt – die Tolerance definiert nur den
-    Suchradius um den Mittelpunkt innerhalb des Extents.
-
-    Args:
-        radius_m: Gewünschter Suchradius in Metern
-        image_size: Bildbreite in Pixeln (Standard: 1000)
-
-    Returns:
-        Tolerance in Pixeln (immer 500 für maximale Abdeckung)
+    The mapExtent already constrains the search area, so the maximum tolerance
+    is used unconditionally.
     """
-    # Maximale Tolerance verwenden: der mapExtent begrenzt den Bereich bereits
     return 500
 
 
 # ---------------------------------------------------------------------------
-# HTTP-Client
+# Async HTTP client
 # ---------------------------------------------------------------------------
 
 
 class EnergyHTTPClient:
-    """Async HTTP-Client für GeoAdmin und opendata.swiss APIs.
+    """Async HTTP client for the GeoAdmin and opendata.swiss APIs.
 
-    Metapher: Ein höflicher Bibliothekar, der Anfragen stellt und
-    Fehler klar kommuniziert.
+    Redirects are disabled and every request target is validated against the
+    egress allow-list before the connection is opened.
     """
 
     def __init__(self, timeout: float = DEFAULT_TIMEOUT) -> None:
         self._client = httpx.AsyncClient(
             timeout=timeout,
-            follow_redirects=True,
+            follow_redirects=False,
             headers={
-                "User-Agent": "swiss-energy-mcp/0.1.0 (github.com/malkreide/swiss-energy-mcp)",
+                "User-Agent": "swiss-energy-mcp/0.2.0 (github.com/malkreide/swiss-energy-mcp)",
                 "Accept": "application/json",
             },
         )
 
     async def get(self, url: str, params: dict[str, Any] | None = None) -> dict:
-        """Führt eine GET-Anfrage aus und gibt das JSON-Ergebnis zurück.
-
-        Args:
-            url: Ziel-URL
-            params: Query-Parameter
-
-        Returns:
-            Geparste JSON-Antwort als dict
+        """Perform a validated GET request and return the parsed JSON body.
 
         Raises:
-            ValueError: Bei API-Fehlern mit benutzerfreundlicher Meldung
+            ValueError: on egress-policy violations or upstream API errors,
+                with a user-facing message that contains no internal details.
         """
+        assert_url_allowed(url)
         try:
             response = await self._client.get(url, params=params)
             response.raise_for_status()
             return response.json()
-        except httpx.HTTPStatusError as e:
-            code = e.response.status_code
+        except httpx.HTTPStatusError as exc:
+            code = exc.response.status_code
             if code == 400:
-                raise ValueError(
-                    f"Fehlerhafte Anfrage (HTTP 400). Bitte Parameter überprüfen. URL: {url}"
-                ) from e
-            elif code == 404:
-                raise ValueError(
-                    f"Ressource nicht gefunden (HTTP 404). "
-                    f"Layer oder Endpunkt existiert nicht. URL: {url}"
-                ) from e
-            elif code == 429:
+                raise ValueError("Fehlerhafte Anfrage (HTTP 400). Bitte Parameter prüfen.") from exc
+            if code == 404:
+                raise ValueError("Ressource nicht gefunden (HTTP 404).") from exc
+            if code == 429:
                 raise ValueError(
                     "Zu viele Anfragen (HTTP 429). Bitte kurz warten und erneut versuchen."
-                ) from e
-            elif code == 503:
+                ) from exc
+            if code == 503:
                 raise ValueError(
-                    "GeoAdmin-Dienst vorübergehend nicht verfügbar (HTTP 503). "
-                    "Bitte später erneut versuchen."
-                ) from e
-            else:
-                raise ValueError(f"API-Fehler (HTTP {code}). URL: {url}") from e
-        except httpx.TimeoutException as e:
-            raise ValueError(
-                "Zeitüberschreitung bei der Anfrage. "
-                "Bitte Netzwerkverbindung prüfen und erneut versuchen."
-            ) from e
-        except httpx.RequestError as e:
-            raise ValueError(f"Netzwerkfehler: {e!s}. Bitte Internetverbindung prüfen.") from e
+                    "Der Dienst ist vorübergehend nicht verfügbar (HTTP 503)."
+                ) from exc
+            raise ValueError(f"Die API hat einen Fehler gemeldet (HTTP {code}).") from exc
+        except httpx.TimeoutException as exc:
+            raise ValueError("Zeitüberschreitung bei der Anfrage. Bitte erneut versuchen.") from exc
+        except httpx.RequestError as exc:
+            raise ValueError("Netzwerkfehler bei der Anfrage. Bitte Verbindung prüfen.") from exc
 
     async def close(self) -> None:
-        """Schliesst den HTTP-Client."""
+        """Close the underlying HTTP connection pool."""
         await self._client.aclose()
 
 
+@dataclass(slots=True)
+class AppContext:
+    """Lifespan context shared with every tool invocation."""
+
+    client: EnergyHTTPClient
+
+
 # ---------------------------------------------------------------------------
-# GeoAdmin identify-Abfrage (Kernfunktion)
+# GeoAdmin queries
 # ---------------------------------------------------------------------------
 
 
@@ -213,37 +253,19 @@ async def query_geoadmin_layer(
     radius_m: int = DEFAULT_RADIUS_M,
     lang: str = "de",
 ) -> list[dict]:
-    """Abfrage eines GeoAdmin-Layers per identify-Endpoint.
-
-    Der identify-Endpunkt ist der zuverlässigste Weg, räumliche Abfragen
-    auf GeoAdmin-Layern durchzuführen. Er gibt bis zu 201 Ergebnisse zurück.
-
-    Args:
-        client: EnergyHTTPClient-Instanz
-        layer: Layer-ID (z. B. 'ch.bfe.windenergieanlagen')
-        lat: Breitengrad des Mittelpunkts (WGS84)
-        lon: Längengrad des Mittelpunkts (WGS84)
-        radius_m: Suchradius in Metern
-        lang: Sprache für Ergebnisse ('de', 'fr', 'it', 'en')
-
-    Returns:
-        Liste von Feature-Dicts mit 'attributes' und optional 'geometry'
-    """
+    """Query a GeoAdmin layer via the identify endpoint (spatial search)."""
     coords = radius_to_map_extent(lat, lon, radius_m)
-    tolerance = compute_tolerance(radius_m)
-
     params = {
         "geometry": f"{coords['e']},{coords['n']}",
         "geometryType": "esriGeometryPoint",
         "layers": f"all:{layer}",
-        "tolerance": tolerance,
+        "tolerance": compute_tolerance(radius_m),
         "imageDisplay": "1000,1000,96",
         "mapExtent": f"{coords['xmin']},{coords['ymin']},{coords['xmax']},{coords['ymax']}",
         "lang": lang,
         "f": "json",
         "returnGeometry": "false",
     }
-
     data = await client.get(f"{GEOADMIN_BASE}/identify", params=params)
     return data.get("results", [])
 
@@ -255,18 +277,7 @@ async def find_geoadmin_by_name(
     search_field: str,
     lang: str = "de",
 ) -> list[dict]:
-    """Sucht im GeoAdmin-Layer nach einem Textfeld.
-
-    Args:
-        client: EnergyHTTPClient-Instanz
-        layer: Layer-ID
-        search_text: Suchbegriff
-        search_field: Feldname für die Suche
-        lang: Sprache
-
-    Returns:
-        Liste von gefundenen Features
-    """
+    """Search a GeoAdmin layer by a text field."""
     params = {
         "layer": layer,
         "searchText": search_text,
@@ -280,7 +291,7 @@ async def find_geoadmin_by_name(
 
 
 # ---------------------------------------------------------------------------
-# opendata.swiss CKAN-Abfragen
+# opendata.swiss CKAN queries
 # ---------------------------------------------------------------------------
 
 
@@ -291,19 +302,8 @@ async def search_opendata_swiss(
     rows: int = 20,
     start: int = 0,
 ) -> dict:
-    """Sucht im opendata.swiss-Katalog nach BFE-Datensätzen.
-
-    Args:
-        client: EnergyHTTPClient-Instanz
-        query: Suchbegriff (leer = alle Datensätze der Organisation)
-        organization: CKAN-Organisations-Slug
-        rows: Anzahl Ergebnisse
-        start: Offset für Paginierung
-
-    Returns:
-        Dict mit 'count', 'results' (Liste von Datensätzen)
-    """
-    q_parts = []
+    """Search the opendata.swiss catalogue for BFE datasets."""
+    q_parts: list[str] = []
     if query:
         q_parts.append(query)
     if organization:
@@ -315,68 +315,9 @@ async def search_opendata_swiss(
         "start": start,
         "sort": "score desc",
     }
-
     data = await client.get(f"{OPENDATA_SWISS_BASE}/package_search", params=params)
-
     if not data.get("success"):
-        raise ValueError("opendata.swiss API hat keinen Erfolg gemeldet.")
+        raise ValueError("Die opendata.swiss-API hat keinen Erfolg gemeldet.")
 
     result = data.get("result", {})
-    return {
-        "count": result.get("count", 0),
-        "results": result.get("results", []),
-    }
-
-
-# ---------------------------------------------------------------------------
-# Formatierungs-Hilfsfunktionen
-# ---------------------------------------------------------------------------
-
-
-def format_power_value(value: Any, unit: str = "kW") -> str:
-    """Formatiert Leistungswerte leserlich.
-
-    Args:
-        value: Rohwert (str, float oder None)
-        unit: Einheit (Standard: kW)
-
-    Returns:
-        Formatierter String, z. B. '18.81 kW' oder '2.00 MW'
-    """
-    if value is None or value == "":
-        return "k.A."
-    try:
-        val = float(str(value).replace(",", "."))
-        if unit == "kW" and val >= 1000:
-            return f"{val / 1000:.2f} MW"
-        return f"{val:.2f} {unit}"
-    except (ValueError, TypeError):
-        return str(value)
-
-
-def format_year(value: Any) -> str:
-    """Formatiert Jahreszahlen.
-
-    Args:
-        value: Rohwert (int, str oder None)
-
-    Returns:
-        Jahreszahl als String oder 'k.A.'
-    """
-    if value is None or value == "":
-        return "k.A."
-    return str(int(value)) if str(value).isdigit() else str(value)
-
-
-def clean_label(raw: str) -> str:
-    """Entfernt HTML-Tags aus GeoAdmin-Labels.
-
-    GeoAdmin gibt Labels manchmal mit <b>...</b> zurück.
-
-    Args:
-        raw: Rohstring mit möglichen HTML-Tags
-
-    Returns:
-        Bereinigter String
-    """
-    return raw.replace("<b>", "").replace("</b>", "").strip()
+    return {"count": result.get("count", 0), "results": result.get("results", [])}

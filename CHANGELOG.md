@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-19
+
+This release implements the remediation of the MCP best-practice audit
+(see `audits/2026-05-19-swiss-energy-mcp.md`).
+
+### Changed (breaking)
+- Tools no longer take a `response_format` parameter. Every search tool now
+  returns a structured `EnergyResponse` envelope (`source`, `license`,
+  `provenance`, `match_type`, `count`, `results`, `summary`, `notes`) instead
+  of a Markdown or JSON string. `energy_check_status` returns a `StatusResponse`.
+- Configuration moved to a typed `Settings` object; all environment variables
+  use the `SWISS_ENERGY_` prefix. The HTTP transport now binds `127.0.0.1` by
+  default — bind `0.0.0.0` only inside a container.
+
+### Added
+- Egress allow-list with SSRF / DNS-rebinding protection; redirects disabled.
+- FastMCP lifespan managing a shared, properly closed HTTP client.
+- `Context` injection: per-call logging and progress reporting.
+- CORS middleware for the HTTP transport (exposes `Mcp-Session-Id`).
+- Structured JSON logging to stderr (`structlog`).
+- `energy://layers` resource and `energy_site_assessment` prompt.
+- `Dockerfile` (multi-stage, non-root user), `.dockerignore`, `.gitignore`,
+  `.env.example`, Dependabot config and a nightly live-test workflow.
+- `docs/roadmap.md` (phased architecture) and `docs/security.md`
+  (egress policy, lethal-trifecta assessment).
+- `tools/` package (one module per tool group); test suite split into
+  `test_unit.py` / `test_tools.py` / `test_live.py` with `respx`-mocked APIs.
+
+### Fixed
+- HTTP transport was non-functional (`mcp.run(transport="streamable_http",
+  port=...)` is not a valid call); the server now serves Streamable HTTP via
+  uvicorn with the correct transport.
+- Tool execution errors now surface as `isError` results instead of being
+  returned as plain success strings.
+
+### Protocol
+- MCP SDK pinned to `mcp[cli] >= 1.20.0`; protocol version follows the SDK.
+
 ## [0.1.0] - 2026-03-11
 
 ### Added

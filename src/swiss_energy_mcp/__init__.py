@@ -1,3 +1,3 @@
-"""Swiss Energy MCP – Schweizer Energiedaten via GeoAdmin und opendata.swiss."""
+"""Swiss Energy MCP – Swiss energy data via GeoAdmin and opendata.swiss."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
