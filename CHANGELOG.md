@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-19
+
+### Fixed
+- HTTP redirects are no longer dropped. `0.2.0` disabled redirects entirely,
+  which could break upstream endpoints that issue a 3xx (e.g. opendata.swiss).
+  Redirects are now followed manually, with every hop re-validated against the
+  egress allow-list — keeping the SEC-021 guarantee without losing redirects.
+
 ## [0.2.0] - 2026-05-19
 
 This release implements the remediation of the MCP best-practice audit

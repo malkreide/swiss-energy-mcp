@@ -27,8 +27,11 @@ Outbound traffic is restricted at the code layer:
   targets, hosts outside the allow-list, and hosts that resolve to a private,
   loopback, link-local or otherwise reserved IP (incl. the cloud metadata
   address `169.254.169.254`).
-- The HTTP client is configured with `follow_redirects=False`, so an upstream
-  response cannot bounce the client onto an unvetted host.
+- Redirects are not followed automatically. The client resolves each 3xx hop
+  manually and runs `assert_url_allowed()` on the redirect target before
+  sending the next request (max. 5 hops), so a response cannot bounce the
+  client onto an unvetted host while still supporting endpoints that legitimately
+  redirect.
 
 **Updating the allow-list:** edit `ALLOWED_HOSTS` in `api_client.py` and the
 table above in the same change; new hosts require a code review.
