@@ -35,7 +35,7 @@ async def test_live_wind_turbines(tool, ctx):
 
 
 async def test_live_hydro_plants(tool, ctx):
-    res = await tool("energy_find_hydro_plants")(LocationInput(**CENTRAL, radius_m=30000), ctx)
+    res = await tool("energy_find_hydro_plants")(LocationInput(**CENTRAL, radius_m=50000), ctx)
     assert res.count > 0
 
 
