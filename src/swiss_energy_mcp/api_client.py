@@ -267,15 +267,22 @@ async def query_geoadmin_layer(
     radius_m: int = DEFAULT_RADIUS_M,
     lang: str = "de",
 ) -> list[dict]:
-    """Query a GeoAdmin layer via the identify endpoint (spatial search)."""
+    """Query a GeoAdmin layer via the identify endpoint (spatial search).
+
+    Uses an envelope geometry equal to the requested mapExtent. The identify
+    endpoint silently truncates very large pixel tolerances for dense layers
+    (e.g. ``ch.bfe.statistik-wasserkraftanlagen``), so an explicit envelope
+    is what reliably returns features across radii.
+    """
     coords = radius_to_map_extent(lat, lon, radius_m)
+    extent = f"{coords['xmin']},{coords['ymin']},{coords['xmax']},{coords['ymax']}"
     params = {
-        "geometry": f"{coords['e']},{coords['n']}",
-        "geometryType": "esriGeometryPoint",
+        "geometry": extent,
+        "geometryType": "esriGeometryEnvelope",
         "layers": f"all:{layer}",
         "tolerance": compute_tolerance(radius_m),
         "imageDisplay": "1000,1000,96",
-        "mapExtent": f"{coords['xmin']},{coords['ymin']},{coords['xmax']},{coords['ymax']}",
+        "mapExtent": extent,
         "lang": lang,
         "f": "json",
         "returnGeometry": "false",
