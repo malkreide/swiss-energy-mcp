@@ -269,10 +269,10 @@ async def query_geoadmin_layer(
 ) -> list[dict]:
     """Query a GeoAdmin layer via the identify endpoint (spatial search).
 
-    Uses an envelope geometry equal to the requested mapExtent. The identify
-    endpoint silently truncates very large pixel tolerances for dense layers
-    (e.g. ``ch.bfe.statistik-wasserkraftanlagen``), so an explicit envelope
-    is what reliably returns features across radii.
+    Uses an envelope geometry equal to the requested mapExtent. ``sr=2056``
+    is sent explicitly: the identify endpoint defaults the spatial reference
+    to LV03 (21781), under which the LV95 coordinates produced here fall off
+    the grid and every layer silently returns zero features.
     """
     coords = radius_to_map_extent(lat, lon, radius_m)
     extent = f"{coords['xmin']},{coords['ymin']},{coords['xmax']},{coords['ymax']}"
@@ -281,6 +281,7 @@ async def query_geoadmin_layer(
         "geometryType": "esriGeometryEnvelope",
         "layers": f"all:{layer}",
         "tolerance": compute_tolerance(radius_m),
+        "sr": 2056,
         "imageDisplay": "1000,1000,96",
         "mapExtent": extent,
         "lang": lang,
