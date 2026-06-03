@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-03
+
+This release follows the 2026-06-03 best-practice re-audit
+(see `audits/2026-06-03-swiss-energy-mcp.md`), which confirmed
+production-readiness, and resolves its remaining low-severity finding.
+
 ### Added
 - DNS pinning (SEC-005): a custom `httpcore` network backend connects to the
   exact IP that was validated against the egress allow-list, closing the
