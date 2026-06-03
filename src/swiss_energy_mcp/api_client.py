@@ -16,11 +16,18 @@ from __future__ import annotations
 
 import socket
 from dataclasses import dataclass
+from importlib.metadata import PackageNotFoundError, version
 from ipaddress import ip_address, ip_network
 from typing import Any
 from urllib.parse import urlparse
 
 import httpx
+
+try:
+    _VERSION = version("swiss-energy-mcp")
+except PackageNotFoundError:  # pragma: no cover - source checkout without install
+    _VERSION = "0.0.0"
+USER_AGENT = f"swiss-energy-mcp/{_VERSION} (github.com/malkreide/swiss-energy-mcp)"
 
 # ---------------------------------------------------------------------------
 # API base addresses
@@ -112,7 +119,6 @@ LAYER_WIND_TURBINES = "ch.bfe.windenergieanlagen"
 LAYER_HYDRO_PLANTS = "ch.bfe.statistik-wasserkraftanlagen"
 LAYER_PV_LARGE = "ch.bfe.photovoltaik-grossanlagen"
 LAYER_SOLAR_ROOFS = "ch.bfe.solarenergie-eignung-daecher"
-LAYER_SOLAR_FACADES = "ch.bfe.solarenergie-eignung-fassaden"
 LAYER_ENERGY_CITIES = "ch.bfe.energiestaedte"
 LAYER_BIOGAS = "ch.bfe.biogasanlagen"
 
@@ -169,13 +175,9 @@ def radius_to_map_extent(lat: float, lon: float, radius_m: int) -> dict[str, flo
     }
 
 
-def compute_tolerance(radius_m: int, image_size: int = 1000) -> int:
-    """Return the pixel tolerance for the identify endpoint.
-
-    The mapExtent already constrains the search area, so the maximum tolerance
-    is used unconditionally.
-    """
-    return 500
+# Pixel tolerance for the identify endpoint. The mapExtent already constrains
+# the search area, so the maximum tolerance is used unconditionally.
+IDENTIFY_TOLERANCE = 500
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +199,7 @@ class EnergyHTTPClient:
             timeout=timeout,
             follow_redirects=False,
             headers={
-                "User-Agent": "swiss-energy-mcp/0.2.1 (github.com/malkreide/swiss-energy-mcp)",
+                "User-Agent": USER_AGENT,
                 "Accept": "application/json",
             },
         )
@@ -280,7 +282,7 @@ async def query_geoadmin_layer(
         "geometry": extent,
         "geometryType": "esriGeometryEnvelope",
         "layers": f"all:{layer}",
-        "tolerance": compute_tolerance(radius_m),
+        "tolerance": IDENTIFY_TOLERANCE,
         "sr": 2056,
         "imageDisplay": "1000,1000,96",
         "mapExtent": extent,

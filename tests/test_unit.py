@@ -6,8 +6,8 @@ import pytest
 
 from swiss_energy_mcp.api_client import (
     ALLOWED_HOSTS,
+    IDENTIFY_TOLERANCE,
     assert_url_allowed,
-    compute_tolerance,
     radius_to_map_extent,
     wgs84_to_lv95,
 )
@@ -65,8 +65,8 @@ class TestMapExtent:
         assert {"xmin", "ymin", "xmax", "ymax", "e", "n"} <= set(r)
 
     def test_tolerance_is_500(self):
-        assert compute_tolerance(5000) == 500
-        assert isinstance(compute_tolerance(1000), int)
+        assert IDENTIFY_TOLERANCE == 500
+        assert isinstance(IDENTIFY_TOLERANCE, int)
 
 
 # ---------------------------------------------------------------------------
