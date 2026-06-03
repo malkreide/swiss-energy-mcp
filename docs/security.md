@@ -33,6 +33,22 @@ Outbound traffic is restricted at the code layer:
   client onto an unvetted host while still supporting endpoints that legitimately
   redirect.
 
+### DNS pinning (SEC-005)
+
+The IP that is validated is the IP that is connected to — there is no second,
+unvalidated DNS lookup between the allow-list check and the TCP connect:
+
+- `resolve_allowed_ip()` resolves the host, rejects the host if *any* returned
+  address is private/reserved, and returns one validated IP.
+- `_PinnedDNSBackend` (a custom `httpcore` network backend installed on the HTTP
+  client's transport via `_PinningTransport`) calls `resolve_allowed_ip()` at
+  `connect_tcp` time and opens the socket to that exact IP. This closes the
+  time-of-check/time-of-use (TOCTOU) gap that exists when a host is validated
+  once and then re-resolved by the HTTP stack for the actual connection.
+- TLS is unaffected: httpcore still performs the handshake using the original
+  hostname for SNI and certificate verification, so pinning to an IP does not
+  weaken transport security.
+
 **Updating the allow-list:** edit `ALLOWED_HOSTS` in `api_client.py` and the
 table above in the same change; new hosts require a code review.
 

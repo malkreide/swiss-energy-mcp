@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- DNS pinning (SEC-005): a custom `httpcore` network backend connects to the
+  exact IP that was validated against the egress allow-list, closing the
+  time-of-check/time-of-use gap between host validation and the TCP connect. TLS
+  SNI and certificate verification still use the original hostname, so transport
+  security is unchanged. See `docs/security.md`.
+
 ### Changed
 - Internal housekeeping (no behaviour change): the `User-Agent` is derived from
   the installed package version instead of a hardcoded string; the constant

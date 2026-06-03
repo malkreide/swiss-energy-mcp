@@ -6,10 +6,15 @@ The server only ever contacts a fixed set of public Swiss government APIs.
 :func:`assert_url_allowed` enforces this as a code-layer egress allow-list
 (SEC-021), rejecting non-HTTPS targets, hosts outside the allow-list, and any
 host that resolves to a private, loopback, link-local or otherwise reserved IP
-(SSRF / DNS-rebinding prevention, SEC-004/SEC-005). Redirects are not followed
-automatically: each hop's target is re-validated against the same allow-list
-before the redirected request is sent, so a response cannot bounce the client
-onto an unvetted host.
+(SSRF prevention, SEC-004). Redirects are not followed automatically: each hop's
+target is re-validated against the same allow-list before the redirected request
+is sent, so a response cannot bounce the client onto an unvetted host.
+
+DNS pinning (SEC-005): the IP that was validated is the IP that is connected to.
+:class:`_PinnedDNSBackend` resolves and re-validates the host at the network
+layer and opens the TCP connection to that exact address, closing the TOCTOU gap
+between validation and connect. TLS SNI and certificate verification still use
+the original hostname, so pinning does not weaken transport security.
 """
 
 from __future__ import annotations
@@ -22,6 +27,8 @@ from typing import Any
 from urllib.parse import urlparse
 
 import httpx
+from httpcore import AsyncNetworkStream
+from httpcore._backends.auto import AutoBackend  # concrete async backend (anyio/trio)
 
 try:
     _VERSION = version("swiss-energy-mcp")
@@ -76,6 +83,51 @@ _BLOCKED_NETWORKS = tuple(
 )
 
 
+def _is_blocked_ip(raw_ip: str) -> bool:
+    """Return True if the IP is private, loopback, reserved or otherwise blocked."""
+    addr = ip_address(raw_ip)
+    return (
+        addr.is_private
+        or addr.is_loopback
+        or addr.is_link_local
+        or addr.is_reserved
+        or addr.is_multicast
+        or addr.is_unspecified
+        or any(addr in network for network in _BLOCKED_NETWORKS)
+    )
+
+
+def resolve_allowed_ip(host: str) -> str:
+    """Resolve an allow-listed host and return a single validated IP to connect to.
+
+    Every resolved address is checked; if *any* of them is private/reserved the
+    host is rejected outright (a partially poisoned record is still poisoned).
+    The first address is returned so the caller can pin the connection to it.
+
+    Raises:
+        ValueError: if the host is not allow-listed, cannot be resolved, or
+            resolves to a private/reserved IP address.
+    """
+    if host not in ALLOWED_HOSTS:
+        raise ValueError("Ziel-Host ist nicht in der Egress-Allow-List zugelassen.")
+
+    try:
+        infos = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+    except socket.gaierror as exc:  # pragma: no cover - network dependent
+        raise ValueError("Ziel-Host konnte nicht aufgelöst werden.") from exc
+
+    pinned: str | None = None
+    for info in infos:
+        raw_ip = info[4][0]
+        if _is_blocked_ip(raw_ip):
+            raise ValueError("Ziel-Host löst auf eine nicht erlaubte IP-Adresse auf.")
+        if pinned is None:
+            pinned = raw_ip
+    if pinned is None:  # pragma: no cover - getaddrinfo returns at least one entry
+        raise ValueError("Ziel-Host konnte nicht aufgelöst werden.")
+    return pinned
+
+
 def assert_url_allowed(url: str) -> None:
     """Validate an outbound URL against the egress allow-list.
 
@@ -86,28 +138,43 @@ def assert_url_allowed(url: str) -> None:
     parsed = urlparse(url)
     if parsed.scheme != "https":
         raise ValueError("Nur HTTPS-Verbindungen sind erlaubt.")
+    resolve_allowed_ip(parsed.hostname or "")
 
-    host = parsed.hostname or ""
-    if host not in ALLOWED_HOSTS:
-        raise ValueError("Ziel-Host ist nicht in der Egress-Allow-List zugelassen.")
 
-    try:
-        infos = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-    except socket.gaierror as exc:  # pragma: no cover - network dependent
-        raise ValueError("Ziel-Host konnte nicht aufgelöst werden.") from exc
+class _PinnedDNSBackend(AutoBackend):
+    """Network backend that connects to a pre-validated, pinned IP (SEC-005).
 
-    for info in infos:
-        addr = ip_address(info[4][0])
-        if (
-            addr.is_private
-            or addr.is_loopback
-            or addr.is_link_local
-            or addr.is_reserved
-            or addr.is_multicast
-            or addr.is_unspecified
-            or any(addr in network for network in _BLOCKED_NETWORKS)
-        ):
-            raise ValueError("Ziel-Host löst auf eine nicht erlaubte IP-Adresse auf.")
+    httpcore calls :meth:`connect_tcp` with the *hostname*; we resolve and
+    validate it once here and open the socket to that exact IP, so there is no
+    second, unvalidated DNS lookup before connect. httpcore performs the TLS
+    handshake afterwards using the original hostname for SNI and certificate
+    verification, so security is preserved while the IP is pinned.
+    """
+
+    async def connect_tcp(
+        self,
+        host: str,
+        port: int,
+        timeout: float | None = None,
+        local_address: str | None = None,
+        socket_options: Any = None,
+    ) -> AsyncNetworkStream:
+        pinned_ip = resolve_allowed_ip(host)
+        return await super().connect_tcp(
+            pinned_ip,
+            port,
+            timeout=timeout,
+            local_address=local_address,
+            socket_options=socket_options,
+        )
+
+
+class _PinningTransport(httpx.AsyncHTTPTransport):
+    """httpx transport whose connection pool pins DNS via :class:`_PinnedDNSBackend`."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._pool._network_backend = _PinnedDNSBackend()
 
 
 # ---------------------------------------------------------------------------
@@ -198,6 +265,7 @@ class EnergyHTTPClient:
         self._client = httpx.AsyncClient(
             timeout=timeout,
             follow_redirects=False,
+            transport=_PinningTransport(),  # SEC-005: pin DNS at the network layer
             headers={
                 "User-Agent": USER_AGENT,
                 "Accept": "application/json",
