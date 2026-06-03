@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Internal housekeeping (no behaviour change): the `User-Agent` is derived from
+  the installed package version instead of a hardcoded string; the constant
+  `compute_tolerance()` helper became the `IDENTIFY_TOLERANCE` constant; the
+  unused `LAYER_SOLAR_FACADES` layer constant was removed.
+
 ## [0.2.1] - 2026-05-19
 
 ### Fixed
