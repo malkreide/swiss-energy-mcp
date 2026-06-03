@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import pytest
 
+from swiss_energy_mcp import api_client
 from swiss_energy_mcp.api_client import (
     ALLOWED_HOSTS,
     IDENTIFY_TOLERANCE,
     assert_url_allowed,
     radius_to_map_extent,
+    resolve_allowed_ip,
     wgs84_to_lv95,
 )
 from swiss_energy_mcp.formatting import (
@@ -135,6 +137,53 @@ class TestEgressGuard:
     def test_allowed_hosts_frozenset(self):
         assert isinstance(ALLOWED_HOSTS, frozenset)
         assert "api3.geo.admin.ch" in ALLOWED_HOSTS
+
+
+# ---------------------------------------------------------------------------
+# DNS pinning (SEC-005)
+# ---------------------------------------------------------------------------
+
+
+def _patch_dns(monkeypatch, ip: str) -> None:
+    """Force getaddrinfo (as used by api_client) to resolve to a single IP."""
+    info = [(2, 1, 6, "", (ip, 443))]
+    monkeypatch.setattr(api_client.socket, "getaddrinfo", lambda *a, **k: info)
+
+
+class TestDnsPinning:
+    _PUBLIC_IP = "185.12.64.10"
+
+    def test_resolve_returns_pinned_ip(self, monkeypatch):
+        _patch_dns(monkeypatch, self._PUBLIC_IP)
+        assert resolve_allowed_ip("api3.geo.admin.ch") == self._PUBLIC_IP
+
+    def test_resolve_rejects_rebinding_to_private(self, monkeypatch):
+        # Allow-listed host whose DNS answer points at a private address.
+        _patch_dns(monkeypatch, "10.1.2.3")
+        with pytest.raises(ValueError, match="IP-Adresse"):
+            resolve_allowed_ip("api3.geo.admin.ch")
+
+    def test_resolve_rejects_unlisted_host(self):
+        with pytest.raises(ValueError, match="Allow-List"):
+            resolve_allowed_ip("evil.example.com")
+
+    async def test_backend_connects_to_pinned_ip(self, monkeypatch):
+        """The backend must open the socket to the validated IP, not the hostname."""
+        captured: dict[str, object] = {}
+
+        async def fake_connect(self, host, port, **kwargs):
+            captured["host"] = host
+            captured["port"] = port
+            return object()
+
+        _patch_dns(monkeypatch, self._PUBLIC_IP)
+        monkeypatch.setattr(api_client.AutoBackend, "connect_tcp", fake_connect)
+
+        backend = api_client._PinnedDNSBackend()
+        await backend.connect_tcp("api3.geo.admin.ch", 443)
+
+        assert captured["host"] == self._PUBLIC_IP
+        assert captured["port"] == 443
 
 
 # ---------------------------------------------------------------------------
