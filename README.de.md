@@ -4,12 +4,12 @@
 
 # ⚡ swiss-energy-mcp
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.3.0-blue)
 [![Lizenz: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)](https://modelcontextprotocol.io/)
 [![Datenquelle](https://img.shields.io/badge/Daten-BFE%20%2F%20GeoAdmin-red)](https://www.geo.admin.ch/)
-![Tests](https://img.shields.io/badge/Tests-78%20bestanden-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-94%20bestanden-brightgreen)
 ![CI](https://github.com/malkreide/swiss-energy-mcp/actions/workflows/ci.yml/badge.svg)
 
 > MCP-Server für Schweizer Energiedaten des Bundesamts für Energie (BFE) via GeoAdmin REST API und opendata.swiss – kein API-Key erforderlich.
@@ -268,7 +268,10 @@ swiss-energy-mcp/
 ├── Dockerfile               # Multi-Stage-Build, Non-Root-User
 ├── pyproject.toml
 ├── CHANGELOG.md
-├── CONTRIBUTING.md
+├── CONTRIBUTING.md          # Beitragsleitfaden (Englisch)
+├── CONTRIBUTING.de.md       # Beitragsleitfaden (Deutsch)
+├── SECURITY.md              # Sicherheitsrichtlinie (Englisch)
+├── SECURITY.de.md           # Sicherheitsrichtlinie (Deutsch)
 ├── LICENSE
 ├── README.md                # Englische Hauptversion
 └── README.de.md             # Diese Datei (Deutsch)
@@ -305,7 +308,16 @@ Siehe [CHANGELOG.md](CHANGELOG.md)
 
 ## Beitragen
 
-Siehe [CONTRIBUTING.md](CONTRIBUTING.md)
+Siehe [CONTRIBUTING.de.md](CONTRIBUTING.de.md) ([🇬🇧 English](CONTRIBUTING.md))
+
+---
+
+## Sicherheit
+
+Siehe [SECURITY.de.md](SECURITY.de.md) ([🇬🇧 English](SECURITY.md)) für die
+Sicherheitsrichtlinie und Zusammenfassung der Sicherheitslage sowie
+[docs/security.md](docs/security.md) für das vollständige technische
+Sicherheitsmodell.
 
 ---
 
