@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "swiss-energy-mcp"
-version = "0.3.0"
+version = "0.3.2"
 description = "MCP Server für Schweizer Energiedaten – BFE Elektrizitätsproduktionsanlagen, Windkraft, Wasserkraft, Photovoltaik, Solareignung, Energiestädte via GeoAdmin REST API und opendata.swiss"
 readme = "README.md"
 license = {text = "MIT"}
