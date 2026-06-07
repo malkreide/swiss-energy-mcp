@@ -340,3 +340,5 @@ Hayal Oezkan · [malkreide](https://github.com/malkreide)
 - **Related:** [swiss-road-mobility-mcp](https://github.com/malkreide/swiss-road-mobility-mcp) — MCP server for Swiss mobility data
 - **Related:** [zurich-opendata-mcp](https://github.com/malkreide/zurich-opendata-mcp) — MCP server for Zurich city open data
 - **Portfolio:** [Swiss Public Data MCP Portfolio](https://github.com/malkreide)
+
+<!-- mcp-name: io.github.malkreide/swiss-energy-mcp -->

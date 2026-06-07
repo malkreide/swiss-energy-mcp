@@ -64,5 +64,3 @@ markers = [
     "live: Tests that make real API calls (skipped by default)",
 ]
 
-[project.urls]
-"mcp-name" = "io.github.malkreide/swiss-energy-mcp"
