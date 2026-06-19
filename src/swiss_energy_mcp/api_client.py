@@ -41,7 +41,11 @@ USER_AGENT = f"swiss-energy-mcp/{_VERSION} (github.com/malkreide/swiss-energy-mc
 # ---------------------------------------------------------------------------
 
 GEOADMIN_BASE = "https://api3.geo.admin.ch/rest/services/api/MapServer"
-OPENDATA_SWISS_BASE = "https://www.opendata.swiss/api/3/action"
+# Canonical CKAN host. opendata.swiss redirects the CKAN API
+# (www.opendata.swiss -> opendata.swiss -> ckan.opendata.swiss); hitting the
+# final host directly avoids the redirect hops while staying inside the
+# egress allow-list.
+OPENDATA_SWISS_BASE = "https://ckan.opendata.swiss/api/3/action"
 
 DEFAULT_TIMEOUT = 20.0
 DEFAULT_RADIUS_M = 5000  # 5 km
@@ -61,7 +65,12 @@ LICENSE_OGD = (
 # ---------------------------------------------------------------------------
 
 ALLOWED_HOSTS: frozenset[str] = frozenset(
-    {"api3.geo.admin.ch", "opendata.swiss", "www.opendata.swiss"}
+    {
+        "api3.geo.admin.ch",
+        "opendata.swiss",
+        "www.opendata.swiss",
+        "ckan.opendata.swiss",
+    }
 )
 
 _BLOCKED_NETWORKS = tuple(
