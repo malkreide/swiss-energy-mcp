@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `energy_search_bfe_datasets` (and the opendata.swiss part of `energy_check_status`)
+  no longer fail with an egress-allow-list error. opendata.swiss now redirects the
+  CKAN API (`www.opendata.swiss` → `opendata.swiss` → `ckan.opendata.swiss`), and
+  the final host was not on the allow-list. The CKAN base URL now points directly
+  at `ckan.opendata.swiss`, which is also added to the egress allow-list — avoiding
+  the redirect hops entirely.
+
 ## [0.3.0] - 2026-06-03
 
 This release follows the 2026-06-03 best-practice re-audit

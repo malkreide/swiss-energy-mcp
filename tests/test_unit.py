@@ -118,6 +118,9 @@ class TestEgressGuard:
     def test_opendata_host_passes(self):
         assert_url_allowed("https://opendata.swiss/api/3/action/package_search")
 
+    def test_ckan_opendata_host_passes(self):
+        assert_url_allowed("https://ckan.opendata.swiss/api/3/action/package_search")
+
     def test_non_https_rejected(self):
         with pytest.raises(ValueError, match="HTTPS"):
             assert_url_allowed("http://api3.geo.admin.ch/x")
