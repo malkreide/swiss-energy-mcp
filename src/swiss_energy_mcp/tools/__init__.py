@@ -7,12 +7,12 @@ profile) and ``catalog`` (dataset search, status).
 
 from __future__ import annotations
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from . import catalog, installations, places
 
 
-def register_tools(mcp: FastMCP) -> None:
+def register_tools(mcp: MCPServer) -> None:
     """Register every tool group on the server."""
     installations.register(mcp)
     places.register(mcp)

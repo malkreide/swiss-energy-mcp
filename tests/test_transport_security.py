@@ -66,8 +66,12 @@ def test_wildcard_cors_is_not_copied():
 def _post_with_host(host_header: str):
     settings = Settings(host="127.0.0.1", port=8000)
     server = build_server(settings)
-    server.settings.transport_security = build_transport_security(settings)
-    with TestClient(server.streamable_http_app()) as client:
+    # mcp 2.x: transport_security is a per-app kwarg, not a setting.
+    with TestClient(
+        server.streamable_http_app(
+            transport_security=build_transport_security(settings)
+        )
+    ) as client:
         return client.post("/mcp", headers={"Host": host_header, **_HEADERS}, json=_INIT)
 
 

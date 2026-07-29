@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 
-from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.mcpserver import Context, MCPServer
 
 from ..api_client import (
     API_GEOADMIN,
@@ -40,7 +40,7 @@ _SOLAR_CLASS_MEANING = {
 }
 
 
-def register(mcp: FastMCP) -> None:
+def register(mcp: MCPServer) -> None:
     """Register the place-centric tools on the server."""
 
     @mcp.tool(
