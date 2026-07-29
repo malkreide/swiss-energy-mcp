@@ -136,9 +136,7 @@ def main() -> None:
                 "without it there is no Host check at all.",
             )
         # mcp 2.x: transport_security is a per-app kwarg, not a setting.
-        app = server.streamable_http_app(
-            transport_security=security, host=settings.host
-        )
+        app = server.streamable_http_app(transport_security=security, host=settings.host)
         # SDK-004: browser-based MCP clients must be able to read Mcp-Session-Id.
         app.add_middleware(
             CORSMiddleware,

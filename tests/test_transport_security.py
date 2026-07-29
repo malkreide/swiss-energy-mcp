@@ -68,9 +68,7 @@ def _post_with_host(host_header: str):
     server = build_server(settings)
     # mcp 2.x: transport_security is a per-app kwarg, not a setting.
     with TestClient(
-        server.streamable_http_app(
-            transport_security=build_transport_security(settings)
-        )
+        server.streamable_http_app(transport_security=build_transport_security(settings))
     ) as client:
         return client.post("/mcp", headers={"Host": host_header, **_HEADERS}, json=_INIT)
 
