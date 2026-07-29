@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mcp.server.fastmcp import Context
+from mcp.server.mcpserver import Context
 
 from ..api_client import AppContext, EnergyHTTPClient
 from ..models import EnergyResponse, Provenance

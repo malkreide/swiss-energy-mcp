@@ -12,7 +12,7 @@ from swiss_energy_mcp.server import build_server
 
 
 class FakeContext:
-    """Minimal stand-in for FastMCP's Context used in tool tests."""
+    """Minimal stand-in for MCPServer's Context used in tool tests."""
 
     def __init__(self, client: EnergyHTTPClient) -> None:
         self.request_context = SimpleNamespace(lifespan_context=AppContext(client=client))
@@ -35,7 +35,7 @@ class FakeContext:
 
 @pytest.fixture(scope="session")
 def server():
-    """A fully built FastMCP server instance."""
+    """A fully built MCPServer server instance."""
     return build_server()
 
 

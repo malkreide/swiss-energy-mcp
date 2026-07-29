@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 
-from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.mcpserver import Context, MCPServer
 
 from ..api_client import (
     API_GEOADMIN,
@@ -33,7 +33,7 @@ def _localized(value: object) -> str:
     return str(value or "")
 
 
-def register(mcp: FastMCP) -> None:
+def register(mcp: MCPServer) -> None:
     """Register the catalogue tools on the server."""
 
     @mcp.tool(

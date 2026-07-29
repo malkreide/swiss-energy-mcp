@@ -6,7 +6,7 @@ public and auth-free.
 
 The module wires the pieces together: configuration (:mod:`settings`),
 structured logging (:mod:`logging_config`), a shared HTTP client managed by a
-FastMCP lifespan, and the tool / resource / prompt registrations.
+MCPServer lifespan, and the tool / resource / prompt registrations.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from .api_client import AppContext, EnergyHTTPClient
 from .logging_config import configure_logging, get_logger
@@ -40,10 +40,10 @@ INSTRUCTIONS = (
 
 
 def _make_lifespan(settings: Settings):
-    """Build a FastMCP lifespan that owns the shared HTTP client."""
+    """Build a MCPServer lifespan that owns the shared HTTP client."""
 
     @asynccontextmanager
-    async def lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
+    async def lifespan(server: MCPServer) -> AsyncIterator[AppContext]:
         log = get_logger()
         client = EnergyHTTPClient(timeout=settings.http_timeout)
         log.info(
@@ -60,14 +60,12 @@ def _make_lifespan(settings: Settings):
     return lifespan
 
 
-def build_server(settings: Settings | None = None) -> FastMCP:
-    """Construct a fully configured FastMCP server instance."""
+def build_server(settings: Settings | None = None) -> MCPServer:
+    """Construct a fully configured MCPServer server instance."""
     settings = settings or Settings()
-    mcp = FastMCP(
+    mcp = MCPServer(
         "swiss_energy_mcp",
         instructions=INSTRUCTIONS,
-        host=settings.host,
-        port=settings.port,
         lifespan=_make_lifespan(settings),
         dependencies=["httpx", "pydantic", "pydantic-settings", "structlog"],
     )
@@ -137,9 +135,8 @@ def main() -> None:
                 "server is reachable under so Host and Origin are validated; "
                 "without it there is no Host check at all.",
             )
-        server.settings.transport_security = security
-
-        app = server.streamable_http_app()
+        # mcp 2.x: transport_security is a per-app kwarg, not a setting.
+        app = server.streamable_http_app(transport_security=security, host=settings.host)
         # SDK-004: browser-based MCP clients must be able to read Mcp-Session-Id.
         app.add_middleware(
             CORSMiddleware,

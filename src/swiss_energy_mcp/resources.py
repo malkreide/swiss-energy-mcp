@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import json
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from .api_client import API_GEOADMIN, LAYER_CATALOG, LICENSE_OGD, SOURCE_GEOADMIN
 
 
-def register_capabilities(mcp: FastMCP) -> None:
+def register_capabilities(mcp: MCPServer) -> None:
     """Register the layer-catalogue resource and the site-assessment prompt."""
 
     @mcp.resource(

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.mcpserver import Context, MCPServer
 
 from ..api_client import (
     API_GEOADMIN,
@@ -33,7 +33,7 @@ _READ_ONLY = {
 }
 
 
-def register(mcp: FastMCP) -> None:
+def register(mcp: MCPServer) -> None:
     """Register all installation-search tools on the server."""
 
     @mcp.tool(
