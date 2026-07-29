@@ -28,10 +28,15 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = Field(default=8000, ge=1, le=65535)
     cors_origins: list[str] = Field(default_factory=lambda: ["https://claude.ai"])
+    # Inbound Host allow-list for the HTTP transport (SEC-005, inbound half).
+    # e.g. SWISS_ENERGY_ALLOWED_HOSTS="mcp.example.ch,mcp.example.ch:443".
+    # Only needed for a non-loopback bind: the reachable name is then a service
+    # or public DNS name this process cannot derive from the bind address.
+    allowed_hosts: list[str] = Field(default_factory=list)
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     http_timeout: float = Field(default=20.0, gt=0, le=120)
 
-    @field_validator("cors_origins", mode="before")
+    @field_validator("cors_origins", "allowed_hosts", mode="before")
     @classmethod
     def _split_origins(cls, value: object) -> object:
         """Allow a comma-separated string in addition to a JSON list."""

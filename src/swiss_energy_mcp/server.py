@@ -80,6 +80,44 @@ def build_server(settings: Settings | None = None) -> FastMCP:
 mcp = build_server()
 
 
+def build_transport_security(settings: Settings):
+    """Host/Origin allow-list for the HTTP transport (SEC-005, inbound half).
+
+    The SDK leaves DNS-rebinding protection OFF while ``transport_security`` is
+    unset — its own source says "If not specified, disable DNS rebinding
+    protection by default for backwards compatibility". Unset therefore means
+    no Host and no Origin validation at all.
+
+    Returns ``None`` when no allow-list can be derived: a non-loopback bind
+    with no ``SWISS_ENERGY_ALLOWED_HOSTS``. The server is then reached under a
+    service or public DNS name this process does not know, and a guessed list
+    would reject every real request with HTTP 421. The caller warns instead.
+    """
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    port = settings.port
+    loopback = {f"127.0.0.1:{port}", f"localhost:{port}", f"[::1]:{port}"}
+    if settings.allowed_hosts:
+        # Loopback stays reachable for container health checks and debugging.
+        hosts = set(settings.allowed_hosts) | loopback
+    elif settings.host in ("127.0.0.1", "localhost", "::1"):
+        hosts = loopback | {f"{settings.host}:{port}"}
+    else:
+        return None
+
+    # Configured CORS origins must also pass the transport check, or the server
+    # rejects exactly the browser clients CORS permits. "*" cannot be expressed
+    # here (origins are matched literally, only a trailing ":*" port wildcard
+    # is supported), so it is not copied across.
+    origins = {o for o in settings.cors_origins if o != "*"}
+    origins |= {f"http://{h}" for h in hosts}
+    return TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=sorted(hosts),
+        allowed_origins=sorted(origins),
+    )
+
+
 def main() -> None:
     """Start the Swiss Energy MCP server."""
     settings = Settings()
@@ -89,6 +127,17 @@ def main() -> None:
     if settings.transport == "http":
         import uvicorn
         from starlette.middleware.cors import CORSMiddleware
+
+        security = build_transport_security(settings)
+        if security is None:
+            get_logger().warning(
+                "server.dns_rebinding_protection_off",
+                host=settings.host,
+                hint="Set SWISS_ENERGY_ALLOWED_HOSTS to the hostnames this "
+                "server is reachable under so Host and Origin are validated; "
+                "without it there is no Host check at all.",
+            )
+        server.settings.transport_security = security
 
         app = server.streamable_http_app()
         # SDK-004: browser-based MCP clients must be able to read Mcp-Session-Id.
