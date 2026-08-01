@@ -7,15 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-01
+
+This release exists mainly so that a repair reaches the people running the
+server: **the published `0.3.3` could no longer be installed from scratch.** It
+declares `mcp[cli]>=1.20.0` with no upper bound, and `mcp` 2.0.0 removed
+`mcp.server.fastmcp` — so every fresh `pip install swiss-energy-mcp` resolved to
+2.0.0 and died on startup with `ModuleNotFoundError`. The repository has carried
+the fix since 29 July; it was simply never released, and `main` kept the same
+version number as the broken artifact.
+
+### Changed (breaking)
+
+- **Migrated to the `mcp` Python SDK 2.x.** The server API moved from
+  `mcp.server.fastmcp` to `mcp.server.mcpserver` with no compatibility shim.
+  Visible to anyone embedding this server: `build_server()` now returns an
+  `MCPServer` rather than a `FastMCP`; `host`/`port` are no longer constructor
+  arguments (uvicorn receives the bind address directly anyway); and
+  `transport_security` — the allow-list introduced in 0.3.x — moved from the
+  settings object to a `streamable_http_app(transport_security=...)` keyword,
+  where misuse now raises instead of being silently ignored.
+
+  The dependency pin is `mcp[cli]>=2.0.0,<3` accordingly. Anyone who must stay
+  on `mcp` 1.x should stay on 0.3.x — and pin an upper bound themselves, because
+  the published 0.3.3 has none.
+
+  Verified against a 1.x baseline captured before any edit: 106 passed,
+  10 deselected — identical.
+
 ### Fixed
 
-- **Capped `mcp` at `<2`.** `mcp` 2.0.0, published 2026-07-28, removed
-  `mcp.server.fastmcp` — the module this server imports. With the previous
-  unbounded `>=1.28.1` every fresh resolve picked 2.0.0 and failed at import
-  with `ModuleNotFoundError`, in CI and for anyone running `pip install` alike.
-  Verified in both directions: 2.0.0 fails, `<2` resolves to 1.29.0 and imports
-  cleanly. Migrating to the 2.x API (`mcp.server.mcpserver`) stays a separate,
-  deliberate piece of work.
 - `energy_search_bfe_datasets` (and the opendata.swiss part of `energy_check_status`)
   no longer fail with an egress-allow-list error. opendata.swiss now redirects the
   CKAN API (`www.opendata.swiss` → `opendata.swiss` → `ckan.opendata.swiss`), and
