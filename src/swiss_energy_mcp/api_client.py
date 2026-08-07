@@ -544,6 +544,58 @@ async def find_geoadmin_by_name(
 # ---------------------------------------------------------------------------
 
 
+class UpstreamSchemaError(ValueError):
+    """Die Antwort kam an, sieht aber anders aus, als der Code sie liest.
+
+    Von einem echten CKAN-Fehler (`success: false`) getrennt, weil die Behebung
+    eine andere ist: Dort hat die Quelle geantwortet und Nein gesagt, hier hat
+    sie ihre Form geändert.
+
+    Erbt von ``ValueError``, damit die Aufrufer in ``server.py``, die heute
+    schon auf ``ValueError`` verzweigen, den Fall weiterhin als API-Fehler
+    behandeln statt ihn als unerwartete Ausnahme durchzureichen.
+    """
+
+
+def _ckan_result(data: dict, action: str) -> dict:
+    """Den ``result``-Block holen, oder laut scheitern (FID-006).
+
+    ``data.get("result", {})`` schrieb jede Strukturänderung in ein gültiges
+    leeres Ergebnis um — und weil die Aufrufer danach ``count`` und ``results``
+    ebenfalls defaulteten, kam am Ende buchstäblich ``{"count": 0,
+    "results": []}`` heraus: nicht von «opendata.swiss hat nichts» zu
+    unterscheiden.
+    """
+    if "result" not in data:
+        raise UpstreamSchemaError(
+            f"opendata.swiss `{action}`: Antwort ohne `result`. Vorhandene "
+            f"Schlüssel: {sorted(data)}. Das ist keine Leermenge — die Struktur "
+            "der Quelle hat sich geändert."
+        )
+    result = data["result"]
+    if not isinstance(result, dict):
+        raise UpstreamSchemaError(
+            f"opendata.swiss `{action}`: `result` ist {type(result).__name__} und kein Objekt."
+        )
+    return result
+
+
+def _ckan_field(result: dict, field: str, action: str) -> object:
+    """Ein gelesenes Feld des ``result``-Blocks bestätigen.
+
+    Die Ebene darunter, und sie zählt genauso: ``package_search`` liefert
+    ``count`` und ``results`` **immer** — auch bei null Treffern. Fehlt eines,
+    ist das keine leere Suche, sondern eine andere Antwort.
+    """
+    if field not in result:
+        raise UpstreamSchemaError(
+            f"opendata.swiss `{action}`: `result` ohne `{field}`. Vorhandene "
+            f"Schlüssel: {sorted(result)}. `package_search` liefert `count` und "
+            "`results` auch bei null Treffern — dies ist keine leere Suche."
+        )
+    return result[field]
+
+
 async def search_opendata_swiss(
     client: EnergyHTTPClient,
     query: str = "",
@@ -565,8 +617,16 @@ async def search_opendata_swiss(
         "sort": "score desc",
     }
     data = await client.get(f"{OPENDATA_SWISS_BASE}/package_search", params=params)
+    if not isinstance(data, dict):
+        raise UpstreamSchemaError(
+            f"opendata.swiss `package_search`: Antwort ist {type(data).__name__} "
+            "und kein Objekt. Erwartet wird die CKAN-Hülle mit `success` und `result`."
+        )
     if not data.get("success"):
         raise ValueError("Die opendata.swiss-API hat keinen Erfolg gemeldet.")
 
-    result = data.get("result", {})
-    return {"count": result.get("count", 0), "results": result.get("results", [])}
+    result = _ckan_result(data, "package_search")
+    return {
+        "count": _ckan_field(result, "count", "package_search"),
+        "results": _ckan_field(result, "results", "package_search"),
+    }

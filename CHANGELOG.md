@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Eine Strukturänderung von opendata.swiss wurde zu «null Treffer».**
+  `search_opendata_swiss` schrieb drei Defaults hintereinander:
+
+  ```python
+  result = data.get("result", {})
+  return {"count": result.get("count", 0), "results": result.get("results", [])}
+  ```
+
+  Fällt `result` weg — weil CKAN seine Antwort umbaut oder die Aktion nie
+  richtig war —, kommt buchstäblich `{"count": 0, "results": []}` heraus. Das
+  ist nicht «etwas ist kaputt», das ist **dieselbe Antwort, die eine korrekte,
+  leere Suche liefert**, und für das Modell nicht davon zu unterscheiden.
+
+  `result` wird jetzt bestätigt statt gedefaultet, und `count`/`results` mit
+  ihm: `package_search` liefert beide **immer**, auch bei null Treffern, also
+  ist ihr Fehlen keine leere Suche. Bei Abweichung fliegt `UpstreamSchemaError`
+  mit den tatsächlich vorhandenen Schlüsseln in der Meldung.
+
+  Ein echter CKAN-Fehler (`success: false`) bleibt ein `ValueError`: Dort hat
+  die Quelle geantwortet und Nein gesagt, hier hat sie ihre Form geändert. Eine
+  echte Leermenge (`count: 0` bei vorhandenem `results`) bleibt ein normales
+  Ergebnis — ein Wächter, der die mitfängt, wird nach dem zweiten Fehlalarm
+  abgeschaltet.
+
+  Gefunden im Portfolio-Durchlauf zu
+  [`FID-006`](https://github.com/malkreide/mcp-audit-skill/blob/main/checks/FID-006.md)
+  am 2026-08-07: Acht Server im Portfolio sprechen mit CKAN, alle acht prüfen
+  das `success`-Envelope, sieben defaulteten `result` danach. Dieser war der
+  einzige, bei dem der Default bis auf die **Zählung** durchschlug.
+
 ### Added
 
 - **`EnergyHTTPClient.get` hatte gar keinen Retry — jetzt hat es einen.**
