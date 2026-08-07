@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`EnergyHTTPClient.get` hatte gar keinen Retry — jetzt hat es einen.**
+  `reference/adoption.toml` in
+  [mcp-data-source-probe-skill](https://github.com/malkreide/mcp-data-source-probe-skill)
+  fuehrt diesen Client seit 2026-03-12 als Uebernahme der Retry-Vorlage. Beim
+  Nachlesen am 2026-08-07: Uebernommen wurde die **Fehlerabbildung**, nicht die
+  Schleife. Ein Grep ueber `src/` findet null Vorkommen von `asyncio.sleep`,
+  `backoff`, `retry` oder `attempt`.
+
+  Damit unterscheidet sich dieser Server von den zehn Schwester-Servern derselben
+  Runde: Dort waren sechs Defekte an einem vorhandenen Retry zu **haerten**, hier
+  fehlte er ganz. Ein 503 wurde direkt zu «Der Dienst ist voruebergehend nicht
+  verfuegbar» — die Meldung, die der Skill als Defaitismus benennt: Sie sagt dem
+  Menschen, er solle es nochmal versuchen, statt es selbst zu tun.
+
+  Neu, in der Form der reparierten Vorlage:
+  - 5xx, 429 und Netzwerkfehler werden bis zu vier Versuche wiederholt; 4xx
+    ausser 429 wie bisher sofort durchgereicht.
+  - **`Retry-After`** schlaegt die eigene Kurve, beide Formen nach RFC 9110
+    §10.2.3; unlesbar ergibt `None` und faellt auf die Kurve zurueck — nie ein
+    Absturz auf dem Fehlerpfad. Der Jitter darauf ist einseitig `[1.0x, 1.25x]`.
+  - **Jitter** `[0.5x, 1.5x]` auf der exponentiellen Kurve, damit nicht alle
+    Clients nach demselben Ausfall im Gleichschritt zurueckkommen.
+  - **Deckel** von 20 s auf die einzelne Wartezeit, angewandt **nach** dem
+    Jittern: `min(deckel, base) * jitter` waere keine Schranke.
+  - **Gesamtbudget** von 25 s ueber den ganzen Aufruf, als
+    `asyncio.timeout`-Wanduhr-Deadline. Nicht als httpx-Timeout: httpx begrenzt
+    pro Operation, und sein Read-Timeout beginnt mit jedem Chunk von vorn.
+
+  Die Fehlerabbildung selbst ist unveraendert — sie war nie das Problem. Zwei
+  Meldungen wurden angepasst, weil sie sonst falsch geworden waeren: Bei 429 und
+  503 stand «bitte kurz warten und erneut versuchen», und genau das ist jetzt
+  bereits geschehen.
+
+  Die Redirect-Kette samt Allow-List-Pruefung jedes Hops (SEC-021/SEC-004) ist in
+  `_send_once` ausgelagert und inhaltlich unveraendert; sie laeuft in jedem
+  Versuch vollstaendig.
+
+  Neu `tests/test_retry_policy.py`: `Retry-After` in beiden Formen samt
+  Ablehnungsfaellen, die Jitter-Streuung, die Deckel-Reihenfolge und die
+  Einseitigkeit.
+
+
 ## [0.4.1] - 2026-08-02
 
 ### Fixed
