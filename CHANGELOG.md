@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Auch die GeoAdmin-Antworten wurden bei einer Strukturänderung zu null
+  Features.** `identify_geoadmin` und `find_geoadmin_by_name` gaben
+  `data.get("results", [])` zurück.
+
+  Hier wiegt der Default schwerer als anderswo, denn dieser Server kennt null
+  Features bereits als **echte** Antwort: Der Docstring von
+  `identify_geoadmin` warnt ausdrücklich davor, dass ein falscher `sr`-Wert
+  jede Ebene still leer laufen lässt. Der Default fügte eine zweite Ursache
+  mit demselben Ergebnis hinzu — und danach waren sie nicht mehr
+  auseinanderzuhalten.
+
+  Beide laufen jetzt über `_geoadmin_results()`, das `results` bestätigt und
+  sonst `UpstreamSchemaError` wirft — denselben Typ, den der CKAN-Pfad seit
+  dem letzten Release nutzt. `results: []` bleibt eine Aussage der Quelle:
+  Bestätigt wird die Anwesenheit des Schlüssels, nicht sein Inhalt.
+
+  Nachtrag zum Portfolio-Durchlauf
+  ([`FID-006`](https://github.com/malkreide/mcp-audit-skill/blob/main/checks/FID-006.md)):
+  Der CKAN-Sweep reparierte den einen Pfad dieses Servers, GeoAdmin ist der
+  andere. Eine Kohorte zu reparieren repariert einen Pfad, nicht einen Server.
+
+### Fixed
+
 - **Eine Strukturänderung von opendata.swiss wurde zu «null Treffer».**
   `search_opendata_swiss` schrieb drei Defaults hintereinander:
 
