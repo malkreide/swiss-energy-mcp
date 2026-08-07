@@ -24,9 +24,11 @@ import pytest
 import respx
 
 from swiss_energy_mcp.api_client import (
+    GEOADMIN_BASE,
     OPENDATA_SWISS_BASE,
     EnergyHTTPClient,
     UpstreamSchemaError,
+    find_geoadmin_by_name,
     search_opendata_swiss,
 )
 
@@ -149,3 +151,63 @@ async def test_a_real_ckan_error_stays_a_ckan_error():
     with pytest.raises(ValueError) as excinfo:
         await _search(query="solar")
     assert not isinstance(excinfo.value, UpstreamSchemaError)
+
+
+# --- Die zweite Quelle: GeoAdmin ---------------------------------------------
+
+
+def _geo(payload):
+    return respx.get(url__startswith=f"{GEOADMIN_BASE}/find").mock(
+        return_value=httpx.Response(200, json=payload)
+    )
+
+
+async def _find(**kwargs):
+    client = EnergyHTTPClient()
+    try:
+        return await find_geoadmin_by_name(
+            client, "ch.bfe.energiestaedte", "Bern", "name", **kwargs
+        )
+    finally:
+        await client.close()
+
+
+@respx.mock
+async def test_a_geoadmin_answer_without_results_is_not_zero_features():
+    """Der Fall, der hier besonders bösartig ist.
+
+    Dieser Server kennt null Features schon als **echte** Antwort: Der
+    Docstring von `identify_geoadmin` warnt, dass ein falscher `sr`-Wert jede
+    Ebene still leer laufen lässt. Ein Default auf `results` fügt eine zweite
+    Ursache mit demselben Ergebnis hinzu — und danach sind sie nicht mehr
+    auseinanderzuhalten.
+    """
+    _geo({"unexpected": "shape"})
+    with pytest.raises(UpstreamSchemaError) as excinfo:
+        await _find()
+    message = str(excinfo.value)
+    assert "'unexpected'" in message, message
+    assert "find" in message
+    assert "keine Leermenge" in message
+
+
+@respx.mock
+async def test_a_geoadmin_search_without_hits_still_passes():
+    """Die Gegenrichtung: `results: []` ist eine Aussage der Quelle."""
+    _geo({"results": []})
+    assert await _find() == []
+
+
+@respx.mock
+async def test_a_geoadmin_search_with_hits_still_passes():
+    _geo({"results": [{"attributes": {"name": "Bern"}}]})
+    assert await _find() == [{"attributes": {"name": "Bern"}}]
+
+
+@respx.mock
+async def test_a_non_list_results_is_rejected():
+    """`results` als Objekt ist keine Trefferliste, sondern eine andere Antwort."""
+    _geo({"results": {"count": 0}})
+    with pytest.raises(UpstreamSchemaError) as excinfo:
+        await _find()
+    assert "dict" in str(excinfo.value)

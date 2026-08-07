@@ -516,7 +516,7 @@ async def query_geoadmin_layer(
         "returnGeometry": "false",
     }
     data = await client.get(f"{GEOADMIN_BASE}/identify", params=params)
-    return data.get("results", [])
+    return _geoadmin_results(data, "identify")
 
 
 async def find_geoadmin_by_name(
@@ -536,7 +536,7 @@ async def find_geoadmin_by_name(
         "returnGeometry": "false",
     }
     data = await client.get(f"{GEOADMIN_BASE}/find", params=params)
-    return data.get("results", [])
+    return _geoadmin_results(data, "find")
 
 
 # ---------------------------------------------------------------------------
@@ -594,6 +594,37 @@ def _ckan_field(result: dict, field: str, action: str) -> object:
             "`results` auch bei null Treffern — dies ist keine leere Suche."
         )
     return result[field]
+
+
+def _geoadmin_results(data: object, endpoint: str) -> list:
+    """Die Trefferliste einer GeoAdmin-Antwort, oder laut scheitern (FID-006).
+
+    ``data.get("results", [])`` machte aus jeder Strukturänderung null Features.
+    Das ist hier besonders bösartig, weil derselbe Server null Features schon
+    als **echte** Antwort kennt: Der Docstring von ``identify_geoadmin`` warnt
+    genau davor, dass ein falscher ``sr``-Wert jede Ebene still leer laufen
+    lässt. Zwei Ursachen, ein Ergebnis — und keine Möglichkeit, sie
+    auseinanderzuhalten.
+
+    ``identify`` und ``find`` liefern ``results`` immer, auch ohne Treffer.
+    Bestätigt wird die Anwesenheit des Schlüssels, nicht sein Inhalt.
+    """
+    if not isinstance(data, dict):
+        raise UpstreamSchemaError(
+            f"GeoAdmin `{endpoint}`: Antwort ist {type(data).__name__} und kein Objekt."
+        )
+    if "results" not in data:
+        raise UpstreamSchemaError(
+            f"GeoAdmin `{endpoint}`: Antwort ohne `results`. Vorhandene Schlüssel: "
+            f"{sorted(data)}. Das ist keine Leermenge — `identify` und `find` "
+            "liefern `results` auch ohne Treffer."
+        )
+    results = data["results"]
+    if not isinstance(results, list):
+        raise UpstreamSchemaError(
+            f"GeoAdmin `{endpoint}`: `results` ist {type(results).__name__} und keine Liste."
+        )
+    return results
 
 
 async def search_opendata_swiss(
