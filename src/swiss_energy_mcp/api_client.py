@@ -19,8 +19,13 @@ the original hostname, so pinning does not weaken transport security.
 
 from __future__ import annotations
 
+import asyncio
+import random
 import socket
+import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from importlib.metadata import PackageNotFoundError, version
 from ipaddress import ip_address, ip_network
 from typing import Any
@@ -48,6 +53,94 @@ GEOADMIN_BASE = "https://api3.geo.admin.ch/rest/services/api/MapServer"
 OPENDATA_SWISS_BASE = "https://ckan.opendata.swiss/api/3/action"
 
 DEFAULT_TIMEOUT = 20.0
+
+
+# --- Retry policy ------------------------------------------------------------
+# Adopted from the mcp-data-source-probe reference template (repaired
+# 2026-08-07). Three questions: *what* is retried, *how fast*, and *how long*.
+# The first is settled in the retry loop (4xx except 429 fails fast); these
+# settle the other two.
+
+RETRY_ATTEMPTS = 4
+RETRY_BASE_DELAY = 2.0  # ladder before jitter: 2, 4, 8
+
+# Ceiling on the WHOLE call — every attempt and every wait together. An attempt
+# count is not a bound: four attempts against an upstream that takes 30s to time
+# out is two minutes inside one tool call, and the number never says so. The
+# anchor is measured, not guessed: the Python MCP SDK ships
+# MCP_DEFAULT_TIMEOUT = 30.0, so 25s leaves headroom for framing and parsing.
+RETRY_TOTAL_BUDGET = 25.0
+
+# Ceiling for a single wait. Bounds the exponential ladder, and bounds a
+# `Retry-After` the source may send but we are not obliged to sit through.
+RETRY_MAX_DELAY = 20.0
+
+# Jitter spread. Without it every client that hit the same outage retries in
+# lockstep, and the load returns as a wave exactly when the source recovers —
+# the retry storm extends the outage it was meant to bridge.
+RETRY_JITTER_SPREAD = 0.5  # exponential delays land in [0.5x, 1.5x]
+
+# On a `Retry-After`, deliberately one-sided: the source said when to come back,
+# so coming back later is fine and coming back earlier is not.
+RETRY_AFTER_JITTER = 0.25  # lands in [1.0x, 1.25x]
+
+# Statuses that carry a meaningful `Retry-After` (RFC 9110 section 10.2.3).
+RETRY_AFTER_STATUSES = frozenset({429, 503})
+
+
+def parse_retry_after(resp: httpx.Response | None) -> float | None:
+    """Seconds to wait per the response's ``Retry-After``, or ``None``.
+
+    RFC 9110 section 10.2.3 allows two forms — delta-seconds (``120``) and an
+    HTTP-date (``Wed, 21 Oct 2026 07:28:00 GMT``). Both appear in the wild, so
+    both are read. Anything unparseable yields ``None`` and the caller falls
+    back to its own curve: a malformed header must not become a crash on the
+    error path, which is the one path already going badly.
+    """
+    if resp is None or resp.status_code not in RETRY_AFTER_STATUSES:
+        return None
+    raw = (resp.headers.get("retry-after") or "").strip()
+    if not raw:
+        return None
+    if raw.isdigit():
+        return float(raw)
+    try:
+        when = parsedate_to_datetime(raw)
+    except (TypeError, ValueError):
+        return None
+    if when is None:
+        return None
+    if when.tzinfo is None:  # RFC 9110 dates are GMT; a naive one means UTC
+        when = when.replace(tzinfo=UTC)
+    return max(0.0, (when - datetime.now(UTC)).total_seconds())
+
+
+def compute_delay(attempt: int, last_error: Exception | None) -> float:
+    """Seconds to wait before ``attempt`` (1-based for the first retry).
+
+    The source's own answer beats our guess: a ``Retry-After`` on a 429 or 503
+    wins over the exponential curve. Everything is spread, then capped.
+
+    The cap wraps the jitter and not the other way round. ``min(cap, base) *
+    jitter`` and ``min(cap, base * jitter)`` both contain a cap and a jitter;
+    only the second is bounded — a value capped at 20s and then multiplied by
+    up to 1.5 lands at 30s, and the constant would claim a ceiling it does not
+    hold.
+    """
+    hinted = parse_retry_after(getattr(last_error, "response", None))
+    if hinted is not None:
+        return min(
+            hinted * (1.0 + random.random() * RETRY_AFTER_JITTER),
+            RETRY_MAX_DELAY,
+        )
+    return min(
+        RETRY_BASE_DELAY
+        * 2 ** (attempt - 1)
+        * (1.0 - RETRY_JITTER_SPREAD + random.random() * 2 * RETRY_JITTER_SPREAD),
+        RETRY_MAX_DELAY,
+    )
+
+
 DEFAULT_RADIUS_M = 5000  # 5 km
 
 # Data-source attribution (CH-004 — OGD licence compliance).
@@ -281,39 +374,94 @@ class EnergyHTTPClient:
             },
         )
 
+    async def _send_once(self, url: str, params: dict[str, Any] | None) -> httpx.Response:
+        """Ein Versuch, inklusive Redirect-Kette. Wirft die httpx-Fehler roh."""
+        response = await self._client.get(url, params=params)
+        redirects = 0
+        while response.is_redirect and response.next_request is not None:
+            redirects += 1
+            if redirects > self._MAX_REDIRECTS:
+                raise ValueError("Zu viele Weiterleitungen bei der Anfrage.")
+            # Re-validate every redirect hop against the egress allow-list.
+            assert_url_allowed(str(response.next_request.url))
+            response = await self._client.send(response.next_request)
+        response.raise_for_status()
+        return response
+
     async def get(self, url: str, params: dict[str, Any] | None = None) -> dict:
         """Perform a validated GET request and return the parsed JSON body.
+
+        Wiederholt 5xx, 429 und Netzwerkfehler mit gestreutem Backoff und einem
+        Gesamtbudget in Sekunden; 4xx ausser 429 werden sofort durchgereicht —
+        ein Client-Fehler wird durch Wiederholen nicht besser.
 
         Raises:
             ValueError: on egress-policy violations or upstream API errors,
                 with a user-facing message that contains no internal details.
         """
         assert_url_allowed(url)
+        last_error: Exception | None = None
+        deadline = time.monotonic() + RETRY_TOTAL_BUDGET
+
+        for attempt in range(RETRY_ATTEMPTS):
+            if attempt > 0:
+                delay = compute_delay(attempt, last_error)
+                # Eine Wartezeit, die das Budget überdauert, wartet für
+                # niemanden: Der Aufrufende hat aufgegeben, bevor sie endet.
+                if delay >= deadline - time.monotonic():
+                    break
+                await asyncio.sleep(delay)
+
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            try:
+                # httpx begrenzt pro Operation, und sein Read-Timeout beginnt
+                # mit jedem Chunk von vorn — eine tröpfelnde Antwort überdauert
+                # jede Einzelschranke, ohne dass ein Read abläuft.
+                async with asyncio.timeout(remaining):
+                    return (await self._send_once(url, params)).json()
+            except TimeoutError as exc:  # Budget weg, nicht bloss dieser Versuch
+                last_error = exc
+                break
+            except httpx.HTTPStatusError as exc:
+                last_error = exc
+                code = exc.response.status_code
+                if code == 429 or 500 <= code < 600:
+                    continue  # wiederholbar — Wartezeit kommt aus compute_delay
+                break
+            except httpx.RequestError as exc:
+                last_error = exc
+                continue
+
+        # Ab hier ist der Versuch endgültig gescheitert. Die Fehlerabbildung
+        # unten ist unverändert: Sie war nie das Problem, es fehlte der Retry
+        # davor.
         try:
-            response = await self._client.get(url, params=params)
-            redirects = 0
-            while response.is_redirect and response.next_request is not None:
-                redirects += 1
-                if redirects > self._MAX_REDIRECTS:
-                    raise ValueError("Zu viele Weiterleitungen bei der Anfrage.")
-                # Re-validate every redirect hop against the egress allow-list.
-                assert_url_allowed(str(response.next_request.url))
-                response = await self._client.send(response.next_request)
-            response.raise_for_status()
-            return response.json()
+            if last_error is None:
+                raise ValueError("Zeitüberschreitung bei der Anfrage. Bitte erneut versuchen.")
+            raise last_error
         except httpx.HTTPStatusError as exc:
             code = exc.response.status_code
             if code == 400:
                 raise ValueError("Fehlerhafte Anfrage (HTTP 400). Bitte Parameter prüfen.") from exc
             if code == 404:
                 raise ValueError("Ressource nicht gefunden (HTTP 404).") from exc
+            # 429 und 503 sind die beiden Status, die dieser Client jetzt selbst
+            # wiederholt — inklusive `Retry-After`, wenn die Quelle eines sendet.
+            # Wer diese Meldung sieht, hat die Wiederholungen also schon hinter
+            # sich; «bitte kurz warten und erneut versuchen» wäre jetzt ein Rat,
+            # der bereits befolgt wurde.
             if code == 429:
                 raise ValueError(
-                    "Zu viele Anfragen (HTTP 429). Bitte kurz warten und erneut versuchen."
+                    "Zu viele Anfragen (HTTP 429) — auch nach mehreren "
+                    "Wiederholungen. Die Quelle drosselt gerade; später erneut "
+                    "versuchen."
                 ) from exc
             if code == 503:
                 raise ValueError(
-                    "Der Dienst ist vorübergehend nicht verfügbar (HTTP 503)."
+                    "Der Dienst ist vorübergehend nicht verfügbar (HTTP 503) — "
+                    "auch nach mehreren Wiederholungen."
                 ) from exc
             raise ValueError(f"Die API hat einen Fehler gemeldet (HTTP {code}).") from exc
         except httpx.TimeoutException as exc:
