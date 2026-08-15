@@ -1,0 +1,27 @@
+{
+  "results": [
+    {
+      "layerBodId": "ch.bfe.photovoltaik-grossanlagen",
+      "layerName": "Photovoltaik-Grossanlagen",
+      "featureId": 15623,
+      "id": 15623,
+      "attributes": {
+        "projectname": "Centrale photovoltaïque en cohabitation du Grand Chasseral",
+        "projectmanagement": "MontSol SA",
+        "projectweb": "https://www.pv-mont-soleil.ch/",
+        "elevation": 1250,
+        "power": "8.47",
+        "annualproduction": "11.38",
+        "winterproduction": "4.57",
+        "specificannualproduction": "1343",
+        "specificwinterproduction": "539",
+        "ref_status": "st12",
+        "statuscategory_de": "erstinstanzlich bewilligt",
+        "statuscategory_fr": "octroi de l'autorisation de première instance",
+        "statuscategory_it": "concessione dell'autorizzazione di prima istanza",
+        "statuscategory_en": "granting of the first-instance authorisation",
+        "label": "Centrale photovoltaïque en cohabitation du Grand Chasseral"
+      }
+    }
+  ]
+}

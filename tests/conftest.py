@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 import pytest_asyncio
 
+from swiss_energy_mcp import api_client
 from swiss_energy_mcp.api_client import AppContext, EnergyHTTPClient
 from swiss_energy_mcp.server import build_server
 
@@ -148,6 +149,29 @@ def dataset() -> dict:
     return {
         "name": "solar-ch",
         "title": {"de": "Solarenergie Schweiz"},
-        "notes": {"de": "Testbeschreibung."},
+        # `description`, nicht `notes` — so nennt opendata.swiss das Feld. Der
+        # Stub hiess frueher wie der Code und bestaetigte damit nur dessen
+        # Annahme; siehe tests/fixtures/PROVENANCE.md.
+        "description": {"de": "Testbeschreibung."},
         "resources": [{"format": "CSV"}],
     }
+
+
+@pytest.fixture
+def ohne_wartezeit(monkeypatch):
+    """Nullt den Backoff-Schlaf ueber den Modul-Alias `api_client._sleep`.
+
+    Nicht ueber `monkeypatch.setattr(api_client.asyncio, "sleep", ...)`: das
+    griffe ins Modul `asyncio` selbst und naehme httpx, respx und
+    pytest-asyncio prozessweit dieselbe Mechanik weg. Portfolio-Konvention,
+    siehe CLAUDE.md Teil 1.
+
+    Gepatcht wird nur, wo eine Zusicherung ueber die *Form* einer Antwort
+    laeuft. Wer die Wartezeit selbst prueft, nimmt die Fixture nicht — deshalb
+    ist sie nicht `autouse`.
+    """
+
+    async def sofort(_delay: float) -> None:
+        return None
+
+    monkeypatch.setattr(api_client, "_sleep", sofort)

@@ -125,7 +125,7 @@ class TestPowerPlants:
         assert res.count == 1
 
     @respx.mock
-    async def test_upstream_error_propagates(self, tool, ctx):
+    async def test_upstream_error_propagates(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{GEOADMIN_BASE}/identify").mock(
             return_value=httpx.Response(503)
         )
@@ -164,7 +164,7 @@ class TestWindTurbines:
         assert res.results[0]["fac_name"] == "Windpark Grenchenberg"
 
     @respx.mock
-    async def test_error_propagates(self, tool, ctx):
+    async def test_error_propagates(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{GEOADMIN_BASE}/identify").mock(
             return_value=httpx.Response(429)
         )
@@ -242,7 +242,7 @@ class TestPvInstallations:
         assert isinstance(res, EnergyResponse)
 
     @respx.mock
-    async def test_error_propagates(self, tool, ctx):
+    async def test_error_propagates(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{GEOADMIN_BASE}/identify").mock(
             return_value=httpx.Response(503)
         )
@@ -320,7 +320,7 @@ class TestSolarPotential:
         assert "map.geo.admin.ch" in res.summary
 
     @respx.mock
-    async def test_error_propagates(self, tool, ctx):
+    async def test_error_propagates(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{GEOADMIN_BASE}/identify").mock(
             return_value=httpx.Response(503)
         )
@@ -396,7 +396,7 @@ class TestLocationProfile:
         assert {"power_plants", "wind_turbines", "hydro_plants"} <= cats
 
     @respx.mock
-    async def test_partial_failure_tolerated(self, tool, ctx):
+    async def test_partial_failure_tolerated(self, tool, ctx, ohne_wartezeit):
         # All five layer queries fail; the tool must still return a response.
         respx.get(url__startswith=f"{GEOADMIN_BASE}/identify").mock(
             return_value=httpx.Response(503)
@@ -437,7 +437,7 @@ class TestSearchDatasets:
         assert "offset" in res.summary
 
     @respx.mock
-    async def test_error_propagates(self, tool, ctx):
+    async def test_error_propagates(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{OPENDATA_SWISS_BASE}/package_search").mock(
             return_value=httpx.Response(503)
         )
@@ -460,7 +460,7 @@ class TestCheckStatus:
         assert all(api.available for api in res.apis)
 
     @respx.mock
-    async def test_geoadmin_down_reported(self, tool, ctx):
+    async def test_geoadmin_down_reported(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{GEOADMIN_BASE}/find").mock(return_value=httpx.Response(503))
         _package_search(5, [dataset()])
         res = await tool("energy_check_status")(ctx)
@@ -482,7 +482,7 @@ class TestCheckStatus:
         assert "API-Status" in res.summary
 
     @respx.mock
-    async def test_no_raw_exception_in_detail(self, tool, ctx):
+    async def test_no_raw_exception_in_detail(self, tool, ctx, ohne_wartezeit):
         respx.get(url__startswith=f"{GEOADMIN_BASE}/find").mock(return_value=httpx.Response(503))
         _package_search(0, [])
         res = await tool("energy_check_status")(ctx)

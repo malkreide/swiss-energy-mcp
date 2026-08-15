@@ -1,0 +1,149 @@
+{
+  "results": [
+    {
+      "layerBodId": "ch.bfe.biogasanlagen",
+      "layerName": "Biogasanlagen",
+      "featureId": 2244,
+      "id": 2244,
+      "attributes": {
+        "plant_id": 14,
+        "name": "B Agreenergie SA - Chézard",
+        "place": "Cernier",
+        "operator": "Agreenergie SA",
+        "beginingofoperation": 2012,
+        "web": null,
+        "combinedheatandpower": 220,
+        "upgradingcapacity": null,
+        "facilitykind": 1,
+        "facilitykind_en": "Agricultural biogas plant",
+        "facilitykind_de": "Landwirtschaftliche Biogasanlage",
+        "facilitykind_fr": "Installation de biogaz agricole",
+        "facilitykind_it": "Impianto di produzione di biogas agricolo",
+        "upgradingtechnology": null,
+        "upgradingtechnology_en": null,
+        "upgradingtechnology_de": null,
+        "upgradingtechnology_fr": null,
+        "upgradingtechnology_it": null,
+        "valorizationtype": 101,
+        "valorizationtype_en": "Electricity and heat",
+        "valorizationtype_de": "Strom und Wärme",
+        "valorizationtype_fr": "Électricité et chaleur",
+        "valorizationtype_it": "Elettricità e calore",
+        "yearly_production": [
+          {
+            "electricity": "1029462.5",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2017"
+          },
+          {
+            "electricity": "882680.25",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2016"
+          },
+          {
+            "electricity": "916113.75",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2015"
+          },
+          {
+            "electricity": "895494.25",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2014"
+          },
+          {
+            "electricity": "858737.25",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2013"
+          },
+          {
+            "electricity": "583847.25",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2012"
+          },
+          {
+            "electricity": "1082777.75",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2018"
+          },
+          {
+            "electricity": "1621965.75",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2019"
+          },
+          {
+            "electricity": "1688514.5",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2020"
+          }
+        ],
+        "label": 2244
+      }
+    },
+    {
+      "layerBodId": "ch.bfe.biogasanlagen",
+      "layerName": "Biogasanlagen",
+      "featureId": 2313,
+      "id": 2313,
+      "attributes": {
+        "plant_id": 127,
+        "name": "B Andreas Ballif Lamboing - Lerchenhof",
+        "place": "Lamboing",
+        "operator": "-",
+        "beginingofoperation": 2018,
+        "web": "",
+        "combinedheatandpower": 56,
+        "upgradingcapacity": null,
+        "facilitykind": 1,
+        "facilitykind_en": "Agricultural biogas plant",
+        "facilitykind_de": "Landwirtschaftliche Biogasanlage",
+        "facilitykind_fr": "Installation de biogaz agricole",
+        "facilitykind_it": "Impianto di produzione di biogas agricolo",
+        "upgradingtechnology": null,
+        "upgradingtechnology_en": null,
+        "upgradingtechnology_de": null,
+        "upgradingtechnology_fr": null,
+        "upgradingtechnology_it": null,
+        "valorizationtype": 101,
+        "valorizationtype_en": "Electricity and heat",
+        "valorizationtype_de": "Strom und Wärme",
+        "valorizationtype_fr": "Électricité et chaleur",
+        "valorizationtype_it": "Elettricità e calore",
+        "yearly_production": [
+          {
+            "electricity": "62863.8",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2019"
+          },
+          {
+            "electricity": "268070.665",
+            "heat": "",
+            "biomethanedirect": "",
+            "biomethaneinjection": null,
+            "year": "2020"
+          }
+        ],
+        "label": 2313
+      }
+    }
+  ]
+}

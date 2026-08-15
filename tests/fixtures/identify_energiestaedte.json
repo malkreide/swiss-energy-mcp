@@ -1,0 +1,94 @@
+{
+  "results": [
+    {
+      "layerBodId": "ch.bfe.energiestaedte",
+      "layerName": "Energiestädte",
+      "featureId": 150665,
+      "id": 150665,
+      "attributes": {
+        "name": "Haute-Sorne",
+        "punktezahl": 61.0,
+        "einwohner": 7167.0,
+        "energiestadtseit": "2024-06-18",
+        "beteiligtegemeinde": null,
+        "anzahlaudits": 1,
+        "berater": "Gury Claude",
+        "linkenergiestadtweb": "https://www.energiestadt.ch/de/energiestaedte-mitglieder-29.html",
+        "bfsnr": 6729,
+        "label": "Haute-Sorne"
+      }
+    },
+    {
+      "layerBodId": "ch.bfe.energiestaedte",
+      "layerName": "Energiestädte",
+      "featureId": 150705,
+      "id": 150705,
+      "attributes": {
+        "name": "Neuchâtel",
+        "punktezahl": 77.0,
+        "einwohner": 33455.0,
+        "energiestadtseit": "1995-09-05",
+        "beteiligtegemeinde": null,
+        "anzahlaudits": 8,
+        "berater": "Gentilini Eros",
+        "linkenergiestadtweb": "https://www.energiestadt.ch/de/energiestaedte-mitglieder-29.html",
+        "bfsnr": 6458,
+        "label": "Neuchâtel"
+      }
+    },
+    {
+      "layerBodId": "ch.bfe.energiestaedte",
+      "layerName": "Energiestädte",
+      "featureId": 150743,
+      "id": 150743,
+      "attributes": {
+        "name": "Brügg",
+        "punktezahl": 71.0,
+        "einwohner": 4371.0,
+        "energiestadtseit": "2004-11-30",
+        "beteiligtegemeinde": null,
+        "anzahlaudits": 6,
+        "berater": "Lanz Thomas",
+        "linkenergiestadtweb": "https://www.energiestadt.ch/de/energiestaedte-mitglieder-29.html",
+        "bfsnr": 733,
+        "label": "Brügg"
+      }
+    },
+    {
+      "layerBodId": "ch.bfe.energiestaedte",
+      "layerName": "Energiestädte",
+      "featureId": 150818,
+      "id": 150818,
+      "attributes": {
+        "name": "Le Locle",
+        "punktezahl": 62.0,
+        "einwohner": 9864.0,
+        "energiestadtseit": "2007-09-25",
+        "beteiligtegemeinde": null,
+        "anzahlaudits": 5,
+        "berater": "Tallon Noé",
+        "linkenergiestadtweb": "https://www.energiestadt.ch/de/energiestaedte-mitglieder-29.html",
+        "bfsnr": 6436,
+        "label": "Le Locle"
+      }
+    },
+    {
+      "layerBodId": "ch.bfe.energiestaedte",
+      "layerName": "Energiestädte",
+      "featureId": 151011,
+      "id": 151011,
+      "attributes": {
+        "name": "Worben",
+        "punktezahl": 52.0,
+        "einwohner": 2404.0,
+        "energiestadtseit": "2022-03-15",
+        "beteiligtegemeinde": null,
+        "anzahlaudits": 1,
+        "berater": "Schlaubitz Beatrix",
+        "linkenergiestadtweb": "https://www.energiestadt.ch/de/energiestaedte-mitglieder-29.html",
+        "bfsnr": 755,
+        "label": "Worben"
+      }
+    }
+  ]
+}
