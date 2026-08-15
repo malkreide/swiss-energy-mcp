@@ -143,6 +143,18 @@ def quelle():
         yield protokoll
 
 
+def _zeilen(name: str) -> int:
+    """Die Zahl der Trefferzeilen einer Aufzeichnung — GeoAdmin wie CKAN.
+
+    GeoAdmin legt sie unter `results`, CKAN eine Ebene tiefer unter
+    `result.results`.
+    """
+    daten = fixture_json(name)
+    if isinstance(daten.get("results"), list):
+        return len(daten["results"])
+    return len(daten["result"]["results"])
+
+
 async def _fahre(tool, ctx, werkzeug: str, klasse: str, eingabe: dict[str, Any]):
     """Ruft ein Werkzeug ueber die `tool`-Fixture aus `conftest.py`."""
     from swiss_energy_mcp import models
@@ -302,6 +314,14 @@ async def test_jedes_werkzeug_liest_seine_aufgezeichnete_antwort(tool, ctx, quel
     assert antwort.match_type == "exact"
     assert antwort.notes is None, f"{werkzeug} meldet einen Leer-Hinweis trotz Treffern"
     assert len(quelle) == len(namen), f"{werkzeug} schickte {len(quelle)} statt {len(namen)}"
+    # Und es muessen die Zeilen *seiner* Aufzeichnung sein, nicht irgendwelche:
+    # alle `identify`-Antworten sind gleich gebaut, ein Werkzeug mit der
+    # falschen Datei faellt sonst nicht auf. Das Profil zaehlt fuenf Layer
+    # zusammen und wird deshalb eigens geprueft.
+    if werkzeug != "energy_location_profile":
+        assert antwort.count == sum(_zeilen(n) for n in namen), (
+            f"{werkzeug} las offenbar eine fremde Aufzeichnung"
+        )
 
 
 async def test_die_energiestaedte_gehen_je_nach_eingabe_woandershin(tool, ctx, quelle):
@@ -323,17 +343,37 @@ async def test_die_energiestaedte_gehen_je_nach_eingabe_woandershin(tool, ctx, q
 async def test_das_standortprofil_zaehlt_alle_fuenf_layer(tool, ctx, quelle):
     """Fuenf Layer, per `asyncio.gather` in unbestimmter Reihenfolge.
 
-    Die Zahlen im Profil muessen die der fuenf Aufzeichnungen sein. Ein
-    Dispatcher, der nach Reihenfolge statt nach Abfrage zuordnet, waere hier mit
-    hoher Wahrscheinlichkeit falsch — und die Zusicherung merkt es.
+    Die Zahlen im Profil muessen die der fuenf Aufzeichnungen sein — und zwar
+    Zeile fuer Zeile in der Tabelle. «Die Zahl kommt irgendwo im Text vor» war
+    die erste Fassung, und die Gegenprobe zeigte, warum das zu wenig ist: ein
+    Dispatcher, der allen dieselbe Datei gibt, kam damit durch.
     """
     klasse, eingabe, namen = WERKZEUGE["energy_location_profile"]
     antwort = await _fahre(tool, ctx, "energy_location_profile", klasse, eingabe)
     assert len(quelle) == 5
-    erwartet = {n: len(fixture_json(n)["results"]) for n in namen}
-    for name, anzahl in erwartet.items():
-        kurz = name.removeprefix("identify_").removesuffix(".json")
-        assert str(anzahl) in antwort.summary, f"{kurz}: {anzahl} steht nicht im Profil"
+
+    fuer = {n.removeprefix("identify_").removesuffix(".json"): _zeilen(n) for n in namen}
+    tabelle = {
+        "Windenergie": fuer["windenergieanlagen"],
+        "Wasserkraft": fuer["statistik_wasserkraftanlagen"],
+        "PV-Grossanlagen": fuer["photovoltaik_grossanlagen"],
+        "Energiestädte": fuer["energiestaedte"],
+    }
+    for beschriftung, anzahl in tabelle.items():
+        assert f"| {beschriftung} | {anzahl} |" in antwort.summary, (
+            f"«{beschriftung}» steht nicht mit {anzahl} im Profil:\n{antwort.summary}"
+        )
+    # Die Produktionsanlagen teilt das Profil in PV-Einzelanlagen und Uebrige
+    # auf; zusammen muessen sie die Zeilen der Aufzeichnung ergeben.
+    aufgeteilt = [
+        int(m)
+        for m in re.findall(
+            r"\| (?:Photovoltaik \(Einzelanlagen\)|Übrige Produktionsanlagen) \| (\d+) \|",
+            antwort.summary,
+        )
+    ]
+    assert len(aufgeteilt) == 2
+    assert sum(aufgeteilt) == fuer["elektrizitaetsproduktionsanlagen"]
 
 
 async def test_die_windanlage_liest_ihre_turbinen_aus_dem_xml(tool, ctx, quelle):
