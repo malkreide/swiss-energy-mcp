@@ -61,6 +61,13 @@ DEFAULT_TIMEOUT = 20.0
 # The first is settled in the retry loop (4xx except 429 fails fast); these
 # settle the other two.
 
+# Eigener Alias, damit Tests die Wartezeit ersetzen koennen, ohne
+# `asyncio.sleep` prozessweit zu entschaerfen. Ein
+# `monkeypatch.setattr(api_client.asyncio, "sleep", ...)` griffe ins Modul
+# `asyncio` selbst und naehme httpx, respx und pytest-asyncio dieselbe
+# Mechanik weg — Portfolio-Konvention, siehe CLAUDE.md Teil 1.
+_sleep = asyncio.sleep
+
 RETRY_ATTEMPTS = 4
 RETRY_BASE_DELAY = 2.0  # ladder before jitter: 2, 4, 8
 
@@ -410,7 +417,7 @@ class EnergyHTTPClient:
                 # niemanden: Der Aufrufende hat aufgegeben, bevor sie endet.
                 if delay >= deadline - time.monotonic():
                     break
-                await asyncio.sleep(delay)
+                await _sleep(delay)
 
             remaining = deadline - time.monotonic()
             if remaining <= 0:

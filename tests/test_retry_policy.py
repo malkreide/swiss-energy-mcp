@@ -8,10 +8,15 @@ hatte gar keinen Retry — ein Grep über `src/` fand null Vorkommen von
 
 from __future__ import annotations
 
+import re
+import time
 from datetime import UTC, datetime, timedelta
 from email.utils import format_datetime
+from pathlib import Path
 
 import httpx
+import pytest
+import respx
 
 from swiss_energy_mcp import api_client
 
@@ -79,3 +84,59 @@ def test_retry_after_jitter_is_one_sided() -> None:
     delays = {api_client.compute_delay(1, _retry_after_error("4")) for _ in range(300)}
     assert min(delays) >= 4.0, "never earlier than the source asked for"
     assert max(delays) <= 5.0  # 4 * 1.25
+
+
+# --- Die Naht, an der Tests die Wartezeit ersetzen ---------------------------
+# Zwei Zusicherungen, die zusammengehoeren: dass der Schlaf ueberhaupt eine
+# eigene Naht hat, und dass niemand stattdessen ins fremde Modul greift.
+
+
+async def test_die_fixture_nullt_die_wartezeit_wirklich(ohne_wartezeit) -> None:
+    """Misst die Uhr, nicht den Aufruf.
+
+    Eine Fixture, die den falschen Namen patcht, faellt an keiner der beiden
+    Zusicherungen unten auf — sie laesst nur den Lauf laenger dauern, und eine
+    laengere Laufzeit liest niemand. Diese hier wartet den vollen Ladder ab,
+    wenn die Naht nicht greift: 2 + 4 + 8 Sekunden.
+    """
+    client = api_client.EnergyHTTPClient()
+    start = time.monotonic()
+    try:
+        with respx.mock:
+            respx.get(url__startswith=api_client.GEOADMIN_BASE).mock(
+                return_value=httpx.Response(503)
+            )
+            with pytest.raises(ValueError):
+                await client.get(f"{api_client.GEOADMIN_BASE}/identify")
+    finally:
+        await client.close()
+    gebraucht = time.monotonic() - start
+    assert gebraucht < 2.0, f"der Backoff hat wirklich geschlafen: {gebraucht:.1f}s"
+
+
+def test_der_schlaf_haengt_an_einem_modul_alias() -> None:
+    """`_sleep` ist die Naht — ohne sie muesste man `asyncio.sleep` ersetzen."""
+    quelle = Path(api_client.__file__).read_text(encoding="utf-8")
+    assert "_sleep = asyncio.sleep" in quelle
+    assert "await _sleep(" in quelle
+    assert "await asyncio.sleep(" not in quelle, "eine Wartestelle umgeht den Alias"
+
+
+def test_kein_test_patcht_die_wartezeit_am_fremden_modul() -> None:
+    """Ein `setattr` auf `sleep` im Modul `asyncio` entschaerft es prozessweit.
+
+    Dann verlieren httpx, respx und pytest-asyncio dieselbe Mechanik, und was
+    danach gruen ist, sagt nichts mehr. Gepatcht wird stattdessen der Alias
+    `api_client._sleep`; dafuer gibt es die Fixture `ohne_wartezeit`.
+
+    Der Ausdruck unten trifft die Aufrufform, nicht das blosse Wort. Dieser
+    Text vermeidet sie deshalb — beim ersten Schreiben stand sie hier, und die
+    Zusicherung zeigte korrekterweise die eigene Datei an.
+    """
+    verboten = re.compile(r"setattr\([^)]*asyncio[^)]*sleep")
+    schuldig = [
+        p.name
+        for p in Path(__file__).parent.glob("test_*.py")
+        if verboten.search(p.read_text(encoding="utf-8"))
+    ]
+    assert not schuldig, f"patcht asyncio.sleep am fremden Modul: {schuldig}"

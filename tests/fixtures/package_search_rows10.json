@@ -1,0 +1,2205 @@
+{
+  "help": "https://ckan.opendata.swiss/api/3/action/help_show?name=package_search",
+  "success": true,
+  "result": {
+    "count": 12,
+    "facets": {},
+    "results": [
+      {
+        "accrual_periodicity": "http://publications.europa.eu/resource/authority/frequency/NEVER",
+        "author": "Bundesamt für Energie BFE",
+        "author_email": null,
+        "conforms_to": [],
+        "contact_points": [
+          {
+            "email": "ogd@bfe.admin.ch",
+            "name": "Bundesamt für Energie BFE"
+          }
+        ],
+        "creator_user_id": "0594d621-c92a-4a32-809c-98e281dc7944",
+        "description": {
+          "fr": "La révision de la loi sur l’énergie (LEne) instaure au 1er janvier 2018 des contributions d’investissement pour les installations hydroélectriques et les installations de biomasse. Les recettes futures de ces installations constituent un élément central pour le calcul de ces contributions. C’est pourquoi l’OFEN met à disposition un scénario de prix établi sur une base horaire, conformément à l’art. 63, al. 5, et à l’art. 85, al. 1, de l’ordonnance sur l’encouragement de la production d’électricité issue d’énergies renouvelables (OEneR).\r\n\r\nCes données ne sont plus mises à jour.",
+          "en": "",
+          "de": "Mit der Revision des Energiegesetzes (EnG) wurden per 1. Januar 2018 Investitionsbeiträge für Wasserkraft- und Biomasseanlagen eingeführt. Ein wesentliches Element zur Bemessung der Beitragshöhe stellen die zukünftigen\r\nErlöse dieser Anlagen dar. Aus diesem Grund stellt das Bundesamt für Energie (BFE) gemäss Artikel 63 Absatz 5 sowie Artikel 85 Absatz 1 der Energieförderverordnung (EnFV) ein stündliches Preisszenario zur Verfügung, mit Hilfe dessen diese Erlöse berechnet werden.\r\n\r\nDiese Daten werden nicht mehr nachgeführt.",
+          "it": ""
+        },
+        "display_name": {
+          "fr": "Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse",
+          "de": "Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+          "en": "",
+          "it": ""
+        },
+        "documentation": [],
+        "id": "30b646ea-4d44-498e-89ae-4fe547280a8b",
+        "identifier": "ogd94@bundesamt-fur-energie-bfe",
+        "isopen": false,
+        "issued": "2022-06-01T00:00:00",
+        "keywords": {
+          "de": [
+            "ogd94-bfe",
+            "preisszenarien",
+            "strompreise",
+            "strommarkt",
+            "investitionsbeitrage"
+          ],
+          "en": [
+            "ogd94-bfe"
+          ],
+          "fr": [
+            "contributions-d-investissement",
+            "scenarios-de-prix",
+            "prix-de-l-electricite",
+            "ogd94-bfe",
+            "marche-de-l-electricite"
+          ],
+          "it": [
+            "ogd94-bfe"
+          ]
+        },
+        "language": [],
+        "license_id": null,
+        "license_title": null,
+        "maintainer": "Bundesamt für Energie BFE",
+        "maintainer_email": "ogd@bfe.admin.ch",
+        "metadata_created": "2022-06-17T03:46:26.106921",
+        "metadata_modified": "2025-12-11T04:00:37.664785",
+        "modified": "2023-01-25T00:00:00",
+        "name": "preisszenarien-fur-die-investitionsbeitrage-wasserkraft-und-biomasse",
+        "num_resources": 2,
+        "num_tags": 9,
+        "organization": {
+          "approval_status": "approved",
+          "created": "2016-09-29T10:33:48.579027",
+          "description": {
+            "fr": "L'Office fédéral de l'énergie (OFEN) est le centre de compétences du Département fédéral de l'environnement, des transports, de l'énergie et de la communication (DETEC) pour les questions liées à l'approvisionnement en énergie et à son utilisation.",
+            "de": "Das Bundesamt für Energie (BFE) ist das Kompetenzzentrum für Fragen der Energieversorgung und der Energienutzung im Eidgenössischen Departement für Umwelt, Verkehr, Energie und Kommunikation (UVEK).",
+            "en": "The Swiss Federal Office of Energy (SFOE) is the country's competence centre for issues relating to energy supply and energy use at the Federal Department of the Environment, Transport, Energy and Communications (DETEC).",
+            "it": "L'Ufficio federale dell'energia (UFE) è il centro di competenza in materia di approvvigionamento e di impiego dell'energia in seno al Dipartimento federale dell'ambiente, dei trasporti, dell'energia e delle comunicazioni (DATEC)."
+          },
+          "display_name": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "id": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+          "image_display_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "image_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "is_organization": true,
+          "name": "bundesamt-fur-energie-bfe",
+          "num_followers": 0,
+          "package_count": 123,
+          "political_level": "confederation",
+          "state": "active",
+          "title": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "type": "organization",
+          "url": "http://www.bfe.admin.ch",
+          "tags": [],
+          "groups": []
+        },
+        "owner_org": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+        "private": false,
+        "publisher": {
+          "url": "https://opendata.swiss/organization/bundesamt-fur-energie-bfe",
+          "name": {
+            "fr": "",
+            "de": "Bundesamt für Energie BFE",
+            "en": "",
+            "it": ""
+          }
+        },
+        "qualified_relations": [
+          {
+            "had_role": "http://www.iana.org/assignments/relation/related",
+            "relation": "https://opendata.swiss/perma/ogd121@bundesamt-fur-energie-bfe"
+          }
+        ],
+        "relations": [],
+        "scheduled": "",
+        "see_alsos": [],
+        "state": "active",
+        "temporals": [
+          {
+            "start_date": "2022-01-01T00:00:00",
+            "end_date": "2045-12-31T00:00:00"
+          }
+        ],
+        "title": {
+          "fr": "Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse",
+          "de": "Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+          "en": "",
+          "it": ""
+        },
+        "title_for_slug": "Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+        "type": "dataset",
+        "url": "https://www.bfe.admin.ch/bfe/de/home/foerderung/erneuerbare-energien/foerderung-wasserkraft/investitionsbeitraege-wasserkraft.html",
+        "version": null,
+        "groups": [
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Energie",
+              "en": "Energy",
+              "fr": "Énergie",
+              "it": "Energia"
+            },
+            "id": "f6a373cb-993f-4a8e-af25-65cdf81e1cab",
+            "image_display_url": "",
+            "name": "ener",
+            "title": "{\"de\": \"Energie\", \"en\": \"Energy\", \"fr\": \"Énergie\", \"it\": \"Energia\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Wirtschaft und Finanzen",
+              "en": "Economy and finance",
+              "fr": "Économie et finances",
+              "it": "Economia e finanze"
+            },
+            "id": "34f50c10-ddd0-4e37-b5c0-49456b39e31a",
+            "image_display_url": "",
+            "name": "econ",
+            "title": "{\"de\": \"Wirtschaft und Finanzen\", \"en\": \"Economy and finance\", \"fr\": \"Économie et finances\", \"it\": \"Economia e finanze\"}"
+          }
+        ],
+        "resources": [
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-06-17T03:46:26.410422",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "download_url": "https://www.uvek-gis.admin.ch/BFE/ogd/94/ogd94_preisszenarien_inv_wasserkraft_biomasse.csv",
+            "format": "CSV",
+            "hash": "",
+            "id": "7b14b57f-d51c-443e-8290-88eed46acc4e",
+            "issued": "2022-06-01T00:00:00",
+            "language": [],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "text/csv",
+            "metadata_modified": "2022-06-17T03:46:26.410422",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2023-01-25T00:00:00",
+            "name": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "package_id": "30b646ea-4d44-498e-89ae-4fe547280a8b",
+            "position": 0,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "uri": "",
+            "url": "https://www.uvek-gis.admin.ch/BFE/ogd/94/ogd94_preisszenarien_inv_wasserkraft_biomasse.csv",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-06-17T03:46:26.410428",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "fr": "Rapport - Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse",
+              "en": "Kurzbericht - Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+              "de": "Kurzbericht - Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+              "it": "Rapport - Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse"
+            },
+            "format": "SERVICE",
+            "hash": "",
+            "id": "3190dd34-b57a-4116-9783-8b1568027026",
+            "issued": "2022-06-01T00:00:00",
+            "language": [
+              "de",
+              "fr"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2022-06-17T03:46:26.410428",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-06-01T00:00:00",
+            "name": {
+              "fr": "Rapport - Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse",
+              "en": "Kurzbericht - Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+              "de": "Kurzbericht - Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+              "it": "Rapport - Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse"
+            },
+            "package_id": "30b646ea-4d44-498e-89ae-4fe547280a8b",
+            "position": 1,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "fr": "Rapport - Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse",
+              "en": "Kurzbericht - Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+              "de": "Kurzbericht - Preisszenarien für die Investitionsbeiträge Wasserkraft und Biomasse",
+              "it": "Rapport - Scénarios de prix pour les contributions d’investissement destinées aux installations hydroélectriques et aux installations de bio-masse"
+            },
+            "uri": "",
+            "url": "https://pubdb.bfe.admin.ch/suche?keywords=740",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "contributions-d-investissement",
+            "id": "7e831be7-0acd-4ce5-8321-91875692a986",
+            "name": "contributions-d-investissement",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "investitionsbeitrage",
+            "id": "c3562b6c-245c-4389-b0a6-6dad87cb5df4",
+            "name": "investitionsbeitrage",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "marche-de-l-electricite",
+            "id": "94075dac-5f38-4576-a066-33cb2de38aaf",
+            "name": "marche-de-l-electricite",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "ogd94-bfe",
+            "id": "6e798b8d-9ac5-44e4-9024-32f8be2330b2",
+            "name": "ogd94-bfe",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "preisszenarien",
+            "id": "47684e6a-f647-48dc-b762-12220d4ceba6",
+            "name": "preisszenarien",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "prix-de-l-electricite",
+            "id": "b7aa3797-e598-426a-a8bf-348d235673ed",
+            "name": "prix-de-l-electricite",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "scenarios-de-prix",
+            "id": "adc3b398-468b-4eb0-b47b-9a9afa601725",
+            "name": "scenarios-de-prix",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "strommarkt",
+            "id": "3eedc575-c707-4799-a51f-c4a604c0f6a5",
+            "name": "strommarkt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "strompreise",
+            "id": "4d427ff8-e511-4840-b7d4-d15fa6a37aea",
+            "name": "strompreise",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "accrual_periodicity": "http://publications.europa.eu/resource/authority/frequency/IRREG",
+        "author": "Bundesamt für Energie BFE",
+        "author_email": null,
+        "contact_points": [
+          {
+            "email": "Wasserkraft@bfe.admin.ch",
+            "name": "Bundesamt für Energie, Sektion Wasserkraft"
+          }
+        ],
+        "creator_user_id": "8732176d-90a4-4603-b7c1-a725b434a22e",
+        "description": {
+          "fr": "",
+          "en": "",
+          "de": "Die Wasserkraft ist der wichtigste einheimische Energieträger für die Produktion von Elektrizität und trägt 55 bis 60% des gesamten Elektrizitätsverbrachs. Die Karte zeigt die Standorte der Wasserkraftwerke mit einer Leistung über 300 kW installierter Leistung. Die Anlagencharakteristiken dieser Anlagen werden in der Statistik der Wasserkraftanlagen der Schweiz erhoben. ",
+          "it": ""
+        },
+        "display_name": {
+          "fr": "",
+          "de": "Karte der Wasserkraftanlagen der Schweiz",
+          "en": "",
+          "it": ""
+        },
+        "id": "86f69317-96eb-40fb-bc70-cddda3a40ed4",
+        "identifier": "ogd120@bundesamt-fur-energie-bfe",
+        "isopen": false,
+        "issued": "2002-01-01T00:00:00",
+        "keywords": {
+          "de": [
+            "ogd120-bfe",
+            "wasserkraft",
+            "laufwasserkraft",
+            "speicherwasserkraft",
+            "stromproduktion"
+          ],
+          "en": [
+            "ogd120-bfe"
+          ],
+          "fr": [
+            "ogd120-bfe"
+          ],
+          "it": [
+            "ogd120-bfe"
+          ]
+        },
+        "language": [],
+        "license_id": null,
+        "license_title": null,
+        "maintainer": "Bundesamt für Energie, Sektion Wasserkraft",
+        "maintainer_email": "Wasserkraft@bfe.admin.ch",
+        "metadata_created": "2023-08-25T12:20:19.423749",
+        "metadata_modified": "2025-12-11T04:00:41.253735",
+        "modified": "2023-08-25T00:00:00",
+        "name": "karte-der-wasserkraftanlagen-der-schweiz",
+        "num_resources": 1,
+        "num_tags": 0,
+        "organization": {
+          "approval_status": "approved",
+          "created": "2016-09-29T10:33:48.579027",
+          "description": {
+            "fr": "L'Office fédéral de l'énergie (OFEN) est le centre de compétences du Département fédéral de l'environnement, des transports, de l'énergie et de la communication (DETEC) pour les questions liées à l'approvisionnement en énergie et à son utilisation.",
+            "de": "Das Bundesamt für Energie (BFE) ist das Kompetenzzentrum für Fragen der Energieversorgung und der Energienutzung im Eidgenössischen Departement für Umwelt, Verkehr, Energie und Kommunikation (UVEK).",
+            "en": "The Swiss Federal Office of Energy (SFOE) is the country's competence centre for issues relating to energy supply and energy use at the Federal Department of the Environment, Transport, Energy and Communications (DETEC).",
+            "it": "L'Ufficio federale dell'energia (UFE) è il centro di competenza in materia di approvvigionamento e di impiego dell'energia in seno al Dipartimento federale dell'ambiente, dei trasporti, dell'energia e delle comunicazioni (DATEC)."
+          },
+          "display_name": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "id": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+          "image_display_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "image_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "is_organization": true,
+          "name": "bundesamt-fur-energie-bfe",
+          "num_followers": 0,
+          "package_count": 69,
+          "political_level": "confederation",
+          "state": "active",
+          "title": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "type": "organization",
+          "url": "http://www.bfe.admin.ch",
+          "tags": [],
+          "groups": []
+        },
+        "owner_org": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+        "private": false,
+        "publisher": {
+          "url": "https://www.bfe.admin.ch",
+          "name": {
+            "fr": "",
+            "de": "Bundesamt für Energie BFE",
+            "en": "",
+            "it": ""
+          }
+        },
+        "qualified_relations": [],
+        "relations": [],
+        "scheduled": "",
+        "see_alsos": [],
+        "state": "active",
+        "temporals": [],
+        "title": {
+          "fr": "",
+          "de": "Karte der Wasserkraftanlagen der Schweiz",
+          "en": "",
+          "it": ""
+        },
+        "title_for_slug": "Karte der Wasserkraftanlagen der Schweiz",
+        "type": "dataset",
+        "url": "https://www.bfe.admin.ch/bfe/de/home/versorgung/erneuerbare-energien/wasserkraft.html#tab__content_bfe_de_home_versorgung_erneuerbare-energien_wasserkraft_jcr_content_par_tabs",
+        "version": null,
+        "groups": [
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Energie",
+              "en": "Energy",
+              "fr": "Énergie",
+              "it": "Energia"
+            },
+            "id": "f6a373cb-993f-4a8e-af25-65cdf81e1cab",
+            "image_display_url": "",
+            "name": "ener",
+            "title": "{\"de\": \"Energie\", \"en\": \"Energy\", \"fr\": \"Énergie\", \"it\": \"Energia\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Regionen und Städte",
+              "en": "Regions and cities",
+              "fr": "Régions et villes",
+              "it": "Regioni e città"
+            },
+            "id": "5ce2de34-4114-43cd-ab45-e90a42db50aa",
+            "image_display_url": "",
+            "name": "regi",
+            "title": "{\"de\": \"Regionen und Städte\", \"en\": \"Regions and cities\", \"fr\": \"Régions et villes\", \"it\": \"Regioni e città\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Umwelt",
+              "en": "Environment",
+              "fr": "Environnement",
+              "it": "Ambiente"
+            },
+            "id": "ab2cc387-d129-4d76-b78d-517326d2a772",
+            "image_display_url": "",
+            "name": "envi",
+            "title": "{\"de\": \"Umwelt\", \"en\": \"Environment\", \"fr\": \"Environnement\", \"it\": \"Ambiente\"}"
+          }
+        ],
+        "resources": [
+          {
+            "byte_size": 273000,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "coverage": "",
+            "created": "2023-08-25T12:22:52.411453",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "fr": "",
+              "en": "",
+              "de": "",
+              "it": ""
+            },
+            "display_name": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "download_url": "https://www.uvek-gis.admin.ch/BFE/ogd/120/ogd120_wasserkraftanlagen_karte.zip",
+            "format": "GeoTIFF",
+            "hash": "",
+            "id": "ef453899-d799-40a6-a573-9a93e9ec1ce9",
+            "identifier": "",
+            "issued": "2002-01-01T00:00:00",
+            "language": [],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2023-08-25T12:22:52.411453",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2023-08-25T00:00:00",
+            "name": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "package_id": "86f69317-96eb-40fb-bc70-cddda3a40ed4",
+            "position": 0,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "url": "https://www.uvek-gis.admin.ch/BFE/ogd/120/ogd120_wasserkraftanlagen_karte.zip",
+            "url_type": null
+          }
+        ],
+        "tags": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "accrual_periodicity": "http://publications.europa.eu/resource/authority/frequency/ANNUAL",
+        "author": null,
+        "author_email": null,
+        "conforms_to": [],
+        "contact_points": [
+          {
+            "email": "contact@bfe.admin.ch",
+            "name": "Bundesamt für Energie"
+          }
+        ],
+        "coverage": "",
+        "creator_user_id": "af084126-f711-4016-a585-70354e997796",
+        "description": {
+          "de": "Die «Statistik der Wasserkraftanlagen (WASTA)» enthält Daten zu den Zentralen der schweizerischen Wasserkraftanlagen mit einer Leistung von mindestens 300 kW. Enthalten sind unter anderem technische Daten wie Leistung und Produktionserwartung.",
+          "fr": "La statistique des aménagements hydroélectriques (SAHE) contient des données sur les centrales des aménagements hydroélectriques suisses d’une puissance de 300 kW ou plus. Elle comprend notamment des données techniques telles que la puissance et la production escomptée.",
+          "it": "La statistica degli impianti idroelettrici (SIMI) contiene dati sulle centrali degli impianti idroelettrici svizzeri con una potenza di almeno 300 kW. Essa contiene tra l'altro dati tecnici quali la potenza e la produzione attesa.",
+          "en": "The \"Statistics on hydropower plants\" (WASTA) contain data concerning the Swiss hydropower plants with an output of at least 300 kW. This includes technical data relating to aspects such as power output and expected production levels."
+        },
+        "display_name": {
+          "de": "Statistik der Wasserkraftanlagen (WASTA)",
+          "fr": "Statistique des aménagements hydroélectriques (SAHE)",
+          "it": "Statistica degli impianti idroelettrici (SIMI)",
+          "en": "Statistics on hydropower plants (WASTA)"
+        },
+        "id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+        "identifier": "a7d239f2-4202-4760-9537-41e1a8c3c984@bundesamt-fur-energie-bfe",
+        "isopen": false,
+        "issued": "2010-01-01T00:00:00",
+        "keywords": {
+          "en": [
+            "official-geodata",
+            "conservation-and-archiving-planning-aap---confederation",
+            "energy-resources",
+            "hydrography",
+            "fsdi-federal-spatial-data-infrastructure"
+          ],
+          "de": [
+            "geobasisdaten",
+            "aufbewahrungs--und-archivierungsplanung-aap---bund",
+            "energiequellen",
+            "gewassernetz",
+            "bgdi-bundesgeodaten-infrastruktur"
+          ],
+          "fr": [
+            "geodonnees-de-base",
+            "planification-de-la-conservation-et-de-larchivage-aap---confederation",
+            "sources-denergie",
+            "hydrographie",
+            "ifdg-linfrastructure-federale-de-donnees-geographiques"
+          ],
+          "it": [
+            "geodati-di-base",
+            "pianificazione-della-conservazione-e-dellarchiviazione-aap---confederazione",
+            "risorse-energetiche",
+            "idrografia",
+            "ifdg-infrastruttura-federale-dei-dati-geografici"
+          ]
+        },
+        "language": [
+          "en",
+          "de",
+          "fr",
+          "it"
+        ],
+        "license_id": null,
+        "license_title": null,
+        "maintainer": null,
+        "maintainer_email": null,
+        "metadata_created": "2024-10-29T02:06:35.883479",
+        "metadata_modified": "2026-07-29T01:32:52.188079",
+        "modified": "2022-12-31T00:00:00",
+        "name": "statistik-der-wasserkraftanlagen-wasta",
+        "num_resources": 10,
+        "num_tags": 0,
+        "organization": {
+          "approval_status": "approved",
+          "created": "2016-09-29T10:33:48.579027",
+          "description": {
+            "fr": "L'Office fédéral de l'énergie (OFEN) est le centre de compétences du Département fédéral de l'environnement, des transports, de l'énergie et de la communication (DETEC) pour les questions liées à l'approvisionnement en énergie et à son utilisation.",
+            "de": "Das Bundesamt für Energie (BFE) ist das Kompetenzzentrum für Fragen der Energieversorgung und der Energienutzung im Eidgenössischen Departement für Umwelt, Verkehr, Energie und Kommunikation (UVEK).",
+            "en": "The Swiss Federal Office of Energy (SFOE) is the country's competence centre for issues relating to energy supply and energy use at the Federal Department of the Environment, Transport, Energy and Communications (DETEC).",
+            "it": "L'Ufficio federale dell'energia (UFE) è il centro di competenza in materia di approvvigionamento e di impiego dell'energia in seno al Dipartimento federale dell'ambiente, dei trasporti, dell'energia e delle comunicazioni (DATEC)."
+          },
+          "display_name": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "id": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+          "image_display_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "image_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "is_organization": true,
+          "name": "bundesamt-fur-energie-bfe",
+          "num_followers": 0,
+          "package_count": 147,
+          "political_level": "confederation",
+          "state": "active",
+          "title": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "type": "organization",
+          "url": "http://www.bfe.admin.ch",
+          "tags": [],
+          "groups": []
+        },
+        "owner_org": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+        "private": false,
+        "publisher": {
+          "name": {
+            "de": "Bundesamt für Energie",
+            "fr": "Office fédéral de l'énergie",
+            "it": "Ufficio federale dell'energia",
+            "en": "Swiss Federal Office of Energy"
+          },
+          "url": "https://www.bfe.admin.ch/geoinformation"
+        },
+        "qualified_relations": [],
+        "relations": [
+          {
+            "label": {
+              "de": "geocat.ch Permalink",
+              "fr": "geocat.ch permalien",
+              "it": "geocat.ch link permanente",
+              "en": "geocat.ch permalink"
+            },
+            "url": "https://www.geocat.ch/datahub/dataset/a7d239f2-4202-4760-9537-41e1a8c3c984"
+          }
+        ],
+        "see_alsos": [],
+        "spatial": "Schweiz",
+        "state": "active",
+        "temporals": [],
+        "title": {
+          "de": "Statistik der Wasserkraftanlagen (WASTA)",
+          "fr": "Statistique des aménagements hydroélectriques (SAHE)",
+          "it": "Statistica degli impianti idroelettrici (SIMI)",
+          "en": "Statistics on hydropower plants (WASTA)"
+        },
+        "title_for_slug": "statistik-der-wasserkraftanlagen-wasta",
+        "type": "dataset",
+        "url": "https://www.bfe.admin.ch/statistik-wasserkraft",
+        "version": null,
+        "groups": [
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Bildung, Kultur und Sport",
+              "en": "Education, culture and sport",
+              "fr": "Éducation, culture et sport",
+              "it": "Istruzione, cultura e sport"
+            },
+            "id": "b36d9b09-dc05-422c-997e-4e81b02afd6f",
+            "image_display_url": "",
+            "name": "educ",
+            "title": "{\"de\": \"Bildung, Kultur und Sport\", \"en\": \"Education, culture and sport\", \"fr\": \"Éducation, culture et sport\", \"it\": \"Istruzione, cultura e sport\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Energie",
+              "en": "Energy",
+              "fr": "Énergie",
+              "it": "Energia"
+            },
+            "id": "f6a373cb-993f-4a8e-af25-65cdf81e1cab",
+            "image_display_url": "",
+            "name": "ener",
+            "title": "{\"de\": \"Energie\", \"en\": \"Energy\", \"fr\": \"Énergie\", \"it\": \"Energia\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Umwelt",
+              "en": "Environment",
+              "fr": "Environnement",
+              "it": "Ambiente"
+            },
+            "id": "ab2cc387-d129-4d76-b78d-517326d2a772",
+            "image_display_url": "",
+            "name": "envi",
+            "title": "{\"de\": \"Umwelt\", \"en\": \"Environment\", \"fr\": \"Environnement\", \"it\": \"Ambiente\"}"
+          }
+        ],
+        "resources": [
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2026-06-23T01:26:04.244731",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Bundesamt für Energie BFE - Detailbeschreibung",
+              "fr": "Office fédéral de l'énergie OFEN - Description détaillée",
+              "it": "Ufficio federale dell'energia UFE - Descrizione dettagliata",
+              "en": "Swiss Federal Office of Energy SFOE - Detail description"
+            },
+            "display_name": {
+              "de": "Bundesamt für Energie BFE - Detailbeschreibung",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "HTML",
+            "hash": "",
+            "id": "4f6df90f-c43e-4e00-8512-1f94a30d3470",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "text/html",
+            "metadata_modified": "2026-07-29T01:32:52.196179",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Bundesamt für Energie BFE - Detailbeschreibung",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 0,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Bundesamt für Energie BFE - Detailbeschreibung",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://www.bfe.admin.ch/statistik-wasserkraft",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898835",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Csv",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "Csv",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "download_url": "https://data.geo.admin.ch/ch.bfe.statistik-wasserkraftanlagen/statistik-wasserkraftanlagen/statistik-wasserkraftanlagen_2056.csv.zip",
+            "format": "CSV",
+            "hash": "",
+            "id": "ef9f7a49-668c-4590-ab07-618d7e05450d",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "text/csv",
+            "metadata_modified": "2026-07-29T01:32:52.196297",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Csv",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 1,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Csv",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://data.geo.admin.ch/ch.bfe.statistik-wasserkraftanlagen/statistik-wasserkraftanlagen/statistik-wasserkraftanlagen_2056.csv.zip",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898840",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "download_url": "https://data.geo.admin.ch/ch.bfe.statistik-wasserkraftanlagen/statistik-wasserkraftanlagen/statistik-wasserkraftanlagen_2056.gpkg",
+            "format": "GPKG",
+            "hash": "",
+            "id": "61578005-cb4a-4074-8d0d-b42d1944e806",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:32:52.196373",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 2,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://data.geo.admin.ch/ch.bfe.statistik-wasserkraftanlagen/statistik-wasserkraftanlagen/statistik-wasserkraftanlagen_2056.gpkg",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898842",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Interlis",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "Interlis",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "download_url": "https://data.geo.admin.ch/ch.bfe.statistik-wasserkraftanlagen/statistik-wasserkraftanlagen/statistik-wasserkraftanlagen_2056.xtf.zip",
+            "format": "ZIP",
+            "hash": "",
+            "id": "0c67ff02-de8a-45fe-b0a6-ced8477b3829",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "application/zip",
+            "metadata_modified": "2026-07-29T01:32:52.196475",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Interlis",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 3,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Interlis",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://data.geo.admin.ch/ch.bfe.statistik-wasserkraftanlagen/statistik-wasserkraftanlagen/statistik-wasserkraftanlagen_2056.xtf.zip",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898844",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "WMS-BGDI Dienst, Layer \"Statistik Wasserkraft\"",
+              "fr": "Service WMS-IFDG, couche \"Statistique hydroélectricité\"",
+              "it": "Servizio WMS-IFDG, strato \"Statistica idroelettricitá\"",
+              "en": "WMS-FSDI service, layer \"Hydropower statistics\""
+            },
+            "display_name": {
+              "de": "ch.bfe.statistik-wasserkraftanlagen",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "WMS",
+            "hash": "",
+            "id": "9c976c2f-51df-4658-8db9-8f4a3b4e3659",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:32:52.196561",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "ch.bfe.statistik-wasserkraftanlagen",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 4,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "ch.bfe.statistik-wasserkraftanlagen",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://wms.geo.admin.ch/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities&lang=de",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898845",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "WMTS-BGDI Dienst, Layer \"Statistik Wasserkraft\"",
+              "fr": "Service WMTS-IFDG, couche , Layer \"Statistique hydroélectricité\"",
+              "it": "Servizio WMTS-IFDG, strato \"Statistica idroelettricitá\"",
+              "en": "WMTS-FSDI service, layer \"Hydropower statistics\""
+            },
+            "display_name": {
+              "de": "ch.bfe.statistik-wasserkraftanlagen",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "WMTS",
+            "hash": "",
+            "id": "98a2e4c6-b16c-497f-a327-7264cf484b16",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:32:52.196685",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "ch.bfe.statistik-wasserkraftanlagen",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 5,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "ch.bfe.statistik-wasserkraftanlagen",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=de",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898846",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Fachportal - map.energie.admin.ch",
+              "fr": "Géoportail thématique - map.energie.admin.ch",
+              "it": "Geoportale tematico - map.energie.admin.ch",
+              "en": "Thematic geoportal - map.energie.admin.ch"
+            },
+            "display_name": {
+              "de": "Map (Preview) Fachportal - map.energie.admin.ch",
+              "fr": "Map (Preview) Géoportail thématique - map.energie.admin.ch",
+              "it": "Map (Preview) Geoportale tematico - map.energie.admin.ch",
+              "en": "Map (Preview) Thematic geoportal - map.energie.admin.ch"
+            },
+            "format": "SERVICE",
+            "hash": "",
+            "id": "28094796-ea0c-49be-968a-b11167e06516",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:32:52.196763",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Map (Preview) Fachportal - map.energie.admin.ch",
+              "fr": "Map (Preview) Géoportail thématique - map.energie.admin.ch",
+              "it": "Map (Preview) Geoportale tematico - map.energie.admin.ch",
+              "en": "Map (Preview) Thematic geoportal - map.energie.admin.ch"
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 6,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Map (Preview) Fachportal - map.energie.admin.ch",
+              "fr": "Map (Preview) Géoportail thématique - map.energie.admin.ch",
+              "it": "Map (Preview) Geoportale tematico - map.energie.admin.ch",
+              "en": "Map (Preview) Thematic geoportal - map.energie.admin.ch"
+            },
+            "url": "https://map.geo.admin.ch/?topic=energie&lang=de&layers=ch.bfe.statistik-wasserkraftanlagen",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-10-29T02:06:35.898848",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "API",
+            "hash": "",
+            "id": "d1e93023-31b9-4b15-b929-020900bc3f75",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:32:52.196827",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 7,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bfe.statistik-wasserkraftanlagen",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-04T02:16:49.651056",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Linked Data",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "Linked Data",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "SERVICE",
+            "hash": "",
+            "id": "b35914b9-9769-412f-8daa-88bf3b3d56a8",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:32:52.196899",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Linked Data",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 8,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Linked Data",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://geo.ld.admin.ch/data/hydroPowerPlants",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2026-06-23T01:26:04.244735",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "Linked Data Dienst (via SPARQL)",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "HTML",
+            "hash": "",
+            "id": "f27f4de3-2ba6-4697-85b3-92b653bba280",
+            "issued": "2010-01-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "text/html",
+            "metadata_modified": "2026-07-29T01:32:52.196962",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2022-12-31T00:00:00",
+            "name": {
+              "de": "Linked Data Dienst (via SPARQL)",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "b28cfbb4-e01b-4f33-9ecf-0d154d9c40f4",
+            "position": 9,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Linked Data Dienst (via SPARQL)",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://www.geo.admin.ch/de/geo-dienstleistungen/geodienste/linkeddata.html",
+            "url_type": null
+          }
+        ],
+        "tags": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": [],
+        "extras": [
+          {
+            "key": "harvest_object_id",
+            "value": "1e1ab179-e6b0-4511-ad12-410fb3c370cf"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "f1b63022-c134-418a-a546-c9e68230c728"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "BFE - Geocat Harvester"
+          }
+        ]
+      },
+      {
+        "accrual_periodicity": "http://publications.europa.eu/resource/authority/frequency/UNKNOWN",
+        "author": null,
+        "author_email": null,
+        "conforms_to": [],
+        "contact_points": [
+          {
+            "email": "contact@bfe.admin.ch",
+            "name": "Bundesamt für Energie"
+          }
+        ],
+        "coverage": "",
+        "creator_user_id": "af084126-f711-4016-a585-70354e997796",
+        "description": {
+          "de": "Beim Geodatenprodukt «Kleinwasserkraftpotentiale der Schweizer Gewässer» handelt es sich um das Ergebnis einer GIS-gestützten Analyse, welche im Rahmen des Forschungsprojektes 102835 «Erhe-bung des Kleinwasserkraftpotentials der Schweiz» im Jahre 2012 durchgeführt wurde. Dabei wurde das theoretische hydroelektrische Potential aller natürlichen Fliessgewässer der Schweiz berechnet. Die Aussagen zum theoretischen Potential sind korrekt zu interpretieren, da unter Berücksichtigung technischer, ökologischer, wirtschaftlicher und rechtlicher Aspekte nur ein Teil des theoretischen Potentials für die Stromerzeugung tatsächlich nutzbar ist. Dazu ist einerseits die Dokumentation der Geodatenmodells und andererseits der Schlussbericht des Forschungsprojektes zu konsultieren.",
+          "fr": "Le produit de géodonnées «Kleinwasserkraftpotentiale der Schweizer Gewässer» (potentiel des cours d'eau suisses pour la petite hydraulique) est le résultat d'une analyse SIG menée en 2012 dans le cadre du programme de recherche 102835 «Erhebung des Kleinwasserkraftpotentials der Schweiz» (Relevé du potentiel de la petite hydraulique en Suisse). Il calcule le potentiel hydroélectrique théo-rique de tous les cours d'eau naturels de la Suisse. Pour pouvoir interpréter les données sur le poten-tiel théorique, il convient de tenir compte du fait que seule une partie de ce potentiel est vraiment utilisable pour la production d'électricité, compte tenu des aspects techniques, écologiques, scientifiques et juridiques. Il faut pour cela consulter la documentation relative au modèle de géodonnées d’une part, et le rapport final du projet de recherche d’autre part.",
+          "it": "Il prodotto di geodati «Kleinwasserkraftpotentiale der Schweizer Gewässer» (potenziale delle acque svizzere per le piccole centrali idroelettriche) è il risultato di un'analisi condotta, con il supporto di sistemi GIS, nell'ambito del progetto di ricerca 102835 «Erhebung des Kleinwasserkraftpotenzials der Schweiz» (rilevamento del potenziale delle piccole centrali idroelettriche svizzere). In tale progetto, svolto nel 2012, è stato calcolato il potenziale idroelettrico teorico di tutti i corsi d'acqua naturali della Svizzera. Nell’interpretazione dei dati sul potenziale teorico occorre tenere conto del fatto che solo una parte di tale potenziale è effettivamente utilizzabile per la produzione di energia elettrica, in consi-derazione di aspetti tecnici, ecologici, economici e giuridici. A tale riguardo è opportuno consultare a documentazione del modello di geodati e il rapporto finale del progetto di ricerca.",
+          "en": "The geodata product ‘Potential of small hydropower plants in Switzerland’ is the result of a GIS-based analysis carried out in 2012 as part of the research project 102835 ‘Survey of Switzerland's small hy-dropower plant potential’. This calculated the theoretical hydroelectric potential of all natural water-courses in Switzerland. As only part of the theoretical potential can actually be used for electricity generation when technical, ecological, economic and legal aspects are taken into account, it is im-portant to interpret the statements on theoretical potential correctly. Both the geodata model documentation and the research project final report should be consulted."
+        },
+        "display_name": {
+          "de": "Kleinwasserkraftpotentiale der Schweizer Gewässer",
+          "fr": "Potentiel des cours d'eau suisses pour la petite hydraulique",
+          "it": "Potenziale dei corsi d'acqua svizzeri per le piccole centrali idroelettriche",
+          "en": "Potential of small hydropower plants in Switzerland"
+        },
+        "id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+        "identifier": "c4b695b0-23ad-4d0d-a496-16fc0f597819@bundesamt-fur-energie-bfe",
+        "isopen": false,
+        "issued": "2010-01-01T00:00:00",
+        "keywords": {
+          "en": [
+            "conservation-and-archiving-planning-aap---confederation",
+            "energy",
+            "renewable-energy-source",
+            "water-power",
+            "fsdi-federal-spatial-data-infrastructure"
+          ],
+          "de": [
+            "aufbewahrungs--und-archivierungsplanung-aap---bund",
+            "energie",
+            "erneuerbare-energiequelle",
+            "wasserkraft",
+            "bgdi-bundesgeodaten-infrastruktur"
+          ],
+          "fr": [
+            "planification-de-la-conservation-et-de-larchivage-aap---confederation",
+            "energie",
+            "source-denergie-renouvelable",
+            "energie-hydraulique",
+            "ifdg-linfrastructure-federale-de-donnees-geographiques"
+          ],
+          "it": [
+            "pianificazione-della-conservazione-e-dellarchiviazione-aap---confederazione",
+            "energia",
+            "fonte-di-energia-rinnovabile",
+            "energia-idrica",
+            "ifdg-infrastruttura-federale-dei-dati-geografici"
+          ]
+        },
+        "language": [
+          "en",
+          "de",
+          "fr",
+          "it"
+        ],
+        "license_id": null,
+        "license_title": null,
+        "maintainer": null,
+        "maintainer_email": null,
+        "metadata_created": "2021-04-28T00:44:03.967753",
+        "metadata_modified": "2026-07-29T01:34:47.821702",
+        "modified": "2012-06-01T00:00:00",
+        "name": "kleinwasserkraftpotentiale-der-schweizer-gewasser",
+        "num_resources": 6,
+        "num_tags": 0,
+        "organization": {
+          "approval_status": "approved",
+          "created": "2016-09-29T10:33:48.579027",
+          "description": {
+            "fr": "L'Office fédéral de l'énergie (OFEN) est le centre de compétences du Département fédéral de l'environnement, des transports, de l'énergie et de la communication (DETEC) pour les questions liées à l'approvisionnement en énergie et à son utilisation.",
+            "de": "Das Bundesamt für Energie (BFE) ist das Kompetenzzentrum für Fragen der Energieversorgung und der Energienutzung im Eidgenössischen Departement für Umwelt, Verkehr, Energie und Kommunikation (UVEK).",
+            "en": "The Swiss Federal Office of Energy (SFOE) is the country's competence centre for issues relating to energy supply and energy use at the Federal Department of the Environment, Transport, Energy and Communications (DETEC).",
+            "it": "L'Ufficio federale dell'energia (UFE) è il centro di competenza in materia di approvvigionamento e di impiego dell'energia in seno al Dipartimento federale dell'ambiente, dei trasporti, dell'energia e delle comunicazioni (DATEC)."
+          },
+          "display_name": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "id": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+          "image_display_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "image_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "is_organization": true,
+          "name": "bundesamt-fur-energie-bfe",
+          "num_followers": 0,
+          "package_count": 147,
+          "political_level": "confederation",
+          "state": "active",
+          "title": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "type": "organization",
+          "url": "http://www.bfe.admin.ch",
+          "tags": [],
+          "groups": []
+        },
+        "owner_org": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+        "private": false,
+        "publisher": {
+          "name": {
+            "de": "Bundesamt für Energie",
+            "fr": "Office fédéral de l'énergie",
+            "it": "Ufficio federale dell'energia",
+            "en": "Swiss Federal Office of Energy"
+          },
+          "url": "https://www.bfe.admin.ch/geoinformation"
+        },
+        "qualified_relations": [],
+        "relations": [
+          {
+            "label": {
+              "de": "geocat.ch Permalink",
+              "fr": "geocat.ch permalien",
+              "it": "geocat.ch link permanente",
+              "en": "geocat.ch permalink"
+            },
+            "url": "https://www.geocat.ch/datahub/dataset/c4b695b0-23ad-4d0d-a496-16fc0f597819"
+          }
+        ],
+        "see_alsos": [],
+        "spatial": "Schweiz",
+        "state": "active",
+        "temporals": [],
+        "title": {
+          "de": "Kleinwasserkraftpotentiale der Schweizer Gewässer",
+          "fr": "Potentiel des cours d'eau suisses pour la petite hydraulique",
+          "it": "Potenziale dei corsi d'acqua svizzeri per le piccole centrali idroelettriche",
+          "en": "Potential of small hydropower plants in Switzerland"
+        },
+        "title_for_slug": "kleinwasserkraftpotentiale-der-schweizer-gewasser",
+        "type": "dataset",
+        "url": "https://www.bfe.admin.ch/kleinwasserkraftpotentiale",
+        "version": null,
+        "groups": [
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Bildung, Kultur und Sport",
+              "en": "Education, culture and sport",
+              "fr": "Éducation, culture et sport",
+              "it": "Istruzione, cultura e sport"
+            },
+            "id": "b36d9b09-dc05-422c-997e-4e81b02afd6f",
+            "image_display_url": "",
+            "name": "educ",
+            "title": "{\"de\": \"Bildung, Kultur und Sport\", \"en\": \"Education, culture and sport\", \"fr\": \"Éducation, culture et sport\", \"it\": \"Istruzione, cultura e sport\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Energie",
+              "en": "Energy",
+              "fr": "Énergie",
+              "it": "Energia"
+            },
+            "id": "f6a373cb-993f-4a8e-af25-65cdf81e1cab",
+            "image_display_url": "",
+            "name": "ener",
+            "title": "{\"de\": \"Energie\", \"en\": \"Energy\", \"fr\": \"Énergie\", \"it\": \"Energia\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Umwelt",
+              "en": "Environment",
+              "fr": "Environnement",
+              "it": "Ambiente"
+            },
+            "id": "ab2cc387-d129-4d76-b78d-517326d2a772",
+            "image_display_url": "",
+            "name": "envi",
+            "title": "{\"de\": \"Umwelt\", \"en\": \"Environment\", \"fr\": \"Environnement\", \"it\": \"Ambiente\"}"
+          }
+        ],
+        "resources": [
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2026-06-23T01:25:58.297986",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Bundesamt für Energie BFE - Detailbeschreibung",
+              "fr": "Office fédéral de l'énergie OFEN - Description détaillée",
+              "it": "Ufficio federale dell'energia UFE - Descrizione dettagliata",
+              "en": "Swiss Federal Office of Energy SFOE - Detail description"
+            },
+            "display_name": {
+              "de": "",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "HTML",
+            "hash": "",
+            "id": "7b2601a5-1a99-40d6-9904-d10bfa858c8f",
+            "issued": "2012-06-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "text/html",
+            "metadata_modified": "2026-07-29T01:34:47.856751",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2012-06-01T00:00:00",
+            "name": {
+              "de": "",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+            "position": 0,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://www.bfe.admin.ch/kleinwasserkraftpotentiale",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-06-13T06:25:09.782888",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "download_url": "https://data.geo.admin.ch/ch.bfe.kleinwasserkraftpotentiale/kleinwasserkraftpotentiale/kleinwasserkraftpotentiale_2056.gpkg.zip",
+            "format": "GPKG",
+            "hash": "",
+            "id": "a3f20f66-28c8-42c5-a6af-875e5e246051",
+            "issued": "2012-06-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:34:47.856946",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2012-06-01T00:00:00",
+            "name": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+            "position": 1,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Geopackage",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://data.geo.admin.ch/ch.bfe.kleinwasserkraftpotentiale/kleinwasserkraftpotentiale/kleinwasserkraftpotentiale_2056.gpkg.zip",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-06-13T06:25:09.782898",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "Fachportal - map.energie.admin.ch",
+              "fr": "Géoportail thématique - map.energie.admin.ch",
+              "it": "Geoportale tematico - map.energie.admin.ch",
+              "en": "Thematic geoportal - map.energie.admin.ch"
+            },
+            "display_name": {
+              "de": "Map (Preview) Fachportal - map.energie.admin.ch",
+              "fr": "Map (Preview) Géoportail thématique - map.energie.admin.ch",
+              "it": "Map (Preview) Geoportale tematico - map.energie.admin.ch",
+              "en": "Map (Preview) Thematic geoportal - map.energie.admin.ch"
+            },
+            "format": "SERVICE",
+            "hash": "",
+            "id": "c056331f-0f89-4df7-a6de-1e8cc46b31dc",
+            "issued": "2012-06-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:34:47.857025",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2012-06-01T00:00:00",
+            "name": {
+              "de": "Map (Preview) Fachportal - map.energie.admin.ch",
+              "fr": "Map (Preview) Géoportail thématique - map.energie.admin.ch",
+              "it": "Map (Preview) Geoportale tematico - map.energie.admin.ch",
+              "en": "Map (Preview) Thematic geoportal - map.energie.admin.ch"
+            },
+            "package_id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+            "position": 2,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "Map (Preview) Fachportal - map.energie.admin.ch",
+              "fr": "Map (Preview) Géoportail thématique - map.energie.admin.ch",
+              "it": "Map (Preview) Geoportale tematico - map.energie.admin.ch",
+              "en": "Map (Preview) Thematic geoportal - map.energie.admin.ch"
+            },
+            "url": "https://map.geo.admin.ch/?topic=energie&lang=rm&layers=ch.bfe.kleinwasserkraftpotentiale",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-06-13T06:25:09.782900",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "display_name": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "API",
+            "hash": "",
+            "id": "aa6352a4-f0d3-47f8-94ba-0108790c45df",
+            "issued": "2012-06-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:34:47.857096",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2012-06-01T00:00:00",
+            "name": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+            "position": 3,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "swisstopo REST API",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bfe.kleinwasserkraftpotentiale",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-03-30T00:23:26.467831",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "WMS-BGDI Dienst, Layer \"Kleinwasserkraftpotentiale\"",
+              "fr": "Service WMS-IFDG, couche \"Potentiel petite hydraulique\"",
+              "it": "Servizio WMS-IFDG, strato \"Potenz. piccole centr. idraul.\"",
+              "en": "WMS-FSDI service, layer \"Water power potential\""
+            },
+            "display_name": {
+              "de": "ch.bfe.kleinwasserkraftpotentiale",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "WMS",
+            "hash": "",
+            "id": "eb882aa8-f0dd-4a4c-b133-3af7fe647f5c",
+            "issued": "2012-06-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:34:47.857167",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2012-06-01T00:00:00",
+            "name": {
+              "de": "ch.bfe.kleinwasserkraftpotentiale",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+            "position": 4,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "ch.bfe.kleinwasserkraftpotentiale",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://wms.geo.admin.ch/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities&lang=de",
+            "url_type": null
+          },
+          {
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-03-30T00:23:26.467838",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "de": "WMTS-BGDI Dienst, Layer \"Kleinwasserkraftpotentiale\"",
+              "fr": "Service WMTS-IFDG, couche , Layer \"Potentiel petite hydraulique\"",
+              "it": "Servizio WMTS-IFDG, strato \"Potenz. piccole centr. idraul.\"",
+              "en": "WMTS-FSDI service, layer \"Water power potential\""
+            },
+            "display_name": {
+              "de": "ch.bfe.kleinwasserkraftpotentiale",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "format": "WMTS",
+            "hash": "",
+            "id": "7c64ee39-77ca-466a-be16-72bef053905e",
+            "issued": "2012-06-01T00:00:00",
+            "language": [
+              "en",
+              "de",
+              "fr",
+              "it"
+            ],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2026-07-29T01:34:47.857234",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2012-06-01T00:00:00",
+            "name": {
+              "de": "ch.bfe.kleinwasserkraftpotentiale",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "package_id": "98e0e1cf-059b-4ab5-873a-2d874350a8b7",
+            "position": 5,
+            "resource_type": null,
+            "rights": "https://opendata.swiss/terms-of-use#terms_by",
+            "size": null,
+            "state": "active",
+            "title": {
+              "de": "ch.bfe.kleinwasserkraftpotentiale",
+              "fr": "",
+              "it": "",
+              "en": ""
+            },
+            "url": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=de",
+            "url_type": null
+          }
+        ],
+        "tags": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": [],
+        "extras": [
+          {
+            "key": "harvest_object_id",
+            "value": "e8b1e8a8-0dab-4623-84b5-bac49e00b89e"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "f1b63022-c134-418a-a546-c9e68230c728"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "BFE - Geocat Harvester"
+          }
+        ]
+      },
+      {
+        "accrual_periodicity": "http://publications.europa.eu/resource/authority/frequency/ANNUAL",
+        "author": "Bundesamt für Energie BFE",
+        "author_email": null,
+        "conforms_to": [],
+        "contact_points": [
+          {
+            "email": "ogd@bfe.admin.ch",
+            "name": "Bundesamt für Energie BFE"
+          }
+        ],
+        "creator_user_id": "67b32c0f-597b-4ac0-91e0-651351aee62f",
+        "description": {
+          "fr": "",
+          "en": "",
+          "de": "Die Energiebilanz der erneuerbaren Energien der Schweiz gibt Auskunft über Inlandproduktion, Import / Export, Lagerhaltung, Umwandlung, Eigenverbrauch, Transport- und Netzverluste und Verbrauch der erneuerbaren Energieträger in der Schweiz auf jährlicher Basis. Die Produktion von erneuerbaren Elektrizität und Fernwärme und der damit verbundene Energieträgerinput werden nach Erzeugungstechnologien dargestellt. In der Energiebilanz der erneuerbaren Energien wird nach folgenden Energieträgern differenziert: Wasserkraft, Holzenergie, erneuerbarer Müll und Industrieabfälle, erneuerbares Gas, biogene Treibstoffe, Biogas, Sonne, Wind, Umweltwärme erneuernare Elektrizität und erneuerbare Fernwärme. In der Energiebilanz der Schweiz (OGD115) werden die Energieträger biogene Treibstoffe, Biogas, Sonne, Wind und Umweltwärme als «übrige erneuerbare Energien» zusammengefasst.",
+          "it": ""
+        },
+        "display_name": {
+          "fr": "",
+          "de": "Schweizerische Gesamtenergiestatistik: Energiebilanz der erneuerbaren Energien der Schweiz",
+          "en": "",
+          "it": ""
+        },
+        "documentation": [],
+        "id": "8e5f37d5-d676-4a54-8426-c80f4f35935c",
+        "identifier": "ogd123@bundesamt-fur-energie-bfe",
+        "isopen": false,
+        "issued": "",
+        "keywords": {
+          "de": [
+            "energiebilanz",
+            "erneuerbaren-energien",
+            "photovoltaik",
+            "wind",
+            "erneuerbare-abfalle",
+            "energieholz",
+            "erneuerbare-elektrizitat",
+            "erneuerbare-fernwarme",
+            "erneuerbaren-energie"
+          ],
+          "en": [],
+          "fr": [],
+          "it": []
+        },
+        "language": [
+          "de"
+        ],
+        "license_id": null,
+        "license_title": null,
+        "maintainer": "Bundesamt für Energie BFE",
+        "maintainer_email": "ogd@bfe.admin.ch",
+        "metadata_created": "2024-12-13T09:22:53.118606",
+        "metadata_modified": "2025-12-11T04:00:37.746268",
+        "modified": "2025-06-30T00:00:00",
+        "name": "schweizerische-gesamtenergiestatistik-energiebilanz-der-erneuerbaren-energien-der-schweiz",
+        "num_resources": 1,
+        "num_tags": 0,
+        "organization": {
+          "approval_status": "approved",
+          "created": "2016-09-29T10:33:48.579027",
+          "description": {
+            "fr": "L'Office fédéral de l'énergie (OFEN) est le centre de compétences du Département fédéral de l'environnement, des transports, de l'énergie et de la communication (DETEC) pour les questions liées à l'approvisionnement en énergie et à son utilisation.",
+            "de": "Das Bundesamt für Energie (BFE) ist das Kompetenzzentrum für Fragen der Energieversorgung und der Energienutzung im Eidgenössischen Departement für Umwelt, Verkehr, Energie und Kommunikation (UVEK).",
+            "en": "The Swiss Federal Office of Energy (SFOE) is the country's competence centre for issues relating to energy supply and energy use at the Federal Department of the Environment, Transport, Energy and Communications (DETEC).",
+            "it": "L'Ufficio federale dell'energia (UFE) è il centro di competenza in materia di approvvigionamento e di impiego dell'energia in seno al Dipartimento federale dell'ambiente, dei trasporti, dell'energia e delle comunicazioni (DATEC)."
+          },
+          "display_name": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "id": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+          "image_display_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "image_url": "https://ckan.opendata.swiss/uploads/group/logo_suisse.png",
+          "is_organization": true,
+          "name": "bundesamt-fur-energie-bfe",
+          "num_followers": 0,
+          "package_count": 123,
+          "political_level": "confederation",
+          "state": "active",
+          "title": {
+            "de": "Bundesamt für Energie BFE",
+            "en": "Swiss Federal Office of Energy SFOE",
+            "fr": "Office fédéral de l'énergie OFEN",
+            "it": "Ufficio federale dell'energia UFE"
+          },
+          "type": "organization",
+          "url": "http://www.bfe.admin.ch",
+          "tags": [],
+          "groups": []
+        },
+        "owner_org": "750d3ce4-5e0b-4dc5-8b6a-f049f64eaf50",
+        "private": false,
+        "publisher": {
+          "url": "https://www.bfe.admin.ch/",
+          "name": {
+            "fr": "",
+            "de": "Bundesamt für Energie BFE",
+            "en": "",
+            "it": ""
+          }
+        },
+        "qualified_relations": [
+          {
+            "had_role": "http://www.iana.org/assignments/relation/related",
+            "relation": "https://opendata.swiss/perma/ogd115@bundesamt-fur-energie-bfe"
+          }
+        ],
+        "relations": [],
+        "scheduled": "",
+        "see_alsos": [],
+        "state": "active",
+        "temporals": [],
+        "title": {
+          "fr": "",
+          "de": "Schweizerische Gesamtenergiestatistik: Energiebilanz der erneuerbaren Energien der Schweiz",
+          "en": "",
+          "it": ""
+        },
+        "title_for_slug": "Schweizerische Gesamtenergiestatistik: Energiebilanz der erneuerbaren Energien der Schweiz",
+        "type": "dataset",
+        "url": "https://www.bfe.admin.ch/bfe/de/home/versorgung/statistik-und-geodaten/energiestatistiken/gesamtenergiestatistik.html",
+        "version": null,
+        "groups": [
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Energie",
+              "en": "Energy",
+              "fr": "Énergie",
+              "it": "Energia"
+            },
+            "id": "f6a373cb-993f-4a8e-af25-65cdf81e1cab",
+            "image_display_url": "",
+            "name": "ener",
+            "title": "{\"de\": \"Energie\", \"en\": \"Energy\", \"fr\": \"Énergie\", \"it\": \"Energia\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Regierung und öffentlicher Sektor",
+              "en": "Government and public sector",
+              "fr": "Gouvernement et secteur public",
+              "it": "Governo e settore pubblico"
+            },
+            "id": "e63f4b4e-5e3e-4c7f-9d4a-4babf164878f",
+            "image_display_url": "",
+            "name": "gove",
+            "title": "{\"de\": \"Regierung und öffentlicher Sektor\", \"en\": \"Government and public sector\", \"fr\": \"Gouvernement et secteur public\", \"it\": \"Governo e settore pubblico\"}"
+          },
+          {
+            "description": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "display_name": {
+              "de": "Umwelt",
+              "en": "Environment",
+              "fr": "Environnement",
+              "it": "Ambiente"
+            },
+            "id": "ab2cc387-d129-4d76-b78d-517326d2a772",
+            "image_display_url": "",
+            "name": "envi",
+            "title": "{\"de\": \"Umwelt\", \"en\": \"Environment\", \"fr\": \"Environnement\", \"it\": \"Ambiente\"}"
+          }
+        ],
+        "resources": [
+          {
+            "access_services": [],
+            "byte_size": 0,
+            "cache_last_updated": null,
+            "cache_url": null,
+            "coverage": "",
+            "created": "2024-12-13T09:28:06.221371",
+            "datastore_active": false,
+            "datastore_contains_all_records_of_source_file": false,
+            "description": {
+              "fr": "",
+              "en": "",
+              "de": "",
+              "it": ""
+            },
+            "display_name": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "documentation": [],
+            "download_url": "https://www.uvek-gis.admin.ch/BFE/ogd/123/ogd123_Energiebilanz_erneuerbareEnergien.csv",
+            "format": "CSV",
+            "hash": "",
+            "id": "cf7f4a76-c2d0-4975-aedc-6c39dbb80c63",
+            "identifier": "",
+            "issued": "2024-12-13T00:00:00",
+            "language": [],
+            "last_modified": null,
+            "license": "https://opendata.swiss/terms-of-use#terms_by",
+            "media_type": "",
+            "metadata_modified": "2024-12-13T09:28:06.221371",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "modified": "2025-06-30T00:00:00",
+            "name": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "package_id": "8e5f37d5-d676-4a54-8426-c80f4f35935c",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "temporal_resolution": "",
+            "title": {
+              "fr": "",
+              "de": "",
+              "en": "",
+              "it": ""
+            },
+            "url": "",
+            "url_type": null
+          }
+        ],
+        "tags": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      }
+    ],
+    "sort": "score desc",
+    "search_facets": {}
+  }
+}

@@ -69,7 +69,13 @@ def register(mcp: MCPServer) -> None:
                 {
                     "name": ds.get("name"),
                     "title": _localized(ds.get("title")),
-                    "notes": _localized(ds.get("notes"))[:300],
+                    # `description`, nicht `notes`: so nennt opendata.swiss das
+                    # Feld. Der aus dem CKAN-Kern gewohnte Name kommt in keiner
+                    # aufgezeichneten Antwort vom 15.08.2026 vor — vorher blieb
+                    # hier zu jedem Datensatz ein leerer Text, bei gruener
+                    # Suite, weil `tests/conftest.py` das Feld genauso falsch
+                    # nannte wie dieser Code.
+                    "notes": _localized(ds.get("description"))[:300],
                     "formats": formats,
                     "url": f"https://opendata.swiss/de/dataset/{ds.get('name', '')}",
                 }
@@ -139,6 +145,14 @@ def register(mcp: MCPServer) -> None:
                     "searchField": "name",
                     "lang": "de",
                     "f": "json",
+                    # Ohne dieses Feld liefert GeoAdmin die Gemeindegeometrie
+                    # mit: gemessen am 15.08.2026 sind das 159 656 statt 574
+                    # Bytes für denselben einen Treffer, den dieses Tool nur
+                    # zählt. Die Tool-Beschreibung nennt die Abfrage
+                    # «leichtgewichtig» — mit Geometrie war sie das nicht.
+                    # Damit ist die Anfrage zeichengleich mit der aus
+                    # `find_geoadmin_by_name()`; beide teilen sich ein Fixture.
+                    "returnGeometry": "false",
                 },
             )
             apis.append(

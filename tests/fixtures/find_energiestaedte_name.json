@@ -1,0 +1,22 @@
+{
+  "results": [
+    {
+      "layerBodId": "ch.bfe.energiestaedte",
+      "layerName": "Energiestädte",
+      "featureId": 150772,
+      "id": 150772,
+      "attributes": {
+        "name": "Zürich",
+        "punktezahl": 90.0,
+        "einwohner": 421878.0,
+        "energiestadtseit": "2000-06-21",
+        "beteiligtegemeinde": null,
+        "anzahlaudits": 7,
+        "berater": "Steingruber Pascal",
+        "linkenergiestadtweb": "https://www.energiestadt.ch/de/energiestaedte-mitglieder-29.html",
+        "bfsnr": 261,
+        "label": "Zürich"
+      }
+    }
+  ]
+}
