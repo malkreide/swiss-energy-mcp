@@ -7,7 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Aufgezeichnete Fixtures** in `tests/fixtures/` — 10 echte Antworten, eine je
+  Abfrageform (nicht je Endpunkt: zwei Hosts, aber zehn Formen — `identify` je
+  Layer, `find` je Layer, `package_search` je Suche). Herkunft, Datum,
+  Auswahlregel und SHA-256 je Datei in `tests/fixtures/PROVENANCE.md`, neu
+  aufzeichnen mit `scripts/record_fixtures.py`, geladen über
+  `tests/fixture_data.py`. Aufnahmeort ist Mont Crosin: der einzige Punkt, an
+  dem alle sieben BFE-Layer etwas liefern. Gekürzt ist nur die Zahl der
+  Trefferzeilen, nie ein Feld. Portfolio-Konvention, gleich wie in
+  `meteoswiss-mcp` und `swiss-statistics-mcp`.
+
+- **`tests/test_recorded_fixtures.py`** — 27 Zusicherungen, die jedes Werkzeug
+  aus seiner eigenen Aufzeichnung fahren. Der Dispatcher ordnet nach der
+  *Anfrage* zu und nicht nach der Reihenfolge: `energy_location_profile`
+  schickt seine fünf Abfragen per `asyncio.gather`, und eine Zuordnung nach
+  Reihenfolge wäre im grünen Fall bloss zufällig richtig.
+
+- **`_sleep = asyncio.sleep` im `api_client`** als Naht für Tests, plus die
+  Fixture `ohne_wartezeit`. Acht Fehlerpfad-Tests fuhren bisher den echten
+  Backoff-Ladder von 2+4+8 Sekunden ab; die Offline-Suite brauchte 135 s und
+  braucht jetzt 5,6 s. `test_die_fixture_nullt_die_wartezeit_wirklich` misst
+  die Uhr, nicht den Aufruf — eine Fixture, die den falschen Namen patcht,
+  fällt sonst an keiner Zusicherung auf, sie macht den Lauf nur länger.
+
 ### Fixed
+
+- **Jede Datensatz-Beschreibung war leer.** `energy_search_bfe_datasets` las
+  sie aus `notes` — dem Feldnamen aus dem CKAN-Kern. opendata.swiss liefert das
+  Feld unter `description`; in keiner aufgezeichneten Antwort kommt `notes` vor.
+  Die Suite blieb dabei grün, weil `conftest.dataset()` das Feld genauso falsch
+  nannte wie der Code und dessen Annahme damit nur bestätigte.
+
+- **Die «leichtgewichtige» Statusabfrage war es nicht.** `energy_check_status`
+  baut seine `find`-Anfrage von Hand und liess `returnGeometry=false` weg, das
+  `find_geoadmin_by_name()` mitschickt. GeoAdmin legte deshalb die
+  Gemeindegeometrie bei: 159 656 statt 574 Bytes für denselben einen Treffer,
+  den das Tool nur zählt (gemessen am 15.08.2026). Damit ist die Anfrage jetzt
+  zeichengleich mit der des Suchwerkzeugs, und beide teilen sich ein Fixture —
+  laufen sie wieder auseinander, wird daraus sichtbar eine zweite Datei.
 
 - **Auch die GeoAdmin-Antworten wurden bei einer Strukturänderung zu null
   Features.** `identify_geoadmin` und `find_geoadmin_by_name` gaben
