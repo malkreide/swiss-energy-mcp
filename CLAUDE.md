@@ -84,6 +84,16 @@ er hatte früher nur einen eigenen `pip install ruff==…`. Kein `include` unter
 `[tool.ruff]` setzen — der Umfang stimmt (28 Dateien über alle drei
 Verzeichnisse, nachgemessen; eine Sonde in `tests/` lässt beide Gates fallen).
 
+`ruff format` sieht dabei 29 statt 28 — 0.16 formatiert auch Markdown. Zwei
+Zahlen, kein Fehler.
+
+**Alle sechs laufen auf allen drei Versionen.** Keine
+`if: matrix.python-version`-Ausnahme, ein grünes 3.13 heisst hier wirklich,
+dass alles auf 3.13 lief. (Im Portfolio nicht selbstverständlich:
+`swiss-food-safety-mcp` gated zwei Gates auf 3.11.) Der `lint`-Job daneben
+hat keine Matrix und läuft auf 3.11. `test` setzt kein `fail-fast: false` —
+eine rote 3.11 bricht 3.12 und 3.13 ab, bevor sie etwas sagen.
+
 **Ein dritter Job gatet mit: `secret-scan`.** Gitleaks über die volle History
 (`fetch-depth: 0`). Er steht nicht in der Liste oben, weil ihn keiner der
 lokalen Befehle nachstellt — ein roter PR bei grünen Tests ist meistens er.
