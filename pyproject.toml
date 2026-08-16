@@ -43,7 +43,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.4.0",
+    # Exakter Pin, und die einzige Stelle, an der die ruff-Version steht. Als
+    # hier eine Spanne stand, loeste der dev-Install auf die jeweils neueste
+    # Version auf, waehrend ci.yml `ruff==0.16.1` darueber installierte — an
+    # zwei Stellen, in den Jobs `test` und `lint`.
+    # `test_werkzeug_versionen.py` faellt, wenn hier wieder eine Spanne steht
+    # oder ein Workflow eine zweite Version setzt.
+    "ruff==0.16.1",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "respx>=0.21.0",

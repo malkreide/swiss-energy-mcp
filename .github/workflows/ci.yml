@@ -27,11 +27,9 @@ jobs:
       - name: Abhängigkeiten installieren
         run: uv pip install -e ".[dev]" --system
 
-      # Pin ruff so an upstream release cannot change the default rule set or
-      # formatter and break CI on unrelated, untouched code.
-      - name: Install pinned ruff
-        run: pip install ruff==0.16.1
-
+      # Kein eigener ruff-Install: der Pin kommt mit dem dev-Install oben mit.
+      # Hier stand `pip install ruff==<version>`, das danach lief und gegen
+      # pyproject gewann — ein Bump dort haette in der CI nichts bewirkt.
       - name: Linting mit ruff
         run: ruff check src/ tests/ scripts/
 
@@ -59,9 +57,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Pin ruff so an upstream release cannot change the default rule set or
-      # formatter and break CI on unrelated, untouched code.
-      - run: pip install ruff==0.16.1
+      # Holt ruff aus dem [dev]-Extra, wo seine Version als einziges steht.
+      # Dieser Job installiert das Projekt sonst nicht — den frueheren
+      # `pip install ruff==<version>` ersatzlos zu streichen naehme ihm das
+      # Werkzeug. Er braucht den Install, nur ohne zweite Versionsangabe.
+      - run: pip install -e ".[dev]"
 
       - run: ruff check src/ tests/ scripts/
 
