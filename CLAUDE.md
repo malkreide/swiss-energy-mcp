@@ -67,8 +67,16 @@ python scripts/check_version_sync.py
 Die ruff-Gates laufen zweimal: im Job `test` und noch einmal im Job `lint`.
 **Der `lint`-Job installiert das Projekt** — er muss es, sonst fehlt ihm ruff;
 er hatte früher nur einen eigenen `pip install ruff==…`. Kein `include` unter
-`[tool.ruff]` setzen — der Umfang stimmt (27 Dateien über alle drei
+`[tool.ruff]` setzen — der Umfang stimmt (28 Dateien über alle drei
 Verzeichnisse, nachgemessen; eine Sonde in `tests/` lässt beide Gates fallen).
+
+**Ein dritter Job gatet mit: `secret-scan`.** Gitleaks über die volle History
+(`fetch-depth: 0`). Er steht nicht in der Liste oben, weil ihn keiner der
+lokalen Befehle nachstellt — ein roter PR bei grünen Tests ist meistens er.
+
+**CI-Trigger:** `push` auf `main`/`develop`, `pull_request` nur gegen `main`.
+Ein PR auf ein anderes Ziel bekommt keinen einzigen Check — das sieht aus wie
+der Merge-Konflikt aus Teil 1, ist aber der Trigger.
 
 **Live-Tests: geplanter Workflow vorhanden.** `.github/workflows/live-tests.yml`,
 `cron: "0 3 * * *"` plus `workflow_dispatch`. Die Live-Suite ist also nicht bloss
