@@ -27,9 +27,6 @@ jobs:
       - name: Abhängigkeiten installieren
         run: uv pip install -e ".[dev]" --system
 
-      # Kein eigener ruff-Install: der Pin kommt mit dem dev-Install oben mit.
-      # Hier stand `pip install ruff==<version>`, das danach lief und gegen
-      # pyproject gewann — ein Bump dort haette in der CI nichts bewirkt.
       - name: Linting mit ruff
         run: ruff check src/ tests/ scripts/
 
@@ -57,11 +54,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Holt ruff aus dem [dev]-Extra, wo seine Version als einziges steht.
-      # Dieser Job installiert das Projekt sonst nicht — den frueheren
-      # `pip install ruff==<version>` ersatzlos zu streichen naehme ihm das
-      # Werkzeug. Er braucht den Install, nur ohne zweite Versionsangabe.
-      - run: pip install -e ".[dev]"
+      # ruff kommt aus dem dev-Extra. Dieser Job hatte vorher nur den
+      # separaten Pin-Schritt als ruff-Quelle; mit dessen Wegfall stand er
+      # ohne Werkzeug da (`ruff: command not found`).
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
 
       - run: ruff check src/ tests/ scripts/
 

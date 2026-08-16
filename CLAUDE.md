@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-## Teil 1 — Konventionen (portfolio-weit)
+## Teil 1 — Portfolio-Konventionen
 
 ### Vor der Arbeit
 
@@ -43,18 +43,19 @@ Merge-Konflikt: GitHub berechnet dafür keinen Merge-Commit und startet nichts.
 
 Ein Codex-Review auf einem PR wird beantwortet oder behoben, nie ignoriert.
 
-## Teil 2 — dieses Repo
+## Teil 2 — Dieses Repo
 
-**ruff:** genau eine Quelle — `ruff==0.16.1` im `[dev]`-Extra von
-`pyproject.toml`. Ein dev-Install reicht also, lokal wie in der CI. Keine
-zweite Version in die Workflows schreiben: ein solcher Schritt läuft nach dem
-Install und überstimmt den Pin still (`ci.yml` hatte einen;
-`test_werkzeug_versionen.py` hält beides fest). Eine `.pre-commit-config.yaml`
-gibt es nicht.
 
-**Gates, wörtlich aus der CI:**
+**ruff: eine Quelle.** `pyproject.toml`, `dev`-Extra, `ruff==0.16.1`. Die CI
+hat keinen eigenen Pin-Schritt — der Install über `ci.yml` genügt, lokal wie
+dort. Eine `.pre-commit-config.yaml` gibt es nicht; wenn eine dazukommt, muss
+sie dieselbe Version aus `pyproject.toml` beziehen und keine zweite nennen.
+`tests/test_werkzeug_versionen.py` hält das fest, statt es zu behaupten — der
+Rückfall wäre still, er macht kein Gate rot.
 
-```bash
+**Gates, wörtlich aus `ci.yml`** (Matrix: Python 3.11 / 3.12 / 3.13):
+
+```
 ruff check src/ tests/ scripts/
 ruff format --check src/ tests/ scripts/
 python -m compileall -q src/
@@ -69,7 +70,8 @@ er hatte früher nur einen eigenen `pip install ruff==…`. Kein `include` unter
 `[tool.ruff]` setzen — der Umfang stimmt (27 Dateien über alle drei
 Verzeichnisse, nachgemessen; eine Sonde in `tests/` lässt beide Gates fallen).
 
-**Live-Tests:** eigener Workflow `.github/workflows/live-tests.yml`, nächtlich
-per Cron (`0 3 * * *`) — **nicht** in `ci.yml`; die hat gar keinen Zeitplan und
-läuft nur auf Push und PR. Sie sind hier also nicht bloss per `-m "not live"`
-ausgeschlossen; DRIFT-005 ist erfüllt.
+**Live-Tests: geplanter Workflow vorhanden.** `.github/workflows/live-tests.yml`,
+`cron: "0 3 * * *"` plus `workflow_dispatch`. Die Live-Suite ist also nicht bloss
+per `-m "not live"` ausgeschlossen — DRIFT-005 ist hier erfüllt. `schedule`
+greift nur auf dem Default-Branch (`main`): Änderungen am Workflow wirken erst
+nach dem Merge, vorher von Hand per `workflow_dispatch`.
