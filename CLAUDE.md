@@ -81,8 +81,12 @@ python scripts/check_version_sync.py
 Die ruff-Gates laufen zweimal: im Job `test` und noch einmal im Job `lint`.
 **Der `lint`-Job installiert das Projekt** — er muss es, sonst fehlt ihm ruff;
 er hatte früher nur einen eigenen `pip install ruff==…`. Kein `include` unter
-`[tool.ruff]` setzen — der Umfang stimmt (28 Dateien über alle drei
-Verzeichnisse, nachgemessen; eine Sonde in `tests/` lässt beide Gates fallen).
+`[tool.ruff]` setzen — der Umfang sind die drei Pfade im Gate-Befehl selbst.
+Wer ihn prüfen will, zählt nach statt hier abzulesen:
+`ruff check src/ tests/ scripts/ --show-files | wc -l`; eine Sonde in `tests/`
+lässt beide Gates fallen. `ruff format` meldet dabei eine Datei mehr als
+`ruff check`, weil 0.16 auch Markdown formatiert und damit
+`tests/fixtures/PROVENANCE.md` mitnimmt — zwei Zahlen, kein Fehler.
 
 **Ein dritter Job gatet mit: `secret-scan`.** Gitleaks über die volle History
 (`fetch-depth: 0`). Er steht nicht in der Liste oben, weil ihn keiner der
