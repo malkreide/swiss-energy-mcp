@@ -54,6 +54,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      # ruff kommt aus dem dev-Extra. Dieser Job hatte vorher nur den
+      # separaten Pin-Schritt als ruff-Quelle; mit dessen Wegfall stand er
+      # ohne Werkzeug da (`ruff: command not found`).
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
       - run: ruff check src/ tests/ scripts/
 
       - run: ruff format --check src/ tests/ scripts/
