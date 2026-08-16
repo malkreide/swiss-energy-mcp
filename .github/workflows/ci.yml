@@ -27,11 +27,6 @@ jobs:
       - name: Abhängigkeiten installieren
         run: uv pip install -e ".[dev]" --system
 
-      # Pin ruff so an upstream release cannot change the default rule set or
-      # formatter and break CI on unrelated, untouched code.
-      - name: Install pinned ruff
-        run: pip install ruff==0.16.1
-
       - name: Linting mit ruff
         run: ruff check src/ tests/ scripts/
 
@@ -58,10 +53,6 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
-
-      # Pin ruff so an upstream release cannot change the default rule set or
-      # formatter and break CI on unrelated, untouched code.
-      - run: pip install ruff==0.16.1
 
       - run: ruff check src/ tests/ scripts/
 
