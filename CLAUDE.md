@@ -50,15 +50,25 @@ Ein Codex-Review auf einem PR wird beantwortet oder behoben, nie ignoriert.
 hat keinen eigenen Pin-Schritt — der Install über `ci.yml` genügt, lokal wie
 dort. Eine `.pre-commit-config.yaml` gibt es nicht; wenn eine dazukommt, muss
 sie dieselbe Version aus `pyproject.toml` beziehen und keine zweite nennen.
+`tests/test_werkzeug_versionen.py` hält das fest, statt es zu behaupten — der
+Rückfall wäre still, er macht kein Gate rot.
 
 **Gates, wörtlich aus `ci.yml`** (Matrix: Python 3.11 / 3.12 / 3.13):
 
 ```
 ruff check src/ tests/ scripts/
 ruff format --check src/ tests/ scripts/
+python -m compileall -q src/
+python -c "from swiss_energy_mcp.server import mcp; print('Import OK')"
 pytest tests/ -m "not live"
 python scripts/check_version_sync.py
 ```
+
+Die ruff-Gates laufen zweimal: im Job `test` und noch einmal im Job `lint`.
+**Der `lint`-Job installiert das Projekt** — er muss es, sonst fehlt ihm ruff;
+er hatte früher nur einen eigenen `pip install ruff==…`. Kein `include` unter
+`[tool.ruff]` setzen — der Umfang stimmt (27 Dateien über alle drei
+Verzeichnisse, nachgemessen; eine Sonde in `tests/` lässt beide Gates fallen).
 
 **Live-Tests: geplanter Workflow vorhanden.** `.github/workflows/live-tests.yml`,
 `cron: "0 3 * * *"` plus `workflow_dispatch`. Die Live-Suite ist also nicht bloss
