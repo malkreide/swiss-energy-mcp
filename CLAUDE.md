@@ -68,7 +68,11 @@ sie dieselbe Version aus `pyproject.toml` beziehen und keine zweite nennen.
 Rückfall wäre still, er macht kein Gate rot.
 
 Vor dem Lauf `ruff --version` prüfen: ein älteres ruff früher im `PATH`
-schlägt den Pin, ohne dass der Install etwas meldet.
+schlägt den Pin, ohne dass der Install etwas meldet. Der Install, zu dem
+`check_ruff_pin.py` dann rät, behebt genau diesen Fall nicht: Liegt ein
+`uv tool`-ruff in `/root/.local/bin`, landet das gepinnte 0.16.1 in
+`/usr/local/bin` und damit dahinter. Dann den Pfad vorziehen
+(`PATH=/usr/local/bin:$PATH`), nicht erneut installieren.
 
 **Gates, wörtlich aus `ci.yml`** (Matrix: Python 3.11 / 3.12 / 3.13):
 
@@ -92,10 +96,7 @@ lässt beide Gates fallen. `ruff format` meldet dabei eine Datei mehr als
 `ruff check`, weil 0.16 auch Markdown formatiert und damit
 `tests/fixtures/PROVENANCE.md` mitnimmt — zwei Zahlen, kein Fehler.
 
-`ruff format` sieht dabei 29 statt 28 — 0.16 formatiert auch Markdown. Zwei
-Zahlen, kein Fehler.
-
-**Alle sechs laufen auf allen drei Versionen.** Keine
+**Alle Gates oben laufen auf allen drei Versionen.** Keine
 `if: matrix.python-version`-Ausnahme, ein grünes 3.13 heisst hier wirklich,
 dass alles auf 3.13 lief. (Im Portfolio nicht selbstverständlich:
 `swiss-food-safety-mcp` gated zwei Gates auf 3.11.) Der `lint`-Job daneben
