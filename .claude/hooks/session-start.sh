@@ -10,8 +10,8 @@
 # Dateien. Siehe .claude/hooks/README.md.
 #
 # OBERSTE REGEL: Dieser Hook blockiert die Session NIEMALS. Kein Netz, kein
-# Remote, detached HEAD, flatterndes DNS — jeder Fall geht still durch und
-# endet mit Status 0. Deshalb hier bewusst KEIN `set -e` und kein `set -o
+# Remote, detached HEAD, flatterndes DNS — jeder Fall geht still durch, ohne
+# Ausgabe, und endet mit Status 0. Deshalb hier bewusst KEIN `set -e` und kein `set -o
 # pipefail`: ein Hook, der bei Netzproblemen die Arbeit anhaelt, wird nach
 # dem zweiten Mal abgeschaltet und schuetzt danach gar nichts.
 
@@ -78,6 +78,13 @@ git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 # Unborn HEAD (frisches Repo ohne Commit) — nichts zu vergleichen.
 git rev-parse --verify --quiet HEAD >/dev/null 2>&1 || exit 0
 
+# Detached HEAD geht still durch. Wer einen einzelnen Commit auscheckt,
+# bisect faehrt oder einen Tag ansieht, steht absichtlich neben dem
+# Branch-Verlauf; ein Rueckstand ist dort keine Meldung wert. Die Pruefung
+# steht vor dem Netzzugriff, damit der Fall auch nichts kostet.
+current="$(git symbolic-ref --quiet --short HEAD 2>/dev/null)" || exit 0
+[ -n "$current" ] || exit 0
+
 # Kein origin -> kein Vergleichspunkt.
 git config --get remote.origin.url >/dev/null 2>&1 || exit 0
 
@@ -119,11 +126,6 @@ case "$behind" in
 '' | *[!0-9]*) exit 0 ;;
 0) exit 0 ;;
 esac
-
-current="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || current="HEAD"
-if [ "$current" = "HEAD" ]; then
-  current="detached HEAD"
-fi
 
 if [ "$behind" = "1" ]; then
   commit_wort="Commit"

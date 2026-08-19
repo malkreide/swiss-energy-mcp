@@ -232,16 +232,40 @@ def test_repo_ohne_commits_blockiert_nicht(tmp_path: pathlib.Path) -> None:
     assert lauf.schweigt
 
 
-def test_detached_head_blockiert_nicht(tmp_path: pathlib.Path) -> None:
+def test_detached_head_schweigt(tmp_path: pathlib.Path) -> None:
+    """Wer einen einzelnen Commit auscheckt, bisect faehrt oder einen Tag
+    ansieht, steht absichtlich neben dem Branch-Verlauf. Ein Rueckstand ist
+    dort keine Meldung wert — auf demselben Klon mit Branch meldet der Hook
+    sehr wohl, sonst pruefte dieser Test bloss ein stummes Skript."""
     klon, quelle = _portfolio_repo(tmp_path)
     _schiebe_nach(quelle, "main", 2)
-    _git(klon, "checkout", "--quiet", "--detach", "HEAD")
 
+    assert "2 Commits" in _hook(klon).stdout
+
+    _git(klon, "checkout", "--quiet", "--detach", "HEAD")
     lauf = _hook(klon)
 
     assert lauf.returncode == 0
-    assert "detached HEAD" in lauf.stdout
-    assert "2 Commits" in lauf.stdout
+    assert lauf.schweigt, f"Hook meldete bei detached HEAD: {lauf.stdout!r}"
+
+
+def test_detached_head_kostet_keinen_netzzugriff(tmp_path: pathlib.Path) -> None:
+    """Die Pruefung steht vor dem Fetch, nicht dahinter.
+
+    Nachgestellt mit einem Remote, der annimmt und nie antwortet: Wuerde
+    zuerst gefetcht, liefe der Hook in die Timeouts und braeuchte Sekunden,
+    obwohl das Ergebnis schon feststeht.
+    """
+    klon, _ = _portfolio_repo(tmp_path)
+    _git(klon, "config", "protocol.ext.allow", "always")
+    _git(klon, "remote", "set-url", "origin", _HAENGENDER_REMOTE)
+    _git(klon, "checkout", "--quiet", "--detach", "HEAD")
+
+    lauf = _hook(klon, fetch_timeout="5", ls_remote_timeout="3")
+
+    assert lauf.returncode == 0
+    assert lauf.schweigt
+    assert lauf.dauer < 2, f"Hook brauchte {lauf.dauer:.1f}s — er fetcht vor der Pruefung"
 
 
 def test_hook_veraendert_den_arbeitsbaum_nicht(tmp_path: pathlib.Path) -> None:
