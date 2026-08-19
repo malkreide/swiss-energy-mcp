@@ -22,8 +22,8 @@ Nach Wichtigkeit geordnet — `tests/test_session_start_hook.py` haelt jede
 davon fest, statt sie zu behaupten.
 
 1. **Der Hook blockiert die Session niemals.** Kein Netz, kein `origin`,
-   ein Remote, der nicht antwortet, detached HEAD, ein Repo ohne Commits,
-   gar kein Git-Repo — jeder Fall geht still durch und endet mit Status 0.
+   ein Remote, der nicht antwortet, ein Repo ohne Commits, gar kein
+   Git-Repo — jeder Fall geht still durch und endet mit Status 0.
    Deshalb steht im Skript bewusst kein `set -e`: Ein Hook, der bei
    Netzproblemen die Arbeit anhaelt, wird nach dem zweiten Mal abgeschaltet
    und schuetzt danach gar nichts.
@@ -34,7 +34,12 @@ davon fest, statt sie zu behaupten.
    statt das Limit stillschweigend fallen zu lassen. `GIT_TERMINAL_PROMPT=0`
    und `ssh -o BatchMode=yes` verhindern, dass eine Passwortabfrage den
    Sessionstart haengen laesst.
-3. **Ausgabe nur, wenn tatsaechlich Commits fehlen.** Bei 0 schweigt er.
+3. **Ausgabe nur, wenn tatsaechlich Commits fehlen.** Bei 0 schweigt er,
+   und ein Klon, der dem Default-Branch *voraus* ist, ist kein Rueckstand.
+   Bei detached HEAD schweigt er ebenfalls: Wer einen einzelnen Commit
+   auscheckt, `bisect` faehrt oder einen Tag ansieht, steht absichtlich
+   neben dem Branch-Verlauf. Diese Pruefung steht vor dem Netzzugriff, damit
+   der Fall auch keine Sekunde kostet.
 4. **Der Default-Branch wird ermittelt, nicht als `main` angenommen.**
    Drei Repos im Portfolio (`openlex-mcp`, `swiss-courts-mcp`,
    `swisstopo-mcp`) heissen ihn `master`; genau diese Annahme hat schon
