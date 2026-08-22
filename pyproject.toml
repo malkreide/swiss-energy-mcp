@@ -51,7 +51,7 @@ dev = [
     # lassen und das Ergebnis mit committen.
     # `tests/test_werkzeug_versionen.py` faellt, wenn hier wieder eine
     # Spanne steht oder ein Workflow eine zweite Version setzt.
-    "ruff==0.16.1",
+    "ruff==0.16.3",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "respx>=0.21.0",
