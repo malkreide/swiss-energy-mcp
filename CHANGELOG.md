@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Browser-Clients scheiterten am Preflight.** Spec `2026-07-28` routet eine
+  Streamable-HTTP-Anfrage über `Mcp-Method`, `Mcp-Name` und
+  `Mcp-Protocol-Version`. Die Freigabeliste nannte davon nur den letzten;
+  `Mcp-Method` und `Mcp-Name` fehlten. Ein Browser darf einen nicht
+  safelisteten Header nicht senden, wenn der Server ihn nicht nennt: die
+  Anfrage starb vor dem ersten MCP-Byte, während stdio und Python, für die kein
+  Preflight gilt, weiterliefen. Deshalb war nichts rot.
+
+### Added
+
+- **`build_http_app()`**, herausgezogen aus `main`, damit die CORS-Schicht
+  prüfbar ist. `main` ruft sie auf; am Verhalten ändert sich nichts.
+
+- **Frischehinweise auf den auflistenden Methoden** (SEP-2549, Spec
+  `2026-07-28`): `tools/list`, `resources/list`, `resources/templates/list`,
+  `prompts/list` und `server/discover` antworten mit `ttlMs` 300000 und
+  `cacheScope` `public`. `resources/read` und `prompts/get` bleiben ohne
+  Hinweis: das wäre eine Zusicherung über den Inhalt statt über das Verzeichnis.
+
 ### Added
 
 - **Die Pruefsummen im Fixture-Nachweis waren Zierde.** `PROVENANCE.md` fuehrt
