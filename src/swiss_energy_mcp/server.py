@@ -14,6 +14,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+from mcp.server.caching import CacheableMethod, CacheHint
 from mcp.server.mcpserver import MCPServer
 
 from .api_client import AppContext, EnergyHTTPClient
@@ -60,12 +61,37 @@ def _make_lifespan(settings: Settings):
     return lifespan
 
 
+# SEP-2549, Spec 2026-07-28: die auflistenden Methoden tragen `ttlMs` und
+# `cacheScope`. Das SDK setzt beides auf «sofort veraltet, nie geteilt» — ein
+# Server ohne `cache_hints` laesst also jeden Client bei jeder Verbindung neu
+# auflisten, fuer Verzeichnisse, die `register_tools`/`register_capabilities`
+# beim Bau festlegen und die nicht vom Aufrufer abhaengen.
+#
+# `resources/read` und `prompts/get` stehen bewusst nicht dabei: das waere eine
+# Zusicherung ueber den INHALT statt ueber das Verzeichnis. Dass
+# `energy://layers` sich selbst als «static catalogue» beschreibt, ist kein
+# Grund dafuer — die naechste Ressource kann eine Abfrage sein.
+LIST_CACHE_TTL_MS = 300_000
+
+# Annotiert, nicht inferiert: `MCPServer` nimmt
+# `Mapping[CacheableMethod, CacheHint]`, und ein Dict-Literal ohne Annotation
+# inferiert mypy als `str`.
+CACHE_HINTS: dict[CacheableMethod, CacheHint] = {
+    "tools/list": CacheHint(ttl_ms=LIST_CACHE_TTL_MS, scope="public"),
+    "resources/list": CacheHint(ttl_ms=LIST_CACHE_TTL_MS, scope="public"),
+    "resources/templates/list": CacheHint(ttl_ms=LIST_CACHE_TTL_MS, scope="public"),
+    "prompts/list": CacheHint(ttl_ms=LIST_CACHE_TTL_MS, scope="public"),
+    "server/discover": CacheHint(ttl_ms=LIST_CACHE_TTL_MS, scope="public"),
+}
+
+
 def build_server(settings: Settings | None = None) -> MCPServer:
     """Construct a fully configured MCPServer server instance."""
     settings = settings or Settings()
     mcp = MCPServer(
         "swiss_energy_mcp",
         instructions=INSTRUCTIONS,
+        cache_hints=CACHE_HINTS,
         lifespan=_make_lifespan(settings),
         dependencies=["httpx", "pydantic", "pydantic-settings", "structlog"],
     )
@@ -116,6 +142,54 @@ def build_transport_security(settings: Settings):
     )
 
 
+# Die Header, nach denen Spec 2026-07-28 eine Streamable-HTTP-Anfrage routet —
+# in der Schreibweise des SDK (`mcp.shared.inbound`). Ein Browser darf einen
+# nicht safelisteten Header gar nicht erst senden, wenn der Server ihn nicht in
+# `Access-Control-Allow-Headers` nennt: ohne sie stirbt jede Cross-Origin-
+# Anfrage am Preflight, vor dem ersten MCP-Byte.
+CORS_ROUTING_HEADERS = ["Mcp-Method", "Mcp-Name", "Mcp-Protocol-Version"]
+
+
+def build_http_app(settings: Settings | None = None, server: MCPServer | None = None):
+    """Baut die Streamable-HTTP-App samt CORS, ohne einen Socket zu binden.
+
+    Herausgezogen aus `main`, damit die CORS-Schicht pruefbar ist: solange
+    Aufbau und `uvicorn.run` in derselben Funktion standen, liess sich die
+    Freigabeliste nur lesen, nicht ausprobieren — und eine gelesene Liste kann
+    vollstaendig aussehen und trotzdem nie an der Middleware ankommen.
+    """
+    from starlette.middleware.cors import CORSMiddleware
+
+    settings = settings or Settings()
+    server = server or build_server(settings)
+    security = build_transport_security(settings)
+    if security is None:
+        get_logger().warning(
+            "server.dns_rebinding_protection_off",
+            host=settings.host,
+            hint="Set SWISS_ENERGY_ALLOWED_HOSTS to the hostnames this "
+            "server is reachable under so Host and Origin are validated; "
+            "without it there is no Host check at all.",
+        )
+    # mcp 2.x: transport_security is a per-app kwarg, not a setting.
+    app = server.streamable_http_app(transport_security=security, host=settings.host)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=[
+            "Content-Type",
+            "Authorization",
+            *CORS_ROUTING_HEADERS,
+            "Mcp-Session-Id",
+            "Last-Event-ID",
+        ],
+        expose_headers=["Mcp-Session-Id"],
+        allow_credentials=False,
+    )
+    return app
+
+
 def main() -> None:
     """Start the Swiss Energy MCP server."""
     settings = Settings()
@@ -124,36 +198,14 @@ def main() -> None:
 
     if settings.transport == "http":
         import uvicorn
-        from starlette.middleware.cors import CORSMiddleware
 
-        security = build_transport_security(settings)
-        if security is None:
-            get_logger().warning(
-                "server.dns_rebinding_protection_off",
-                host=settings.host,
-                hint="Set SWISS_ENERGY_ALLOWED_HOSTS to the hostnames this "
-                "server is reachable under so Host and Origin are validated; "
-                "without it there is no Host check at all.",
-            )
-        # mcp 2.x: transport_security is a per-app kwarg, not a setting.
-        app = server.streamable_http_app(transport_security=security, host=settings.host)
-        # SDK-004: browser-based MCP clients must be able to read Mcp-Session-Id.
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=settings.cors_origins,
-            allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
-            allow_headers=[
-                "Content-Type",
-                "Authorization",
-                "Mcp-Session-Id",
-                "Mcp-Protocol-Version",
-                "Last-Event-ID",
-            ],
-            expose_headers=["Mcp-Session-Id"],
-            allow_credentials=False,
-        )
         get_logger().info("server.http", host=settings.host, port=settings.port)
-        uvicorn.run(app, host=settings.host, port=settings.port, log_config=None)
+        uvicorn.run(
+            build_http_app(settings, server),
+            host=settings.host,
+            port=settings.port,
+            log_config=None,
+        )
     else:
         server.run(transport="stdio")
 
