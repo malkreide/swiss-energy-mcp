@@ -171,8 +171,12 @@ Alle Variablen nutzen das Präfix `SWISS_ENERGY_` und werden beim Start validier
 | `SWISS_ENERGY_HOST` | `127.0.0.1` | Host für HTTP-Transport. `0.0.0.0` nur im Container binden. |
 | `SWISS_ENERGY_PORT` | `8000` | Port für HTTP-Transport |
 | `SWISS_ENERGY_CORS_ORIGINS` | `https://claude.ai` | Erlaubte CORS-Origins, kommagetrennt (HTTP-Transport) |
+| `SWISS_ENERGY_ALLOWED_HOSTS` | *(leer)* | Eingehende `Host`-Freigabeliste, kommagetrennt. Nur noetig, wenn nicht auf Loopback gebunden wird. |
 | `SWISS_ENERGY_LOG_LEVEL` | `INFO` | Log-Level: `DEBUG` / `INFO` / `WARNING` / `ERROR` |
 | `SWISS_ENERGY_HTTP_TIMEOUT` | `20` | Timeout für Upstream-Requests in Sekunden |
+
+Beide Listen-Variablen nehmen neben der Komma-Form auch ein JSON-Array
+entgegen — `["https://a.test"]`.
 
 Eine Vorlage liegt unter [`.env.example`](.env.example).
 

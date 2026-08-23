@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Die dokumentierte Konfiguration liess den Server gar nicht erst starten.**
+  `SWISS_ENERGY_CORS_ORIGINS=https://claude.ai` — der Wert, den beide READMEs
+  und `.env.example` nennen — starb als `SettingsError` beim Laden. Betroffen
+  war jede Form ausser JSON, `SWISS_ENERGY_ALLOWED_HOSTS` genauso, und wer
+  `.env.example` kopierte (wozu die Datei selbst auffordert), bekam auf beiden
+  Transporten einen Prozess, der sich weigerte hochzufahren. Der
+  `mode="before"`-Validator, der die Komma-Form auftrennen sollte, lief nie:
+  pydantic-settings dekodiert ein Listenfeld in der Quelle als JSON, bevor
+  irgendein Validator drankommt. Beide Felder tragen jetzt `NoDecode`, und der
+  Validator nimmt beide Formen entgegen. Der Boden von `pydantic-settings`
+  steigt dafür auf `>=2.7.0` — darunter gibt es das Marker-Objekt nicht.
+
 - **Browser-Clients scheiterten am Preflight.** Spec `2026-07-28` routet eine
   Streamable-HTTP-Anfrage über `Mcp-Method`, `Mcp-Name` und
   `Mcp-Protocol-Version`. Die Freigabeliste nannte davon nur den letzten;

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from swiss_energy_mcp import api_client
@@ -204,6 +206,96 @@ class TestSettings:
     def test_cors_origins_from_csv(self):
         s = Settings(_env_file=None, cors_origins="https://a.test,https://b.test")
         assert s.cors_origins == ["https://a.test", "https://b.test"]
+
+    # Der Test darueber geht am Befund vorbei, und zwar der Bauart nach: ein
+    # direktes Schluesselwort umgeht die EnvSettingsSource, und genau dort lag
+    # der Absturz. Die naechsten drei fahren deshalb durch die Umgebung.
+
+    @pytest.mark.parametrize(
+        ("raw", "erwartet"),
+        [
+            # Genau der Wert, den README und .env.example nennen.
+            ("https://claude.ai", ["https://claude.ai"]),
+            (
+                "https://a.test,https://b.test",
+                ["https://a.test", "https://b.test"],
+            ),
+            (" https://a.test , https://b.test ", ["https://a.test", "https://b.test"]),
+            ("*", ["*"]),
+            # Die JSON-Form ist die einzige, die vor der Behebung durchkam.
+            ('["https://a.test","https://b.test"]', ["https://a.test", "https://b.test"]),
+        ],
+    )
+    def test_cors_origins_aus_der_umgebung(self, monkeypatch, raw, erwartet):
+        monkeypatch.setenv("SWISS_ENERGY_CORS_ORIGINS", raw)
+        assert Settings(_env_file=None).cors_origins == erwartet
+
+    def test_allowed_hosts_aus_der_umgebung(self, monkeypatch):
+        # Dieselbe Mechanik, dasselbe Feldpaar — der Docstring in settings.py
+        # nennt fuer allowed_hosts eine kommagetrennte Liste als Beispiel.
+        monkeypatch.setenv("SWISS_ENERGY_ALLOWED_HOSTS", "mcp.example.ch,mcp.example.ch:443")
+        assert Settings(_env_file=None).allowed_hosts == [
+            "mcp.example.ch",
+            "mcp.example.ch:443",
+        ]
+
+    def test_die_ausgelieferte_env_vorlage_startet(self, tmp_path, monkeypatch):
+        """`.env.example` woertlich als `.env` — die Datei sagt selbst, man
+        solle sie kopieren. Vor der Behebung starb genau das mit einem
+        SettingsError, weil `SWISS_ENERGY_CORS_ORIGINS=https://claude.ai`
+        kein JSON ist."""
+        vorlage = Path(__file__).resolve().parent.parent / ".env.example"
+        text = vorlage.read_text(encoding="utf-8")
+        ziel = tmp_path / ".env"
+        ziel.write_text(text, encoding="utf-8")
+
+        # Sonst prueft der Test nur noch, dass irgendeine Vorlage laedt: in der
+        # JSON-Form laeuft er auch ohne die Behebung durch. Beide READMEs nennen
+        # die Komma-Form, also faehrt die Vorlage sie auch.
+        zeile = next(z for z in text.splitlines() if z.startswith("SWISS_ENERGY_CORS_ORIGINS="))
+        assert not zeile.partition("=")[2].lstrip().startswith("["), (
+            "die Vorlage steht in JSON, die READMEs nennen die Komma-Form"
+        )
+        monkeypatch.chdir(tmp_path)
+        # Nur die Vorlage soll wirken, nicht eine Variable aus der CI-Umgebung.
+        for name in ("SWISS_ENERGY_CORS_ORIGINS", "SWISS_ENERGY_ALLOWED_HOSTS"):
+            monkeypatch.delenv(name, raising=False)
+
+        s = Settings()
+
+        assert s.cors_origins == ["https://claude.ai"]
+
+    def test_der_deklarierte_boden_traegt_nodecode(self):
+        """`NoDecode` ist keine Selbstverstaendlichkeit des Pakets.
+
+        Gemessen, nicht erinnert: in pydantic-settings 2.6.1 gibt es das
+        Marker-Objekt nicht, in 2.7.0 schon. Stuende der Boden weiter bei
+        2.0.0, waere eine erlaubte Aufloesung eine, in der `settings.py` beim
+        Import stirbt — und zwar erst beim Anwender, nie in dieser CI, die
+        immer die neueste Version zieht.
+        """
+        import tomllib
+        from importlib.metadata import version as installierte_version
+
+        daten = tomllib.loads((Path(__file__).resolve().parents[1] / "pyproject.toml").read_text())
+        specs = [
+            d
+            for d in daten["project"]["dependencies"]
+            if d.split(">=")[0].split("[")[0].strip() == "pydantic-settings"
+        ]
+        assert len(specs) == 1, f"genau ein Specifier erwartet, gefunden: {specs}"
+        boden = specs[0].partition(">=")[2].split(",")[0].strip()
+        assert boden, f"kein Untergrenze in {specs[0]!r} — jede alte Version waere erlaubt"
+
+        def teile(v: str) -> tuple[int, ...]:
+            return tuple(int(t) for t in v.split(".") if t.isdigit())
+
+        assert teile(boden) >= (2, 7), (
+            f"pydantic-settings>={boden} laesst Versionen ohne NoDecode zu"
+        )
+        # Und die tatsaechlich installierte muss den Boden auch einhalten,
+        # sonst prueft der Rest dieser Klasse gegen etwas anderes als deklariert.
+        assert teile(installierte_version("pydantic-settings")) >= teile(boden)
 
     def test_invalid_transport_rejected(self):
         import pydantic
