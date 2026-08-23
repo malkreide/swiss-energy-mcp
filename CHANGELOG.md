@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Anfrage starb vor dem ersten MCP-Byte, während stdio und Python, für die kein
   Preflight gilt, weiterliefen. Deshalb war nichts rot.
 
+- **Die README nannte `mcp[cli] >= 1.20.0`.** Deklariert ist
+  `mcp[cli]>=2.0.0,<3` — eine Major-Version daneben.
+
 ### Added
 
 - **`build_http_app()`**, herausgezogen aus `main`, damit die CORS-Schicht
@@ -27,6 +30,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `prompts/list` und `server/discover` antworten mit `ttlMs` 300000 und
   `cacheScope` `public`. `resources/read` und `prompts/get` bleiben ohne
   Hinweis: das wäre eine Zusicherung über den Inhalt statt über das Verzeichnis.
+
+- **Protokoll-Gate: beide Spec-Aeren gepinnt und geprueft**
+  (`tests/test_protocol_version.py`). `mcp` 2.x bedient zwei Aeren ueber
+  denselben Server — den `initialize`-Handshake, der bei `2025-11-25`
+  deckelt, und den Pro-Request-Envelope, der `2026-07-28` erreicht.
+  `LATEST_PROTOCOL_VERSION` ist ein Alias auf die **moderne** Aera; wer nur
+  dagegen pinnt, laesst genau die Aera frei wandern, die heutige Clients
+  aushandeln. Beide sind jetzt einzeln gepinnt, ein Dependabot-Bump von
+  `mcp` kann keine davon still verschieben.
+
+  Nachgemessen statt aus Konstantennamen geschlossen: ein echter `initialize`
+  durch den zusammengebauten ASGI-Stack. Ein Client, der ueber den Handshake
+  nach `2026-07-28` fragt, bekommt `2025-11-25` zurueck.
+
+  Beide READMEs beschreiben die Aeren; ein Test haelt jede Sprache einzeln
+  dagegen — im Portfolio sind EN und DE desselben Repos schon dreimal
+  auseinandergelaufen, weil nur eine Fassung nachgezogen wurde.
 
 ### Added
 
