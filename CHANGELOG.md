@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Der Server stellte sich ohne Version vor.** Spec `2026-07-28` hängt den
+  Identitätsblock unter `_meta["io.modelcontextprotocol/serverInfo"]` an
+  **jede** Antwort; die Handshake-Ära führt ihn einmalig in
+  `initialize.serverInfo`. Beide speisen sich aus demselben
+  `MCPServer`-Konstruktor — und `version` wurde ihm nie übergeben. Der
+  SDK-Vorgabewert dafür ist der leere String, kein Fehler und keine Warnung,
+  also meldete der Server jedem Client `{"name": "swiss_energy_mcp",
+  "version": ""}`, in der modernen Ära bei jedem einzelnen Aufruf. Kein Gate
+  wurde davon rot: eine leere Identität ist eine formal gültige Antwort.
+  Aufgefallen ist es erst an `server/discover`, der Identitätsprobe der Spec.
+  Der Wert kommt jetzt aus den Paket-Metadaten (`__version__`), nicht als
+  Literal — `scripts/check_version_sync.py` lässt in `src/` ohnehin keine
+  handgepflegte Nummer zu.
+
 - **Die dokumentierte Konfiguration liess den Server gar nicht erst starten.**
   `SWISS_ENERGY_CORS_ORIGINS=https://claude.ai` — der Wert, den beide READMEs
   und `.env.example` nennen — starb als `SettingsError` beim Laden. Betroffen
@@ -33,6 +47,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `mcp[cli]>=2.0.0,<3` — eine Major-Version daneben.
 
 ### Added
+
+- **`title` und `websiteUrl` im Identitätsblock.** Die beiden übrigen Felder,
+  die Spec `2026-07-28` neben `name` und `version` führt. Clients, die einen
+  Server auflisten, zeigen damit «Swiss Energy MCP» statt des
+  Programmbezeichners und verlinken auf das Repository.
+
+- **`tests/test_server_identity.py`** misst den Block durch den
+  zusammengebauten ASGI-Stack, in beiden Ären. Ein Konstruktorargument kann
+  richtig gesetzt sein und trotzdem nicht in der Antwort landen; und eine
+  Zusicherung gegen nur eine Ära bliebe grün, während die andere etwas
+  anderes erzählt.
 
 - **`build_http_app()`**, herausgezogen aus `main`, damit die CORS-Schicht
   prüfbar ist. `main` ruft sie auf; am Verhalten ändert sich nichts.
