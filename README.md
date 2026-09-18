@@ -208,6 +208,28 @@ the spec changelog between the two revisions, verify the server still behaves,
 then move the constant, this section, `README.de.md` and
 [`CHANGELOG.md`](CHANGELOG.md) together.
 
+### Server identity
+
+Every modern-era response carries the server's identity under
+`_meta["io.modelcontextprotocol/serverInfo"]`; the handshake era carries the
+same block once, in `initialize.serverInfo`:
+
+```json
+{
+  "name": "swiss_energy_mcp",
+  "title": "Swiss Energy MCP",
+  "version": "<version from the package metadata>",
+  "websiteUrl": "https://github.com/malkreide/swiss-energy-mcp"
+}
+```
+
+`version` comes from the installed package metadata, never from a literal in
+`src/` — `scripts/check_version_sync.py` rejects a hand-maintained number
+there. Both eras are measured through the assembled ASGI stack in
+[`tests/test_server_identity.py`](tests/test_server_identity.py): the SDK
+default for `version` is the empty string, so a missing constructor argument
+is silent rather than red.
+
 ## MCP Primitives
 
 The server uses all three MCP primitives:

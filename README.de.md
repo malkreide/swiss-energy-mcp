@@ -209,6 +209,28 @@ das Spec-Changelog zwischen den beiden Revisionen lesen, pruefen, ob sich der
 Server weiterhin richtig verhaelt, dann Konstante, diesen Abschnitt, `README.md`
 und [`CHANGELOG.md`](CHANGELOG.md) gemeinsam bewegen.
 
+### Server-Identitaet
+
+Jede Antwort der modernen Aera traegt die Identitaet des Servers unter
+`_meta["io.modelcontextprotocol/serverInfo"]`; die Handshake-Aera fuehrt
+denselben Block einmalig in `initialize.serverInfo`:
+
+```json
+{
+  "name": "swiss_energy_mcp",
+  "title": "Swiss Energy MCP",
+  "version": "<Version aus den Paket-Metadaten>",
+  "websiteUrl": "https://github.com/malkreide/swiss-energy-mcp"
+}
+```
+
+`version` kommt aus den Metadaten des installierten Pakets, nie aus einem
+Literal in `src/` — `scripts/check_version_sync.py` weist eine handgepflegte
+Nummer dort zurueck. Beide Aeren werden in
+[`tests/test_server_identity.py`](tests/test_server_identity.py) durch den
+zusammengebauten ASGI-Stack gemessen: der SDK-Vorgabewert von `version` ist
+der leere String, ein fehlendes Konstruktorargument also still und nicht rot.
+
 ## MCP-Primitive
 
 Der Server nutzt alle drei MCP-Primitive:

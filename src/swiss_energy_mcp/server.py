@@ -17,6 +17,7 @@ from contextlib import asynccontextmanager
 from mcp.server.caching import CacheableMethod, CacheHint
 from mcp.server.mcpserver import MCPServer
 
+from . import __version__
 from .api_client import AppContext, EnergyHTTPClient
 from .logging_config import configure_logging, get_logger
 from .resources import register_capabilities
@@ -85,11 +86,33 @@ CACHE_HINTS: dict[CacheableMethod, CacheHint] = {
 }
 
 
+# Der Identitaetsblock, den Spec 2026-07-28 unter
+# `_meta["io.modelcontextprotocol/serverInfo"]` an JEDE Antwort haengt — und
+# den die Handshake-Aera einmalig in `initialize.serverInfo` fuehrt. Beide
+# Aeren speisen sich aus demselben `MCPServer`-Konstruktor.
+#
+# `version` stand hier lange nicht, und der SDK-Vorgabewert ist der LEERE
+# String, kein Fehler: Der Server hat sich jedem Client als
+# `{"name": "swiss_energy_mcp", "version": ""}` vorgestellt — in der modernen
+# Aera bei jedem einzelnen Aufruf. Nichts wurde davon rot, weil eine leere
+# Identitaet eine gueltige Antwort ist; gemessen wurde es erst an
+# `server/discover`, der Identitaetsprobe der Spec.
+#
+# Der Wert kommt aus den Paket-Metadaten und NICHT als Literal hierher:
+# `scripts/check_version_sync.py` laesst in `src/` keine handgepflegte Nummer
+# zu, und genau diese Drift hat im Portfolio schon falsche User-Agents erzeugt.
+WEBSITE_URL = "https://github.com/malkreide/swiss-energy-mcp"
+TITLE = "Swiss Energy MCP"
+
+
 def build_server(settings: Settings | None = None) -> MCPServer:
     """Construct a fully configured MCPServer server instance."""
     settings = settings or Settings()
     mcp = MCPServer(
         "swiss_energy_mcp",
+        title=TITLE,
+        version=__version__,
+        website_url=WEBSITE_URL,
         instructions=INSTRUCTIONS,
         cache_hints=CACHE_HINTS,
         lifespan=_make_lifespan(settings),
