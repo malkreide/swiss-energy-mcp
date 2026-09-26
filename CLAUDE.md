@@ -284,17 +284,18 @@ wie der Code: Nichts ist rot, weil nichts geprüft wird, worauf es ankommt.
 
 ## Teil 2 — Dieses Repo
 
-**ruff: eine Quelle.** `pyproject.toml`, `dev`-Extra, `ruff==0.16.3`. Die CI
-hat keinen eigenen Pin-Schritt — der Install über `ci.yml` genügt, lokal wie
-dort. Eine `.pre-commit-config.yaml` gibt es nicht; wenn eine dazukommt, muss
-sie dieselbe Version aus `pyproject.toml` beziehen und keine zweite nennen.
+**ruff: eine Quelle.** `pyproject.toml`, `dev`-Extra, dort exakt; die Version
+dort nachlesen, nicht hier. Die CI hat keinen eigenen Pin-Schritt — der
+Install über `ci.yml` genügt, lokal wie dort. Eine `.pre-commit-config.yaml`
+gibt es nicht; wenn eine dazukommt, muss sie dieselbe Version aus
+`pyproject.toml` beziehen und keine zweite nennen.
 `tests/test_werkzeug_versionen.py` hält das fest, statt es zu behaupten — der
 Rückfall wäre still, er macht kein Gate rot.
 
 Vor dem Lauf `ruff --version` prüfen: ein älteres ruff früher im `PATH`
 schlägt den Pin, ohne dass der Install etwas meldet. Der Install, zu dem
 `check_ruff_pin.py` dann rät, behebt genau diesen Fall nicht: Liegt ein
-`uv tool`-ruff in `/root/.local/bin`, landet das gepinnte 0.16.1 in
+`uv tool`-ruff in `/root/.local/bin`, landet das gepinnte ruff in
 `/usr/local/bin` und damit dahinter. Dann den Pfad vorziehen
 (`PATH=/usr/local/bin:$PATH`), nicht erneut installieren.
 
