@@ -7,44 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [0.5.0] - 2026-09-27
 
-- **Der Server stellte sich ohne Version vor.** Spec `2026-07-28` hängt den
-  Identitätsblock unter `_meta["io.modelcontextprotocol/serverInfo"]` an
-  **jede** Antwort; die Handshake-Ära führt ihn einmalig in
-  `initialize.serverInfo`. Beide speisen sich aus demselben
-  `MCPServer`-Konstruktor — und `version` wurde ihm nie übergeben. Der
-  SDK-Vorgabewert dafür ist der leere String, kein Fehler und keine Warnung,
-  also meldete der Server jedem Client `{"name": "swiss_energy_mcp",
-  "version": ""}`, in der modernen Ära bei jedem einzelnen Aufruf. Kein Gate
-  wurde davon rot: eine leere Identität ist eine formal gültige Antwort.
-  Aufgefallen ist es erst an `server/discover`, der Identitätsprobe der Spec.
-  Der Wert kommt jetzt aus den Paket-Metadaten (`__version__`), nicht als
-  Literal — `scripts/check_version_sync.py` lässt in `src/` ohnehin keine
-  handgepflegte Nummer zu.
+Dieses Release existiert vor allem, damit eine Reparatur bei denen ankommt,
+die den Server betreiben: **Mit der dokumentierten Konfiguration startete das
+veröffentlichte `0.4.1` gar nicht erst.** `SWISS_ENERGY_CORS_ORIGINS=https://claude.ai`
+— der Wert aus beiden READMEs und aus `.env.example` — endet dort beim Laden der
+Settings mit `SettingsError`, und weil die Settings vor der Wahl des Transports
+geladen werden, auf stdio wie auf HTTP. Gemessen am Paket von PyPI, nicht am Repo:
+die JSON-Schreibweise und eine leere Variable laufen dort durch, es ist also genau
+die dokumentierte Form. `main` trägt die Korrektur seit dem 23. August; sie wurde
+nur nie ausgeliefert.
 
-- **Die dokumentierte Konfiguration liess den Server gar nicht erst starten.**
-  `SWISS_ENERGY_CORS_ORIGINS=https://claude.ai` — der Wert, den beide READMEs
-  und `.env.example` nennen — starb als `SettingsError` beim Laden. Betroffen
-  war jede Form ausser JSON, `SWISS_ENERGY_ALLOWED_HOSTS` genauso, und wer
-  `.env.example` kopierte (wozu die Datei selbst auffordert), bekam auf beiden
-  Transporten einen Prozess, der sich weigerte hochzufahren. Der
-  `mode="before"`-Validator, der die Komma-Form auftrennen sollte, lief nie:
-  pydantic-settings dekodiert ein Listenfeld in der Quelle als JSON, bevor
-  irgendein Validator drankommt. Beide Felder tragen jetzt `NoDecode`, und der
-  Validator nimmt beide Formen entgegen. Der Boden von `pydantic-settings`
-  steigt dafür auf `>=2.7.0` — darunter gibt es das Marker-Objekt nicht.
-
-- **Browser-Clients scheiterten am Preflight.** Spec `2026-07-28` routet eine
-  Streamable-HTTP-Anfrage über `Mcp-Method`, `Mcp-Name` und
-  `Mcp-Protocol-Version`. Die Freigabeliste nannte davon nur den letzten;
-  `Mcp-Method` und `Mcp-Name` fehlten. Ein Browser darf einen nicht
-  safelisteten Header nicht senden, wenn der Server ihn nicht nennt: die
-  Anfrage starb vor dem ersten MCP-Byte, während stdio und Python, für die kein
-  Preflight gilt, weiterliefen. Deshalb war nichts rot.
-
-- **Die README nannte `mcp[cli] >= 1.20.0`.** Deklariert ist
-  `mcp[cli]>=2.0.0,<3` — eine Major-Version daneben.
+Daneben bedient der Server die Protokollrevision `2026-07-28` jetzt vollständig:
+Er meldet in beiden Ären eine Identität mit Version, und Browser-Clients kommen
+durch den CORS-Preflight.
 
 ### Added
 
@@ -102,8 +79,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   der Freigabeliste, faellt genau dieser eine Test, und die sieben bestehenden
   bleiben gruen.
 
-### Added
-
 - **Die Pruefsummen im Fixture-Nachweis waren Zierde.** `PROVENANCE.md` fuehrt
   je Datei einen SHA-256 — um genau einen Fall zu fangen: eine Aufzeichnung,
   die nach dem Lauf von Hand nachgebessert wurde. Eine korrigierte Antwort ist
@@ -134,77 +109,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   braucht jetzt 5,6 s. `test_die_fixture_nullt_die_wartezeit_wirklich` misst
   die Uhr, nicht den Aufruf — eine Fixture, die den falschen Namen patcht,
   fällt sonst an keiner Zusicherung auf, sie macht den Lauf nur länger.
-
-### Fixed
-
-- **Jede Datensatz-Beschreibung war leer.** `energy_search_bfe_datasets` las
-  sie aus `notes` — dem Feldnamen aus dem CKAN-Kern. opendata.swiss liefert das
-  Feld unter `description`; in keiner aufgezeichneten Antwort kommt `notes` vor.
-  Die Suite blieb dabei grün, weil `conftest.dataset()` das Feld genauso falsch
-  nannte wie der Code und dessen Annahme damit nur bestätigte.
-
-- **Die «leichtgewichtige» Statusabfrage war es nicht.** `energy_check_status`
-  baut seine `find`-Anfrage von Hand und liess `returnGeometry=false` weg, das
-  `find_geoadmin_by_name()` mitschickt. GeoAdmin legte deshalb die
-  Gemeindegeometrie bei: 159 656 statt 574 Bytes für denselben einen Treffer,
-  den das Tool nur zählt (gemessen am 15.08.2026). Damit ist die Anfrage jetzt
-  zeichengleich mit der des Suchwerkzeugs, und beide teilen sich ein Fixture —
-  laufen sie wieder auseinander, wird daraus sichtbar eine zweite Datei.
-
-- **Auch die GeoAdmin-Antworten wurden bei einer Strukturänderung zu null
-  Features.** `identify_geoadmin` und `find_geoadmin_by_name` gaben
-  `data.get("results", [])` zurück.
-
-  Hier wiegt der Default schwerer als anderswo, denn dieser Server kennt null
-  Features bereits als **echte** Antwort: Der Docstring von
-  `identify_geoadmin` warnt ausdrücklich davor, dass ein falscher `sr`-Wert
-  jede Ebene still leer laufen lässt. Der Default fügte eine zweite Ursache
-  mit demselben Ergebnis hinzu — und danach waren sie nicht mehr
-  auseinanderzuhalten.
-
-  Beide laufen jetzt über `_geoadmin_results()`, das `results` bestätigt und
-  sonst `UpstreamSchemaError` wirft — denselben Typ, den der CKAN-Pfad seit
-  dem letzten Release nutzt. `results: []` bleibt eine Aussage der Quelle:
-  Bestätigt wird die Anwesenheit des Schlüssels, nicht sein Inhalt.
-
-  Nachtrag zum Portfolio-Durchlauf
-  ([`FID-006`](https://github.com/malkreide/mcp-audit-skill/blob/main/checks/FID-006.md)):
-  Der CKAN-Sweep reparierte den einen Pfad dieses Servers, GeoAdmin ist der
-  andere. Eine Kohorte zu reparieren repariert einen Pfad, nicht einen Server.
-
-### Fixed
-
-- **Eine Strukturänderung von opendata.swiss wurde zu «null Treffer».**
-  `search_opendata_swiss` schrieb drei Defaults hintereinander:
-
-  ```python
-  result = data.get("result", {})
-  return {"count": result.get("count", 0), "results": result.get("results", [])}
-  ```
-
-  Fällt `result` weg — weil CKAN seine Antwort umbaut oder die Aktion nie
-  richtig war —, kommt buchstäblich `{"count": 0, "results": []}` heraus. Das
-  ist nicht «etwas ist kaputt», das ist **dieselbe Antwort, die eine korrekte,
-  leere Suche liefert**, und für das Modell nicht davon zu unterscheiden.
-
-  `result` wird jetzt bestätigt statt gedefaultet, und `count`/`results` mit
-  ihm: `package_search` liefert beide **immer**, auch bei null Treffern, also
-  ist ihr Fehlen keine leere Suche. Bei Abweichung fliegt `UpstreamSchemaError`
-  mit den tatsächlich vorhandenen Schlüsseln in der Meldung.
-
-  Ein echter CKAN-Fehler (`success: false`) bleibt ein `ValueError`: Dort hat
-  die Quelle geantwortet und Nein gesagt, hier hat sie ihre Form geändert. Eine
-  echte Leermenge (`count: 0` bei vorhandenem `results`) bleibt ein normales
-  Ergebnis — ein Wächter, der die mitfängt, wird nach dem zweiten Fehlalarm
-  abgeschaltet.
-
-  Gefunden im Portfolio-Durchlauf zu
-  [`FID-006`](https://github.com/malkreide/mcp-audit-skill/blob/main/checks/FID-006.md)
-  am 2026-08-07: Acht Server im Portfolio sprechen mit CKAN, alle acht prüfen
-  das `success`-Envelope, sieben defaulteten `result` danach. Dieser war der
-  einzige, bei dem der Default bis auf die **Zählung** durchschlug.
-
-### Added
 
 - **`EnergyHTTPClient.get` hatte gar keinen Retry — jetzt hat es einen.**
   `reference/adoption.toml` in
@@ -247,6 +151,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Ablehnungsfaellen, die Jitter-Streuung, die Deckel-Reihenfolge und die
   Einseitigkeit.
 
+### Fixed
+
+- **Der Server stellte sich ohne Version vor.** Spec `2026-07-28` hängt den
+  Identitätsblock unter `_meta["io.modelcontextprotocol/serverInfo"]` an
+  **jede** Antwort; die Handshake-Ära führt ihn einmalig in
+  `initialize.serverInfo`. Beide speisen sich aus demselben
+  `MCPServer`-Konstruktor — und `version` wurde ihm nie übergeben. Der
+  SDK-Vorgabewert dafür ist der leere String, kein Fehler und keine Warnung,
+  also meldete der Server jedem Client `{"name": "swiss_energy_mcp",
+  "version": ""}`, in der modernen Ära bei jedem einzelnen Aufruf. Kein Gate
+  wurde davon rot: eine leere Identität ist eine formal gültige Antwort.
+  Aufgefallen ist es erst an `server/discover`, der Identitätsprobe der Spec.
+  Der Wert kommt jetzt aus den Paket-Metadaten (`__version__`), nicht als
+  Literal — `scripts/check_version_sync.py` lässt in `src/` ohnehin keine
+  handgepflegte Nummer zu.
+
+- **Die dokumentierte Konfiguration liess den Server gar nicht erst starten.**
+  `SWISS_ENERGY_CORS_ORIGINS=https://claude.ai` — der Wert, den beide READMEs
+  und `.env.example` nennen — starb als `SettingsError` beim Laden. Betroffen
+  war jede Form ausser JSON, `SWISS_ENERGY_ALLOWED_HOSTS` genauso, und wer
+  `.env.example` kopierte (wozu die Datei selbst auffordert), bekam auf beiden
+  Transporten einen Prozess, der sich weigerte hochzufahren. Der
+  `mode="before"`-Validator, der die Komma-Form auftrennen sollte, lief nie:
+  pydantic-settings dekodiert ein Listenfeld in der Quelle als JSON, bevor
+  irgendein Validator drankommt. Beide Felder tragen jetzt `NoDecode`, und der
+  Validator nimmt beide Formen entgegen. Der Boden von `pydantic-settings`
+  steigt dafür auf `>=2.7.0` — darunter gibt es das Marker-Objekt nicht.
+
+- **Browser-Clients scheiterten am Preflight.** Spec `2026-07-28` routet eine
+  Streamable-HTTP-Anfrage über `Mcp-Method`, `Mcp-Name` und
+  `Mcp-Protocol-Version`. Die Freigabeliste nannte davon nur den letzten;
+  `Mcp-Method` und `Mcp-Name` fehlten. Ein Browser darf einen nicht
+  safelisteten Header nicht senden, wenn der Server ihn nicht nennt: die
+  Anfrage starb vor dem ersten MCP-Byte, während stdio und Python, für die kein
+  Preflight gilt, weiterliefen. Deshalb war nichts rot.
+
+- **Die README nannte `mcp[cli] >= 1.20.0`.** Deklariert ist
+  `mcp[cli]>=2.0.0,<3` — eine Major-Version daneben.
+
+- **Jede Datensatz-Beschreibung war leer.** `energy_search_bfe_datasets` las
+  sie aus `notes` — dem Feldnamen aus dem CKAN-Kern. opendata.swiss liefert das
+  Feld unter `description`; in keiner aufgezeichneten Antwort kommt `notes` vor.
+  Die Suite blieb dabei grün, weil `conftest.dataset()` das Feld genauso falsch
+  nannte wie der Code und dessen Annahme damit nur bestätigte.
+
+- **Die «leichtgewichtige» Statusabfrage war es nicht.** `energy_check_status`
+  baut seine `find`-Anfrage von Hand und liess `returnGeometry=false` weg, das
+  `find_geoadmin_by_name()` mitschickt. GeoAdmin legte deshalb die
+  Gemeindegeometrie bei: 159 656 statt 574 Bytes für denselben einen Treffer,
+  den das Tool nur zählt (gemessen am 15.08.2026). Damit ist die Anfrage jetzt
+  zeichengleich mit der des Suchwerkzeugs, und beide teilen sich ein Fixture —
+  laufen sie wieder auseinander, wird daraus sichtbar eine zweite Datei.
+
+- **Auch die GeoAdmin-Antworten wurden bei einer Strukturänderung zu null
+  Features.** `identify_geoadmin` und `find_geoadmin_by_name` gaben
+  `data.get("results", [])` zurück.
+
+  Hier wiegt der Default schwerer als anderswo, denn dieser Server kennt null
+  Features bereits als **echte** Antwort: Der Docstring von
+  `identify_geoadmin` warnt ausdrücklich davor, dass ein falscher `sr`-Wert
+  jede Ebene still leer laufen lässt. Der Default fügte eine zweite Ursache
+  mit demselben Ergebnis hinzu — und danach waren sie nicht mehr
+  auseinanderzuhalten.
+
+  Beide laufen jetzt über `_geoadmin_results()`, das `results` bestätigt und
+  sonst `UpstreamSchemaError` wirft — denselben Typ, den der CKAN-Pfad seit
+  dem letzten Release nutzt. `results: []` bleibt eine Aussage der Quelle:
+  Bestätigt wird die Anwesenheit des Schlüssels, nicht sein Inhalt.
+
+  Nachtrag zum Portfolio-Durchlauf
+  ([`FID-006`](https://github.com/malkreide/mcp-audit-skill/blob/main/checks/FID-006.md)):
+  Der CKAN-Sweep reparierte den einen Pfad dieses Servers, GeoAdmin ist der
+  andere. Eine Kohorte zu reparieren repariert einen Pfad, nicht einen Server.
+
+- **Eine Strukturänderung von opendata.swiss wurde zu «null Treffer».**
+  `search_opendata_swiss` schrieb drei Defaults hintereinander:
+
+  ```python
+  result = data.get("result", {})
+  return {"count": result.get("count", 0), "results": result.get("results", [])}
+  ```
+
+  Fällt `result` weg — weil CKAN seine Antwort umbaut oder die Aktion nie
+  richtig war —, kommt buchstäblich `{"count": 0, "results": []}` heraus. Das
+  ist nicht «etwas ist kaputt», das ist **dieselbe Antwort, die eine korrekte,
+  leere Suche liefert**, und für das Modell nicht davon zu unterscheiden.
+
+  `result` wird jetzt bestätigt statt gedefaultet, und `count`/`results` mit
+  ihm: `package_search` liefert beide **immer**, auch bei null Treffern, also
+  ist ihr Fehlen keine leere Suche. Bei Abweichung fliegt `UpstreamSchemaError`
+  mit den tatsächlich vorhandenen Schlüsseln in der Meldung.
+
+  Ein echter CKAN-Fehler (`success: false`) bleibt ein `ValueError`: Dort hat
+  die Quelle geantwortet und Nein gesagt, hier hat sie ihre Form geändert. Eine
+  echte Leermenge (`count: 0` bei vorhandenem `results`) bleibt ein normales
+  Ergebnis — ein Wächter, der die mitfängt, wird nach dem zweiten Fehlalarm
+  abgeschaltet.
+
+  Gefunden im Portfolio-Durchlauf zu
+  [`FID-006`](https://github.com/malkreide/mcp-audit-skill/blob/main/checks/FID-006.md)
+  am 2026-08-07: Acht Server im Portfolio sprechen mit CKAN, alle acht prüfen
+  das `success`-Envelope, sieben defaulteten `result` danach. Dieser war der
+  einzige, bei dem der Default bis auf die **Zählung** durchschlug.
 
 ## [0.4.1] - 2026-08-02
 
