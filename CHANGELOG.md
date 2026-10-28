@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Ein abgelaufenes Gesamtbudget verliess den Client als rohes `TimeoutError`.**
+  Seit dem Retry aus 0.5.0 begrenzt `asyncio.timeout` jede Anfrage auf 25 s.
+  Das eingebaute `TimeoutError`, das dabei entsteht, ist kein
+  `httpx.TimeoutException` und lief an der Fehlerabbildung vorbei. Folge im
+  Live-Lauf vom 20.10.2026, als `api3.geo.admin.ch` zeitweise nicht antwortete:
+  Drei Werkzeuge endeten mit einem Traceback statt einer Meldung, und
+  `energy_check_status` stürzte ab, statt GeoAdmin als nicht verfügbar zu
+  melden. Jetzt wird daraus eine `ValueError` mit «Zeitüberschreitung …».
+
 ## [0.5.0] - 2026-09-27
 
 Dieses Release existiert vor allem, damit eine Reparatur bei denen ankommt,

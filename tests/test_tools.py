@@ -468,6 +468,32 @@ class TestCheckStatus:
         assert geoadmin.available is False
 
     @respx.mock
+    async def test_geoadmin_haengt_wird_gemeldet_nicht_geworfen(self, tool, ctx, monkeypatch):
+        """Live-Lauf 20.10.2026: GeoAdmin antwortete nicht innerhalb des Budgets,
+        und das Status-Werkzeug stuerzte mit rohem `TimeoutError` ab — genau in
+        dem Fall, fuer den es da ist. Es muss die Quelle als nicht verfuegbar
+        melden und die andere trotzdem pruefen.
+        """
+        import asyncio
+
+        from swiss_energy_mcp import api_client
+
+        monkeypatch.setattr(api_client, "RETRY_TOTAL_BUDGET", 0.2)
+
+        async def haengt(_request):
+            await asyncio.sleep(30)
+            return httpx.Response(200, json={})
+
+        respx.get(url__startswith=f"{GEOADMIN_BASE}/find").mock(side_effect=haengt)
+        _package_search(5, [dataset()])
+        res = await tool("energy_check_status")(ctx)
+        geoadmin = next(a for a in res.apis if "GeoAdmin" in a.name)
+        opendata = next(a for a in res.apis if "opendata" in a.name)
+        assert geoadmin.available is False
+        assert "Zeitüberschreitung" in geoadmin.detail
+        assert opendata.available is True
+
+    @respx.mock
     async def test_lists_layers(self, tool, ctx):
         _find([])
         _package_search(0, [])
