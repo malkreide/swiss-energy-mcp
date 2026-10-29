@@ -8,6 +8,7 @@ hatte gar keinen Retry — ein Grep über `src/` fand null Vorkommen von
 
 from __future__ import annotations
 
+import asyncio
 import re
 import time
 from datetime import UTC, datetime, timedelta
@@ -112,6 +113,43 @@ async def test_die_fixture_nullt_die_wartezeit_wirklich(ohne_wartezeit) -> None:
         await client.close()
     gebraucht = time.monotonic() - start
     assert gebraucht < 2.0, f"der Backoff hat wirklich geschlafen: {gebraucht:.1f}s"
+
+
+@pytest.fixture
+def kurzes_budget(monkeypatch):
+    """Das Gesamtbudget auf 0.2 s — echte Zeit, nicht eine Fake-Uhr.
+
+    Das Budget ist ein `asyncio.timeout` und laeuft gegen die Uhr des Event
+    Loops. Eine Fake-Uhr, die nur beim Schlafen vorrueckt, kann seinen Ablauf
+    nicht ausloesen (CLAUDE.md Teil 1); also wird die Schranke verkuerzt,
+    nicht die Zeit.
+    """
+    monkeypatch.setattr(api_client, "RETRY_TOTAL_BUDGET", 0.2)
+
+
+async def _haengt(_request: httpx.Request) -> httpx.Response:
+    """Eine Quelle, die die Verbindung annimmt und dann nicht antwortet."""
+    await asyncio.sleep(30)
+    return httpx.Response(200, json={})
+
+
+async def test_ein_abgelaufenes_budget_wird_zur_meldung(kurzes_budget) -> None:
+    """Gemessen im Live-Lauf vom 20.10.2026: drei Werkzeuge endeten mit rohem
+    `TimeoutError`, weil das eingebaute `TimeoutError` aus `asyncio.timeout`
+    kein `httpx.TimeoutException` ist und an der Fehlerabbildung vorbeiging.
+    Der Vertrag von `get` ist eine `ValueError` mit Meldung — auch hier.
+    """
+    client = api_client.EnergyHTTPClient()
+    start = time.monotonic()
+    try:
+        with respx.mock:
+            respx.get(url__startswith=api_client.GEOADMIN_BASE).mock(side_effect=_haengt)
+            with pytest.raises(ValueError, match="Zeitüberschreitung"):
+                await client.get(f"{api_client.GEOADMIN_BASE}/identify")
+    finally:
+        await client.close()
+    gebraucht = time.monotonic() - start
+    assert gebraucht < 2.0, f"das Budget hat nicht gegriffen: {gebraucht:.1f}s"
 
 
 def test_der_schlaf_haengt_an_einem_modul_alias() -> None:

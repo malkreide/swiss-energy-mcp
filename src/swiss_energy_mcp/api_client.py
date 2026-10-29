@@ -473,6 +473,17 @@ class EnergyHTTPClient:
             raise ValueError(f"Die API hat einen Fehler gemeldet (HTTP {code}).") from exc
         except httpx.TimeoutException as exc:
             raise ValueError("Zeitüberschreitung bei der Anfrage. Bitte erneut versuchen.") from exc
+        except TimeoutError as exc:
+            # Das Gesamtbudget aus `asyncio.timeout` oben. Das eingebaute
+            # `TimeoutError` ist kein `httpx.TimeoutException` — ohne diesen
+            # Zweig verliess es das Werkzeug roh, und `energy_check_status`
+            # stuerzte ab, statt die Quelle als nicht verfuegbar zu melden
+            # (Live-Lauf vom 20.10.2026).
+            raise ValueError(
+                f"Zeitüberschreitung bei der Anfrage: keine vollständige Antwort "
+                f"innerhalb von {RETRY_TOTAL_BUDGET:.0f} s, Wiederholungen "
+                "eingeschlossen. Die Quelle antwortet gerade zu langsam."
+            ) from exc
         except httpx.RequestError as exc:
             raise ValueError("Netzwerkfehler bei der Anfrage. Bitte Verbindung prüfen.") from exc
 
