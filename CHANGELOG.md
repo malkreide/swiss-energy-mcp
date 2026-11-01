@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-31
+
+**0.5.0 wurde vorbereitet, aber nie veröffentlicht.** Es gibt kein Tag
+`v0.5.0`, PyPI und die MCP-Registry stehen am 31.10.2026 beide auf `0.4.1`.
+Wer den Server über PyPI betreibt, springt also von `0.4.1` direkt auf `0.5.1`
+und bekommt dabei alles aus dem Abschnitt [0.5.0] unten, vor allem die
+Reparatur, ohne die `0.4.1` mit der dokumentierten CORS-Konfiguration nicht
+startet. Die Nummer `0.5.0` wird nicht nachträglich vergeben: `main` trägt sie
+seit dem 27.9.2026, und ein später veröffentlichtes `0.5.0` mit anderem Inhalt
+hiesse gleich wie der Stand, den manche schon aus Git installiert haben.
+
+Neu gegenüber `0.5.0` ist nur ein Fix:
+
 ### Fixed
 
 - **Ein abgelaufenes Gesamtbudget verliess den Client als rohes `TimeoutError`.**
