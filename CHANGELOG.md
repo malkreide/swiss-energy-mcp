@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Die MCP-Registry listete den Server ohne Titel.** `server.json` setzte kein
+  `title`, obwohl der Server selbst sich seit 0.5.0 als «Swiss Energy MCP»
+  meldet. Registry-Clients zeigten deshalb nur den technischen Namen
+  `io.github.malkreide/swiss-energy-mcp`. Jetzt steht der Titel auch im
+  Manifest; ein Test hält Titel und Projektadresse in `server.json` und in der
+  gemeldeten Identität gleich. Wirksam in der Registry mit dem nächsten
+  Release.
+
 ## [0.5.1] - 2026-10-31
 
 **0.5.0 wurde vorbereitet, aber nie veröffentlicht.** Es gibt kein Tag
