@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 from importlib.metadata import version as _distribution_version
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -157,6 +158,21 @@ async def test_die_identitaet_nennt_titel_und_projektadresse() -> None:
     website = info.get("websiteUrl")
     assert website, "keine `websiteUrl` im Identitaetsblock"
     assert website.startswith("https://"), website
+
+
+async def test_das_registry_manifest_nennt_dieselbe_identitaet() -> None:
+    """`server.json` und der laufende Server stellen sich gleich vor.
+
+    Titel und Projektadresse stehen an zwei Stellen: im Konstruktor, den
+    Clients zur Laufzeit sehen, und im Manifest, das die MCP-Registry listet.
+    Bis 0.5.1 fehlte `title` im Manifest, und die Registry zeigte deshalb nur
+    den technischen Namen. Geprueft wird gegen die gemeldete Identitaet, nicht
+    gegen `server.TITLE` — sonst bliebe eine Drift im Konstruktor unbemerkt.
+    """
+    manifest = json.loads((Path(__file__).parents[1] / "server.json").read_text("utf-8"))
+    info = await _modern_server_info("server/discover")
+    assert manifest.get("title") == info.get("title")
+    assert manifest.get("websiteUrl") == info.get("websiteUrl")
 
 
 async def test_beide_aeren_melden_dieselbe_identitaet() -> None:
