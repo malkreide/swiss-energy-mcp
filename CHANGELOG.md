@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-11-07
+
+Ein Release nur für die MCP-Registry: Der Code ist gegenüber `0.5.1`
+unverändert. Ein Registry-Eintrag lässt sich nach der Veröffentlichung nicht
+mehr ändern, deshalb erscheint der Titel erst mit einer neuen Version. Wer
+`0.5.1` von PyPI betreibt, muss nicht aktualisieren.
+
 ### Fixed
 
 - **Die MCP-Registry listete den Server ohne Titel.** `server.json` setzte kein
@@ -14,8 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   meldet. Registry-Clients zeigten deshalb nur den technischen Namen
   `io.github.malkreide/swiss-energy-mcp`. Jetzt steht der Titel auch im
   Manifest; ein Test hält Titel und Projektadresse in `server.json` und in der
-  gemeldeten Identität gleich. Wirksam in der Registry mit dem nächsten
-  Release.
+  gemeldeten Identität gleich.
 
 ## [0.5.1] - 2026-10-31
 
