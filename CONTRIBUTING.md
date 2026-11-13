@@ -67,11 +67,15 @@ workflow*. See [`.github/workflows/live-tests.yml`](.github/workflows/live-tests
 
 **Who sees it:** A red run opens an issue labelled `upstream` and the stable title “Live-Tests gegen api3.geo.admin.ch / opendata.swiss rot (<Datum>)”. A second red run recognises the open issue by its title prefix and appends to that same thread rather than opening a second one. Once the suite is green again, the issue closes itself.
 
-**Three answers, not two.** `scripts/classify_live_run.py` reads the JUnit XML rather than
+**Four answers, not two.** `scripts/classify_live_run.py` reads the JUnit XML rather than
 the exit code and separates `clear` (ran, green), `finding` (ran, something
-fell) and `unknown` (did not run — install failed, nothing collected,
-everything skipped). An `unknown` never closes an issue: closing would claim a
-comparison that never happened.
+fell), `unreachable` (ran, and *every* failure ended in a timeout, a network
+error or HTTP 429/5xx) and `unknown` (did not run — install failed, nothing
+collected, everything skipped). An `unknown` never closes an issue: closing
+would claim a comparison that never happened. An `unreachable` is red as well
+and opens the issue as well, with “Quelle nicht erreichbar” added to the title:
+the source was down, and there is usually nothing to fix. A single other
+failure, an HTTP 404 included, makes the run a `finding`.
 
 **A red live run does not necessarily mean *our* bug.** It means the contract
 with the source has changed, or the source is down. Both belong seen; only the

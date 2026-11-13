@@ -52,10 +52,11 @@ jobs:
           pytest tests/ -m live -v --tb=short --junitxml=live-report.xml 2>&1 | tee live-output.txt
           echo "pytest_exit=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
 
-      # `if: failure()` kennt rot und nicht rot. Ein Live-Lauf hat drei
-      # Antworten, und die dritte zaehlt: Ein gescheitertes `pip install`, ein
-      # Timeout oder eine umbenannte Marke sind NICHT dasselbe wie ein
-      # gebrochener Vertrag mit der Quelle. Und ein Lauf, in dem jeder Test
+      # `if: failure()` kennt rot und nicht rot. Ein Live-Lauf hat vier
+      # Antworten (siehe scripts/classify_live_run.py): Ein gescheitertes
+      # `pip install`, eine umbenannte Marke oder eine Quelle, die gerade nicht
+      # antwortet, sind NICHT dasselbe wie ein gebrochener Vertrag mit der
+      # Quelle. Und ein Lauf, in dem jeder Test
       # uebersprungen wurde, sieht unter jedem Exit-Code-Check aus wie Erfolg.
       - name: Ergebnis einordnen
         id: verdict
@@ -112,8 +113,31 @@ jobs:
               return;
             }
 
-            if (state === 'finding') {
-              const body = [
+            if (state === 'finding' || state === 'unreachable') {
+              // `unreachable` nimmt denselben Thread (Praefix und Label), damit
+              // ein Ausfall nicht neben einem offenen Befund ein zweites Issue
+              // aufmacht. Titel und Text sagen aber, dass nichts zu fixen ist.
+              const body = state === 'unreachable' ? [
+                'Die geplante Live-Suite konnte `api3.geo.admin.ch / opendata.swiss` nicht',
+                'vollstaendig abfragen: Die Quelle hat nicht oder nicht rechtzeitig geantwortet.',
+                '',
+                `Lauf: ${run}`,
+                `Einordnung: ${reason}`,
+                '',
+                '**Das ist kein Befund ueber den Vertrag mit der Quelle.** Jeder gescheiterte',
+                'Test endete an einer Zeitueberschreitung, einem Netzwerkfehler oder HTTP',
+                '429/5xx; die uebrigen Tests sind gelaufen. Zu fixen ist in der Regel nichts,',
+                'das Issue schliesst sich beim naechsten gruenen Lauf. Haelt es ueber mehrere',
+                'Tage an, die Quelle direkt abfragen.',
+                '',
+                '<details><summary>Letzte Zeilen der pytest-Ausgabe</summary>',
+                '',
+                '```',
+                tail,
+                '```',
+                '',
+                '</details>',
+              ].join('\n') : [
                 'Die geplante Live-Suite gegen `api3.geo.admin.ch / opendata.swiss` ist rot.',
                 '',
                 `Lauf: ${run}`,
@@ -138,9 +162,12 @@ jobs:
               ].join('\n');
 
               if (open) {
+                const anlass = state === 'unreachable'
+                  ? `Wieder rot am ${heute}, Quelle nicht erreichbar.`
+                  : `Wieder rot am ${heute}.`;
                 await github.rest.issues.createComment({
                   ...context.repo, issue_number: open.number,
-                  body: `Wieder rot am ${heute}.\n\n${body}`,
+                  body: `${anlass}\n\n${body}`,
                 });
               } else {
                 // Das Label anlegen, falls das Repo es noch nicht kennt: Sonst
@@ -154,8 +181,11 @@ jobs:
                 } catch (e) {
                   if (e.status !== 422) throw e;  // 422 = existiert bereits
                 }
+                // Der Zusatz steht HINTER dem Praefix, damit der naechste Lauf
+                // das Issue weiter ueber `startsWith(PREFIX)` findet.
+                const zusatz = state === 'unreachable' ? ', Quelle nicht erreichbar' : '';
                 await github.rest.issues.create({
-                  ...context.repo, title: `${PREFIX} (${heute})`, body, labels: [LABEL],
+                  ...context.repo, title: `${PREFIX} (${heute}${zusatz})`, body, labels: [LABEL],
                 });
               }
               return;
@@ -174,9 +204,10 @@ jobs:
               });
             }
 
-      # Erst hier wird der Job rot. `clear` ist gruen; `finding` und `unknown`
-      # sind beide rot, aber nur `finding` hat oben ein Issue erzeugt — der
-      # Unterschied steht im Log, nicht im Exit-Code.
+      # Erst hier wird der Job rot. `clear` ist gruen; `finding`, `unreachable`
+      # und `unknown` sind rot, aber nur die ersten beiden haben oben ein Issue
+      # erzeugt — der Unterschied steht im Log und im Issue-Titel, nicht im
+      # Exit-Code.
       - name: Ergebnis durchreichen
         if: steps.verdict.outputs.state != 'clear'
         # Ueber `env`, nicht ueber `${{ }}`: Der Grund kann eine Parser-Meldung
