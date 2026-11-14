@@ -69,11 +69,16 @@ workflow*. Siehe [`.github/workflows/live-tests.yml`](.github/workflows/live-tes
 
 **Wer es sieht:** Ein roter Lauf öffnet ein Issue mit dem Label `upstream` und dem stabilen Titel «Live-Tests gegen api3.geo.admin.ch / opendata.swiss rot (<Datum>)». Ein zweiter roter Lauf erkennt das offene Issue am Titelanfang und hängt sich an denselben Thread, statt ein zweites aufzumachen. Wird die Suite wieder grün, schliesst sich das Issue selbst.
 
-**Drei Antworten, nicht zwei.** `scripts/classify_live_run.py` liest das JUnit-XML statt des
+**Vier Antworten, nicht zwei.** `scripts/classify_live_run.py` liest das JUnit-XML statt des
 Exit-Codes und unterscheidet: `clear` (gelaufen, grün), `finding` (gelaufen,
-etwas gefallen) und `unknown` (nicht gelaufen — Installation gescheitert, null
-Tests eingesammelt, alle übersprungen). Ein `unknown` schliesst nie ein Issue:
-Zuzumachen hiesse zu behaupten, der Vergleich sei gelaufen.
+etwas gefallen), `unreachable` (gelaufen, und *jeder* Fehlschlag endete an einer
+Zeitüberschreitung, einem Netzwerkfehler oder HTTP 429/5xx) und `unknown` (nicht
+gelaufen — Installation gescheitert, null Tests eingesammelt, alle übersprungen).
+Ein `unknown` schliesst nie ein Issue: Zuzumachen hiesse zu behaupten, der
+Vergleich sei gelaufen. Ein `unreachable` ist ebenfalls rot und öffnet ebenfalls
+das Issue, mit dem Zusatz «Quelle nicht erreichbar» im Titel: Die Quelle war
+weg, zu fixen ist in der Regel nichts. Ein einziger anderer Fehlschlag, auch ein
+HTTP 404, macht den Lauf zum `finding`.
 
 **Ein roter Live-Lauf heisst nicht zwingend «unser Fehler».** Er heisst: Der
 Vertrag mit der Quelle hat sich geändert, oder die Quelle ist gerade aus. Beides

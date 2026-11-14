@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Die Live-Suite unterscheidet einen Ausfall der Quelle von einem
+  Befund.** Am 20.10. und am 10.11.2026 antwortete `api3.geo.admin.ch` einige
+  Minuten lang nicht innerhalb von 25 s; beide Male ging ein Issue auf, das wie
+  ein gebrochener Vertrag aussah, und am nächsten Tag war alles grün.
+  `scripts/classify_live_run.py` kennt dafür jetzt den Zustand `unreachable`:
+  Endet *jeder* Fehlschlag an einer Zeitüberschreitung, einem Netzwerkfehler
+  oder HTTP 429/5xx, bleibt der Lauf rot und das Issue geht weiter auf, trägt
+  aber «Quelle nicht erreichbar» im Titel und sagt, dass in der Regel nichts zu
+  fixen ist. Ein einziger anderer Fehlschlag, auch ein HTTP 404, bleibt ein
+  `finding`. `tests/test_live_einordnung_meldungen.py` hält die erkannten
+  Meldungen gegen die, die der Client wirklich erzeugt.
+
 ## [0.5.2] - 2026-11-07
 
 Ein Release nur für die MCP-Registry: Der Code ist gegenüber `0.5.1`
